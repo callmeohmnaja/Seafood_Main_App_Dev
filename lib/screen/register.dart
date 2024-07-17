@@ -22,6 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         future: firebase,
         builder: (context, snapshot) {
           if (snapshot.hasError)
+            // ignore: curly_braces_in_flow_control_structures
             return Scaffold(
               appBar: AppBar(title: Text('Error')),
               body: Center(child: Text('${snapshot.error}')),
@@ -37,6 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // ignore: prefer_const_constructors
                             Text('อีเมล', style: TextStyle(fontSize: 20)),
                             TextFormField(
                               validator: MultiValidator([

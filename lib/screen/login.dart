@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:seafood_app/model/profile.dart';
-import 'package:seafood_app/screen/welcome.dart';
+import 'package:seafood_app/screen/food_app.dart';
+// import 'package:seafood_app/screen/welcome.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -75,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             Navigator.pushReplacement(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return WelcomeScreen(); //ที่จริงต้องกลับ wlcome screen
+                                              return FoodApp(); //ไปหน้า foodApp
                                             }));
                                           });
                                         } on FirebaseAuthException catch (e) {

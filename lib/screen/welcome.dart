@@ -25,7 +25,9 @@ class WelcomeScreen extends StatelessWidget {
                     }));
                   },
                   child: Text('ออกจากระบบ'))
-            ],
+                   ],
+            
+          
           ),
         ),
       ),

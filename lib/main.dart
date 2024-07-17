@@ -8,7 +8,8 @@ import 'package:seafood_app/screen/home.dart';
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     // Replace with actual values
-    options: FirebaseOptions(
+    // ignore: prefer_const_constructors
+    options:  FirebaseOptions(
       apiKey: "AIzaSyA_6BqYTJ_NzPODbKhhDvHuI0-97kyemPw",
       appId: "1:785736376641:android:591dc33dc281627234c1c0",
       messagingSenderId: "785736376641",
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Seafood App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
