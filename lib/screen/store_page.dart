@@ -1,0 +1,15 @@
+import 'package:flutter/material.dart';
+
+class StorePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('เปิดร้านอาหาร'),
+      ),
+      body: Center(
+        child: Text('เขียน'),
+      ),
+    );
+  }
+}

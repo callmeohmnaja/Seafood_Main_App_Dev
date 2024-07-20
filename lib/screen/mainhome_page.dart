@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/raider_page.dart';
-import 'recipes_page.dart';
+import 'package:seafood_app/screen/store_page.dart';
+import 'package:seafood_app/screen/support_page.dart';
+import 'oder.dart';
 import 'favorites_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -86,7 +88,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                  MaterialPageRoute(builder: (context) => StorePage()),
                 );
               },
             ),
@@ -97,7 +99,7 @@ class HomePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
+                  MaterialPageRoute(builder: (context) => SupportPage()),
                 );
               },
             ),

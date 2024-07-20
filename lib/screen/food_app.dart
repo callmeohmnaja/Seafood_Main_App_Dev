@@ -2,7 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'mainhome_page.dart';
-import 'recipes_page.dart';
+import 'oder.dart';
 import 'favorites_page.dart';
 
 
@@ -10,7 +10,7 @@ class FoodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Food Navigation Example',
+      title: 'Seafood Main',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),

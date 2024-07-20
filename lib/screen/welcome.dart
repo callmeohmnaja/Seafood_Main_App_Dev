@@ -27,11 +27,10 @@ class WelcomeScreen extends StatelessWidget {
                   child: Text('ออกจากระบบ'))
                    ],
             
-          
+       
           ),
         ),
       ),
     );
   }
 }
-// หน้านี้คงไม่ได้ใช้
