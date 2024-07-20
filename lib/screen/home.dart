@@ -6,7 +6,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register & Login with Firebase')),
+      appBar: AppBar(title: Text('Register & Login')),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
