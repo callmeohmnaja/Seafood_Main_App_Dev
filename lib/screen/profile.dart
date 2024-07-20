@@ -5,44 +5,24 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('โปรไฟล์'),
       ),
       body: Center(
-        child: Text('Profile Page Content'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 80,
+              backgroundImage: AssetImage('images/rick.jpg'), // เปลี่ยนเป็นตำแหน่งรูปโปรไฟล์ของคุณ
+            ),
+            SizedBox(height: 20),
+            Text(
+              'example@email.com', // แสดงอีเมลของผู้ใช้
+              style: TextStyle(fontSize: 24),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-// class WelcomeScreen extends StatelessWidget {
-//   final auth = FirebaseAuth.instance;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Welcome')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(10.0),
-//         child: Center(
-//           child: Column(
-//             children: [
-//               Text(
-//                 'อีเมลของคุณคือ ' + auth.currentUser!.email.toString(),
-//                 style: TextStyle(fontSize: 20),
-//               ),
-//               ElevatedButton(
-//                   onPressed: () {
-//                     Navigator.pushReplacement(context,
-//                         MaterialPageRoute(builder: (context) {
-//                       return HomeScreen();
-//                     }));
-//                   },
-//                   child: Text('ออกจากระบบ'))
-//                    ],
-            
-          
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-

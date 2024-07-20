@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'home_page.dart';
+import 'mainhome_page.dart';
 import 'recipes_page.dart';
 import 'favorites_page.dart';
 
