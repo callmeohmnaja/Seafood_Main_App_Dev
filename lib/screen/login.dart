@@ -7,13 +7,16 @@ import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/food_app.dart';
 // import 'package:seafood_app/screen/welcome.dart';
 
+// ignore: use_key_in_widget_constructors
 class LoginScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
+  // ignore: unnecessary_new
   Profile profile = new Profile();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   @override
@@ -22,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
         future: firebase,
         builder: (context, snapshot) {
           if (snapshot.hasError)
+            // ignore: curly_braces_in_flow_control_structures
             return Scaffold(
               appBar: AppBar(title: Text('Error')),
               body: Center(child: Text('${snapshot.error}')),

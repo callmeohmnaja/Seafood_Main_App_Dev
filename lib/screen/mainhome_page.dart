@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/raider_page.dart';
@@ -7,6 +8,7 @@ import 'package:seafood_app/screen/support_page.dart';
 import 'oder.dart';
 import 'favorites_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,10 @@ class HomePage extends StatelessWidget {
               title: Text('หน้าแรก'),
               onTap: () {
                 Navigator.pop(context);
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodApp()),
+                 );
               },
             ),
             ListTile(
@@ -119,6 +125,7 @@ class HomePage extends StatelessWidget {
         
       ),
     
+
       body: Center(
         child: Text('Home Page Content'),
       ),

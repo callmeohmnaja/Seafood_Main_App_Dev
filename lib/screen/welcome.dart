@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/home.dart';
 
+// ignore: use_key_in_widget_constructors
 class WelcomeScreen extends StatelessWidget {
   final auth = FirebaseAuth.instance;
   @override
@@ -14,6 +15,7 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Text(
+                // ignore: prefer_interpolation_to_compose_strings
                 'อีเมลของคุณคือ ' + auth.currentUser!.email.toString(),
                 style: TextStyle(fontSize: 20),
               ),

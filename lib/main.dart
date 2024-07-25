@@ -19,6 +19,7 @@ import 'package:seafood_app/screen/home.dart';
   runApp(MyApp());
 }
 
+// ignore: use_key_in_widget_constructors
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -32,8 +33,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// ignore: use_key_in_widget_constructors
 class MyHomePage extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 

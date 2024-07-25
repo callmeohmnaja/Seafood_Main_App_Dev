@@ -1,12 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
+import 'package:seafood_app/screen/support_page.dart';
 import 'mainhome_page.dart';
 import 'oder.dart';
 import 'favorites_page.dart';
 
 
+// ignore: use_key_in_widget_constructors
 class FoodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -20,8 +21,10 @@ class FoodApp extends StatelessWidget {
   }
 }
 
+// ignore: use_key_in_widget_constructors
 class MainScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -32,6 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     RecipesPage(),
     FavoritesPage(),
+    SupportPage(),
     ProfilePage(),
     
   ];
@@ -42,10 +46,12 @@ class _MainScreenState extends State<MainScreen> {
       body: _pageOptions[_pageIndex],
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.greenAccent,
+        // ignore: prefer_const_literals_to_create_immutables
         items: <Widget>[
           Icon(Icons.home, size: 30),
           Icon(Icons.restaurant_menu, size: 30),
-          Icon(Icons.favorite, size: 30),
+          Icon(Icons.reviews, size: 30),
+          Icon(Icons.support_agent,size: 30),
           Icon(Icons.person, size: 30),
         ],
         onTap: (index) {

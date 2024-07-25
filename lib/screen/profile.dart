@@ -8,6 +8,7 @@ import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class ProfilePage extends StatelessWidget {
   final auth = FirebaseAuth.instance;
   @override
@@ -16,7 +17,7 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('โปรไฟล์'),
       ),
-      drawer: Drawer(
+         drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -108,9 +109,20 @@ class ProfilePage extends StatelessWidget {
                 );
               },
             ),
+             ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ออกจากระบบ'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()), //แก้ให้กลับไปหน้าหลัก
+                );
+              },
+            ),
           ],
-      ),
-      ),
+        ),
+       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -121,6 +133,7 @@ class ProfilePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
+              // ignore: prefer_interpolation_to_compose_strings
               'อีเมลของคุณคือ' + auth.currentUser!.email.toString(), // แสดงอีเมลของผู้ใช้
               style: TextStyle (fontSize: 24),
             ),
@@ -132,6 +145,8 @@ class ProfilePage extends StatelessWidget {
                     }));
                   },
                   child: Text('ออกจากระบบ'))
+                  
+                  
                    ],
             
         ),

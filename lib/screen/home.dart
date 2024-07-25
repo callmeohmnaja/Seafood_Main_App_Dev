@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/login.dart';
 import 'package:seafood_app/screen/register.dart';
 
+
+
+
+
+// ignore: use_key_in_widget_constructors
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

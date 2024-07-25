@@ -6,14 +6,17 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/home.dart';
 
+// ignore: use_key_in_widget_constructors
 class RegisterScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
+  // ignore: unnecessary_new
   Profile profile = new Profile();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   @override
@@ -86,12 +89,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         } on FirebaseAuthException catch (e) {
                                           String message;
                                           if (e.code == 'email-already-in-use')
+                                            // ignore: curly_braces_in_flow_control_structures
                                             message =
                                                 'อีเมลซ้ำไม่สามารถใช้งานได้';
                                           else if (e.code == 'weak-password')
+                                            // ignore: curly_braces_in_flow_control_structures
                                             message =
                                                 'รหัสผ่านต้องมีความยาว 6 ตัวอักษรขึ้นไป';
                                           else
+                                            // ignore: curly_braces_in_flow_control_structures
                                             message = e.message.toString();
 
                                           Fluttertoast.showToast(msg: message);

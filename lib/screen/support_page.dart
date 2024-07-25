@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/oder.dart';
 import 'package:seafood_app/screen/profile.dart';
@@ -7,6 +8,7 @@ import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
 
 
+// ignore: use_key_in_widget_constructors
 class SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class SupportPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('แจ้งปัญหา'),
       ),
-      drawer: Drawer(
+       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -106,9 +108,20 @@ class SupportPage extends StatelessWidget {
                 );
               },
             ),
+             ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ออกจากระบบ'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()), //แก้ให้กลับไปหน้าหลัก
+                );
+              },
+            ),
           ],
         ),
-      ),
+       ),
       body: Center(
         child: Text('เขียน'),
       ),

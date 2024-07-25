@@ -8,11 +8,14 @@ import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class RaiderPage extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('สมัครไรเดอร์'),
+        backgroundColor: Colors.green,
       ),
       drawer: Drawer(
         child: ListView(
@@ -30,106 +33,194 @@ class RaiderPage extends StatelessWidget {
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('หน้าแรก'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.home,
+              text: 'หน้าแรก',
+              onTap: () => _navigateTo(context, HomePage()),
             ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('ออเดอร์ของฉัน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RecipesPage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.restaurant_menu,
+              text: 'ออเดอร์ของฉัน',
+              onTap: () => _navigateTo(context, RecipesPage()),
             ),
-            ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('สิ่งที่ถูกใจ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.favorite,
+              text: 'สิ่งที่ถูกใจ',
+              onTap: () => _navigateTo(context, FavoritesPage()),
             ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('โปรไฟล์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.person,
+              text: 'โปรไฟล์',
+              onTap: () => _navigateTo(context, ProfilePage()),
             ),
-               ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.motorcycle,
+              text: 'สมัครไรเดอร์',
+              onTap: () => _navigateTo(context, RaiderPage()),
             ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.store,
+              text: 'เปิดร้านอาหาร',
+              onTap: () => _navigateTo(context, StorePage()),
             ),
-            ListTile(
-              leading: Icon(Icons.support),
-              title: Text('แจ้งปัญหา'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportPage()),
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.support,
+              text: 'แจ้งปัญหา',
+              onTap: () => _navigateTo(context, SupportPage()),
             ),
-              ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ออกจากระบบ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()), //แก้ให้กลับไปหน้าหลัก
-                );
-              },
+            _buildDrawerItem(
+              icon: Icons.logout,
+              text: 'ออกจากระบบ',
+              onTap: () => _navigateTo(context, HomeScreen()),
             ),
           ],
-        ),   
-      ));
+        ),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'สมัครเป็นไรเดอร์',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox(height: 20),
+              Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'กรุณากรอกข้อมูลของคุณ',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[800],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildTextField(
+                          label: 'ชื่อ',
+                          icon: Icons.person,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'กรุณากรอกชื่อ';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        _buildTextField(
+                          label: 'อีเมล',
+                          icon: Icons.email,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'กรุณากรอกอีเมล';
+                            }
+                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                .hasMatch(value)) {
+                              return 'กรุณากรอกอีเมลที่ถูกต้อง';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        _buildTextField(
+                          label: 'เบอร์โทรศัพท์',
+                          icon: Icons.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'กรุณากรอกเบอร์โทรศัพท์';
+                            }
+                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                              return 'กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                        _buildTextField(
+                          label: 'เลขใบอนุญาตขับขี่',
+                          icon: Icons.card_membership,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'กรุณากรอกเลขใบอนุญาตขับขี่';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              // Handle form submission here
+                            }
+                          },
+                          child: Text('สมัคร'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            textStyle: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String text,
+    required GestureTapCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.green),
+      title: Text(text),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required IconData icon,
+    FormFieldValidator<String>? validator,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(icon, color: Colors.green),
+      ),
+      validator: validator,
+    );
+  }
+
+  void _navigateTo(BuildContext context, Widget page) {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
   }
 }
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Raider'),
-//       ),
-//       body: Center(
-//         child: Text('สร้างหน้าสมัครบัญชีจ้า'),
-//       ),
-//     );
-//   }
-// }
