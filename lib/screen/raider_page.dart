@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
@@ -9,6 +11,8 @@ import 'package:seafood_app/screen/support_page.dart';
 
 class RaiderPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
+  Profile profile = new Profile();
+  final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {

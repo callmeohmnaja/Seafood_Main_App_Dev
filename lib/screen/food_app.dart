@@ -50,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
         items: <Widget>[
           Icon(Icons.home, size: 30),
           Icon(Icons.restaurant_menu, size: 30),
-          Icon(Icons.reviews, size: 30),
+          Icon(Icons.add, size: 30),
           Icon(Icons.support_agent,size: 30),
           Icon(Icons.person, size: 30),
         ],

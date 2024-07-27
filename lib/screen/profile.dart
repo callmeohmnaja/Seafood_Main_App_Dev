@@ -129,7 +129,7 @@ class ProfilePage extends StatelessWidget {
           children: <Widget>[
             CircleAvatar(
               radius: 80,
-              backgroundImage: AssetImage('images/rick.jpg'), // เปลี่ยนเป็นตำแหน่งรูปโปรไฟล์ของคุณ
+              backgroundImage: AssetImage('images/seafood_logo.png'), // เปลี่ยนเป็นตำแหน่งรูปโปรไฟล์ของคุณ
             ),
             SizedBox(height: 20),
             Text(
