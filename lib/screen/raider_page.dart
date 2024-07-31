@@ -1,21 +1,16 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
-import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/oder.dart';
 import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/rider_dashboard.dart';
 import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
+import 'package:seafood_app/screen/rider_dashboard.dart';
 
-// ignore: use_key_in_widget_constructors
 class RaiderPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-  // ignore: unnecessary_new
-  Profile profile = new Profile();
-  final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +43,7 @@ class RaiderPage extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.restaurant_menu,
               text: 'ออเดอร์ของฉัน',
-              onTap: () => _navigateTo(context, FoodOrderPage()),
+              onTap: () => _navigateTo(context, RecipesPage()),
             ),
             _buildDrawerItem(
               icon: Icons.favorite,
@@ -122,61 +117,34 @@ class RaiderPage extends StatelessWidget {
                         _buildTextField(
                           label: 'ชื่อ',
                           icon: Icons.person,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'กรุณากรอกชื่อ';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 10),
                         _buildTextField(
                           label: 'อีเมล',
                           icon: Icons.email,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'กรุณากรอกอีเมล';
-                            }
-                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                .hasMatch(value)) {
-                              return 'กรุณากรอกอีเมลที่ถูกต้อง';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 10),
                         _buildTextField(
                           label: 'เบอร์โทรศัพท์',
                           icon: Icons.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'กรุณากรอกเบอร์โทรศัพท์';
-                            }
-                            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                              return 'กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง';
-                            }
-                            return null;
-                          },
+                          keyboardType: TextInputType.phone,
                         ),
                         SizedBox(height: 10),
                         _buildTextField(
-                          label: 'เลขใบอนุญาตขับขี่',
+                          label: 'เลขใบอนุญาตขับขี่รถจักรยานยนต์',
                           icon: Icons.card_membership,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'กรุณากรอกเลขใบอนุญาตขับขี่';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              // Handle form submission here
+                            if (_formKey.currentState?.validate() == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('กำลังบันทึกข้อมูล')),
+                              );
+                              _navigateTo(context,
+                                  RiderDashboardPage()); // นำทางไปที่หน้า RiderDashboardPage
                             }
                           },
-                          // ignore: sort_child_properties_last
                           child: Text('สมัคร'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
@@ -197,6 +165,31 @@ class RaiderPage extends StatelessWidget {
     );
   }
 
+  Widget _buildTextField({
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.green),
+        border: OutlineInputBorder(),
+        filled: true,
+        fillColor: Colors.grey[200],
+      ),
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'กรุณากรอกข้อมูล';
+        }
+        return null;
+      },
+    );
+  }
+
   Widget _buildDrawerItem({
     required IconData icon,
     required String text,
@@ -206,21 +199,6 @@ class RaiderPage extends StatelessWidget {
       leading: Icon(icon, color: Colors.green),
       title: Text(text),
       onTap: onTap,
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    FormFieldValidator<String>? validator,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(icon, color: Colors.green),
-      ),
-      validator: validator,
     );
   }
 
