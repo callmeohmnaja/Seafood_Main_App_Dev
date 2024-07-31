@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Seafood App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: MyHomePage(),
     );
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        // title: Text(''),
       ),
       body: HomeScreen(),
     );

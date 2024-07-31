@@ -128,6 +128,8 @@
 //   }
 // }
 
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
 import 'package:seafood_app/screen/home.dart';
@@ -282,6 +284,7 @@ class StorePage extends StatelessWidget {
                               );
                             }
                           },
+                          // ignore: sort_child_properties_last
                           child: Text('เปิดร้าน'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,

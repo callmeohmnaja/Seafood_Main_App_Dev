@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // เพิ่มการนำเข้า Cloud Firestore
 import 'package:seafood_app/screen/favorites_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
@@ -8,15 +9,16 @@ import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
 
 
-// ignore: use_key_in_widget_constructors
 class SupportPage extends StatelessWidget {
+  final TextEditingController _issueController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('แจ้งปัญหา'),
       ),
-       drawer: Drawer(
+      drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -75,7 +77,7 @@ class SupportPage extends StatelessWidget {
                 );
               },
             ),
-               ListTile(
+            ListTile(
               leading: Icon(Icons.motorcycle),
               title: Text('สมัครไรเดอร์'),
               onTap: () {
@@ -108,22 +110,76 @@ class SupportPage extends StatelessWidget {
                 );
               },
             ),
-             ListTile(
+            ListTile(
               leading: Icon(Icons.logout),
               title: Text('ออกจากระบบ'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()), //แก้ให้กลับไปหน้าหลัก
+                  MaterialPageRoute(builder: (context) => HomeScreen()), // แก้ให้กลับไปหน้าหลัก
                 );
               },
             ),
           ],
         ),
-       ),
-      body: Center(
-        child: Text('เขียน'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'กรุณาแจ้งปัญหาที่คุณพบ:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _issueController,
+              maxLines: 5, // จำนวนบรรทัดสูงสุด
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'กรุณากรอกปัญหาของคุณที่นี่...',
+              ),
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                // ส่งข้อมูลไปยัง Firestore
+                String issue = _issueController.text;
+                if (issue.isNotEmpty) {
+                  await FirebaseFirestore.instance.collection('issues').add({
+                    'issue': issue,
+                    'timestamp': FieldValue.serverTimestamp(), // เก็บเวลาที่ส่ง
+                  });
+                  
+                  // แสดงข้อความยืนยัน
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('แจ้งปัญหา'),
+                      content: Text('คุณได้แจ้งปัญหาดังนี้: \n\n$issue'),
+                      actions: [
+                        TextButton(
+                          child: Text('ตกลง'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _issueController.clear(); // ล้างข้อมูลใน TextField
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // แจ้งให้ผู้ใช้กรอกปัญหา
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('กรุณากรอกปัญหาของคุณ')),
+                  );
+                }
+              },
+              child: Text('ส่งปัญหา'),
+            ),
+          ],
+        ),
       ),
     );
   }

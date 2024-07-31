@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/login.dart';
 import 'package:seafood_app/screen/register.dart';
 
-
-
-
-
 // ignore: use_key_in_widget_constructors
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register & Login')),
+      appBar: AppBar(title:Text('Register & Login' , style: TextStyle(fontSize: 26)),
+      centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(

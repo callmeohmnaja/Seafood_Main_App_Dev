@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/oder.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
@@ -48,7 +48,7 @@ class FavoritesPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RecipesPage()),
+                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
                 );
               },
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
@@ -15,7 +16,7 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('โปรไฟล์'),
+        title: Text('โปรไฟล์' ),
       ),
          drawer: Drawer(
         child: ListView(
@@ -50,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RecipesPage()),
+                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
                 );
               },
             ),

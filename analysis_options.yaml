@@ -10,6 +10,7 @@
 analyzer:
   errors:
     implicit_call_tearoffs: ignore
+    must_be_immutable: ignore
     prefer_const_constructors: ignore
 include: package:flutter_lints/flutter.yaml
 

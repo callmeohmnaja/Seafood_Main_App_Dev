@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/oder.dart';
@@ -9,8 +10,10 @@ import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class RaiderPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
+  // ignore: unnecessary_new
   Profile profile = new Profile();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
@@ -45,7 +48,7 @@ class RaiderPage extends StatelessWidget {
             _buildDrawerItem(
               icon: Icons.restaurant_menu,
               text: 'ออเดอร์ของฉัน',
-              onTap: () => _navigateTo(context, RecipesPage()),
+              onTap: () => _navigateTo(context, FoodOrderPage()),
             ),
             _buildDrawerItem(
               icon: Icons.favorite,
@@ -173,6 +176,7 @@ class RaiderPage extends StatelessWidget {
                               // Handle form submission here
                             }
                           },
+                          // ignore: sort_child_properties_last
                           child: Text('สมัคร'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,

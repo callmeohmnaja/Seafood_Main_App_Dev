@@ -1,9 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 import 'mainhome_page.dart';
-import 'oder.dart';
 import 'favorites_page.dart';
 
 
@@ -33,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final _pageOptions = [
     HomePage(),
-    RecipesPage(),
+    FoodOrderPage(),
     FavoritesPage(),
     SupportPage(),
     ProfilePage(),
