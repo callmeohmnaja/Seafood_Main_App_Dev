@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class PaymentPage extends StatelessWidget {
   final double totalAmount;
 
+  // ignore: use_super_parameters
   const PaymentPage({Key? key, required this.totalAmount}) : super(key: key);
 
   @override
@@ -17,7 +18,7 @@ class PaymentPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'รายจ่ายทั้งหมด: \THB$totalAmount',
+              'รายจ่ายทั้งหมด: THB$totalAmount',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),

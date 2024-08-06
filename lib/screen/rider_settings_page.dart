@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: use_key_in_widget_constructors
 class RiderSettingsPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
@@ -66,6 +67,7 @@ class RiderSettingsPage extends StatelessWidget {
                       );
                     }
                   },
+                  // ignore: sort_child_properties_last
                   child: Text('บันทึก'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,

@@ -1,5 +1,6 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/patment_page.dart'; // Assuming this exists
 
 class Food {
@@ -22,6 +23,7 @@ class Cart {
   }
 }
 
+// ignore: use_key_in_widget_constructors
 class FoodOrderPage extends StatefulWidget {
   @override
   _FoodOrderPageState createState() => _FoodOrderPageState();
@@ -69,7 +71,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
             child: ListTile(
               leading: Image.network(food.imageUrl, width: 50, height: 50),
               title: Text(food.name),
-              subtitle: Text('\THB${food.price}'),
+              subtitle: Text('THB${food.price}'),
               trailing: ElevatedButton(
                 child: Text('เพิ่มเข้าตะกร้า'),
                 onPressed: () {
@@ -92,6 +94,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
 class CartPage extends StatelessWidget {
   final Cart cart;
 
+  // ignore: use_super_parameters
   const CartPage({Key? key, required this.cart}) : super(key: key);
 
   @override
@@ -109,7 +112,7 @@ class CartPage extends StatelessWidget {
                 final food = cart.items[index];
                 return ListTile(
                   title: Text(food.name),
-                  subtitle: Text('\THB${food.price}'),
+                  subtitle: Text('THB${food.price}'),
                 );
               },
             ),
@@ -117,7 +120,7 @@ class CartPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'ทั้งหมด: \THB${cart.totalPrice}',
+              'ทั้งหมด: THB${cart.totalPrice}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),

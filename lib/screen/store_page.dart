@@ -131,7 +131,7 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/oder.dart';

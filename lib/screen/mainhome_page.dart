@@ -8,76 +8,15 @@ import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
-import 'favorites_page.dart';
+import 'book_page.dart';
 
-// ignore: use_key_in_widget_constructors
-class MySearchDelegate extends SearchDelegate {
-  List<String> searchResults = ['ร้านA', 'ร้านB', 'ร้านC', 'ร้านD'];
 
+class HomePage extends StatefulWidget {
   @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        onPressed: () {
-          if (query.isEmpty) {
-            close(context, null);
-          } else {
-            query = '';
-          }
-        },
-        icon: const Icon(Icons.clear),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: const Icon(Icons.arrow_back),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text(
-        query,
-        style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> suggestions = searchResults.where((element) {
-      final result = element.toLowerCase();
-      final input = query.toLowerCase();
-
-      return result.contains(input);
-    }).toList();
-
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        final suggestion = suggestions[index];
-
-        return ListTile(
-          title: Text(suggestion),
-          onTap: () {
-            query = suggestion;
-            showResults(context);
-          },
-        );
-      },
-    );
-  }
+  _HomePageState createState() => _HomePageState();
 }
 
-// ignore: use_key_in_widget_constructors
-class HomePage extends StatelessWidget {
+class _HomePageState extends State<HomePage> {
   final controller = TextEditingController();
   List<Book> books = allBook;
 
@@ -85,15 +24,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showSearch(context: context, delegate: MySearchDelegate());
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
+        title: Text('Home')
       ),
       drawer: Drawer(
         child: ListView(
@@ -134,8 +65,8 @@ class HomePage extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('สิ่งที่ถูกใจ'),
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -196,63 +127,96 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          HomeScreen()), 
+                      builder: (context) => HomeScreen()),
                 );
               },
             ),
           ],
         ),
       ),
-      body: Column(children: [
-        Container(
-          margin: const EdgeInsets.all(16),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Search',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: Colors.green))),
-            onChanged: searchBook,
+      body: Column(
+        children: [
+          // Search TextField
+          Container(
+            margin: const EdgeInsets.all(16),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: 'Search',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(color: Colors.green))),
+              onChanged: searchBook,
+            ),
           ),
-        ),
-        Expanded(
+          // Image Carousel
+          Container(
+            height: 200, // Height of the carousel
+            child: PageView(
+              children: [
+                Image.network(
+                  'https://example.com/image1.jpg',
+                  fit: BoxFit.cover,
+                ),
+                Image.network(
+                  'https://example.com/image2.jpg',
+                  fit: BoxFit.cover,
+                ),
+                Image.network(
+                  'https://example.com/image3.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ],
+            ),
+          ),
+          // Buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(onPressed: () {}, child: Text('รถเข็นของฉัน',style: TextStyle(color: Colors.blue))),
+              ElevatedButton(onPressed: () {}, child: Text('Text2')),
+              ElevatedButton(onPressed: () {}, child: Text('Text3')),
+            ],
+          ),
+          // Book List
+          Expanded(
             child: ListView.builder(
-                itemCount: books.length,
-                itemBuilder: ((context, index) {
-                  final book = books[index];
-                  return ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: Image.network(
-                        book.urlImages,
-                        fit: BoxFit.cover,
-                        width: 50,
-                        height: 50,
-                      ),
-                      title: Text(book.title),
-                      onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BookPage(book: book)),
-                          ));
-                })))
-      ]),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                final book = books[index];
+                return ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: Image.network(
+                    book.urlImages,
+                    fit: BoxFit.cover,
+                    width: 50,
+                    height: 50,
+                  ),
+                  title: Text(book.title),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookPage(book: book),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   void searchBook(String query) {
-    // ignore: unused_local_variable
     final suggestions = allBook.where((book) {
       final bookTitle = book.title.toLowerCase();
       final input = query.toLowerCase();
 
       return bookTitle.contains(input);
-    }).toList(),
-    setState;(() => books = suggestions);
+    }).toList();
+    
+    setState(() => books = suggestions);
   }
 }
-
-
-

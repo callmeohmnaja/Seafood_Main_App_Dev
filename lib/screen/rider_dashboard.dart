@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/rider_settings_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class RiderDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

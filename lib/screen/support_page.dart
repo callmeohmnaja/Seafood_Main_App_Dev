@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // เพิ่มการนำเข้า Cloud Firestore
-import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/oder.dart';
@@ -9,6 +8,7 @@ import 'package:seafood_app/screen/raider_page.dart';
 import 'package:seafood_app/screen/store_page.dart';
 
 
+// ignore: use_key_in_widget_constructors
 class SupportPage extends StatelessWidget {
   final TextEditingController _issueController = TextEditingController();
 
@@ -56,8 +56,8 @@ class SupportPage extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('สิ่งที่ถูกใจ'),
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -143,14 +143,11 @@ class SupportPage extends StatelessWidget {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () async {
+              onPressed: ()  {
                 // ส่งข้อมูลไปยัง Firestore
                 String issue = _issueController.text;
                 if (issue.isNotEmpty) {
-                  await FirebaseFirestore.instance.collection('issues').add({
-                    'issue': issue,
-                    'timestamp': FieldValue.serverTimestamp(), // เก็บเวลาที่ส่ง
-                  });
+                  
                   
                   // แสดงข้อความยืนยัน
                   showDialog(

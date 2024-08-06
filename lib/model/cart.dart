@@ -5,6 +5,7 @@ import 'package:seafood_app/screen/patment_page.dart';
 class CartPage extends StatelessWidget {
   final Cart cart;
 
+  // ignore: use_super_parameters
   const CartPage({Key? key, required this.cart}) : super(key: key);
 
   @override
@@ -22,7 +23,7 @@ class CartPage extends StatelessWidget {
                 final food = cart.items[index];
                 return ListTile(
                   title: Text(food.name),
-                  subtitle: Text('\THB${food.price}'),
+                  subtitle: Text('THB${food.price}'),
                 );
               },
             ),
@@ -30,7 +31,7 @@ class CartPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'ทั้งหมด: \THB${cart.totalPrice}',
+              'ทั้งหมด: THB${cart.totalPrice}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),

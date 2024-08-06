@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/favorites_page.dart';
+import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
@@ -56,8 +56,8 @@ class RecipesPage extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('สิ่งที่ถูกใจ'),
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
