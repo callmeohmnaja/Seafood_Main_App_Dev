@@ -1,10 +1,184 @@
 import 'package:flutter/material.dart';
+import 'package:seafood_app/BookGuide/oderguide_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/mainhome_page.dart';
+import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/raider_page.dart';
+import 'package:seafood_app/screen/store_page.dart';
+import 'package:seafood_app/screen/support_page.dart';
 
 class HowtousePage extends StatelessWidget {
   const HowtousePage({super.key});
 
-  @override
+@override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "วิธีการชําระ",
+          style: TextStyle(fontSize: 20, color: Colors.green),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('หน้าแรก'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.restaurant_menu),
+              title: Text('ออเดอร์ของฉัน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OderguidePage()), // Ensure correct class name
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StorePage()), // Ensure correct class name
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('โปรไฟล์'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.motorcycle),
+              title: Text('สมัครไรเดอร์'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RaiderPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.store),
+              title: Text('เปิดร้านอาหาร'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StorePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.support),
+              title: Text('แจ้งปัญหา'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SupportPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ออกจากระบบ'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()), // Corrected to HomePage
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'คู่มือการใช้งาน',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.green),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  'เมื่อเข้าสู่ระบบท่านจะเจอกับหน้าแรกประกอบไปด้วย ช่องค้นหา ไว้สําหรับค้นหา ร้านอาหารและเมนูอาหาร',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodApp()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green, // Background color
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: Text(
+                'หน้าหลัก',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

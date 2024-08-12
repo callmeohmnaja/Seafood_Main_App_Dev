@@ -9,7 +9,7 @@ import 'package:seafood_app/screen/home.dart';
   await Firebase.initializeApp(
     // Replace with actual values
     // ignore: prefer_const_constructors
-    options:  FirebaseOptions(
+      options:  FirebaseOptions(
       apiKey: "AIzaSyA_6BqYTJ_NzPODbKhhDvHuI0-97kyemPw",
       appId: "1:785736376641:android:591dc33dc281627234c1c0",
       messagingSenderId: "785736376641",
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Seafood App',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.lightGreen,
       ),
       home: MyHomePage(),
     );

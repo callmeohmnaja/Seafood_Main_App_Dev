@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
@@ -11,6 +13,7 @@ import 'package:seafood_app/screen/support_page.dart';
 import 'book_page.dart';
 
 
+// ignore: use_key_in_widget_constructors
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -151,6 +154,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // Image Carousel
+          // ignore: sized_box_for_whitespace
           Container(
             height: 200, // Height of the carousel
             child: PageView(

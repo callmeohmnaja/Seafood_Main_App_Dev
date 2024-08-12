@@ -8,6 +8,7 @@ import 'package:seafood_app/screen/rider_dashboard.dart';
 import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class RaiderPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
@@ -144,6 +145,7 @@ class RaiderPage extends StatelessWidget {
                                   RiderDashboardPage()); // นำทางไปที่หน้า RiderDashboardPage
                             }
                           },
+                          // ignore: sort_child_properties_last
                           child: Text('สมัคร'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
