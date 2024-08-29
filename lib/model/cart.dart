@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
-import 'package:seafood_app/screen/patment_page.dart';
+import 'package:seafood_app/screen/payment_page.dart';
 
 class CartPage extends StatelessWidget {
   final Cart cart;

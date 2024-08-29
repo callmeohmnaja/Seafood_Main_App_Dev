@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class PaymentPage extends StatelessWidget {
   final double totalAmount;
 
-  // ignore: use_super_parameters
-  const PaymentPage({Key? key, required this.totalAmount}) : super(key: key);
+  const PaymentPage({super.key, required this.totalAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +44,10 @@ class PaymentPage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Handle payment processing
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('ชําระเงินเสร็จสิ้น!')),
                 );
-                Navigator.pop(context); // Go back to the cart
+                Navigator.pop(context);
               },
               child: Text('ชําระเงิน'),
             ),

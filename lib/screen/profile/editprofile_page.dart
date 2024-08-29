@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // ignore: use_key_in_widget_constructors
-class RiderSettingsPage extends StatelessWidget {
+class EditprofilePage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -29,19 +29,13 @@ class RiderSettingsPage extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'ชื่อ',
+                  label: 'ชื่อผู้ใช้',
                   icon: Icons.person,
                 ),
                 SizedBox(height: 10),
                 _buildTextField(
-                  label: 'อีเมล',
+                  label: 'แก้ไขอีเมล',
                   icon: Icons.email,
-                ),
-                SizedBox(height: 10),
-                _buildTextField(
-                  label: 'เบอร์โทรศัพท์',
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
                 ),
                 SizedBox(height: 10),
                 _buildTextField(

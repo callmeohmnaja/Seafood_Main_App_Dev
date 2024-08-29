@@ -7,14 +7,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:Text('Register & Login' , style: TextStyle(fontSize: 26)),
-      centerTitle: true),
+      appBar: AppBar(
+          title: Text('Register & Login', style: TextStyle(fontSize: 26)),
+          centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset('images/seafood_logo.png'),
+              Image.asset('image/logo.png'),
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(

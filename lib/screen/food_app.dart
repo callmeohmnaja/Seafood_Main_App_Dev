@@ -7,8 +7,9 @@ import 'mainhome_page.dart';
 import 'book_page.dart';
 
 
-// ignore: use_key_in_widget_constructors
 class FoodApp extends StatelessWidget {
+  const FoodApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
   final _pageOptions = [
     HomePage(),
     FoodOrderPage(),
-    FavoritesPage(),
+    Guide(),
     SupportPage(),
     ProfilePage(),
     

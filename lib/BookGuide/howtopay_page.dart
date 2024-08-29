@@ -3,8 +3,6 @@ import 'package:seafood_app/BookGuide/oderguide_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class HowtopayPage extends StatelessWidget {
@@ -53,18 +51,22 @@ class HowtopayPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OderguidePage()), // Ensure correct class name
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          OderguidePage()), // Ensure correct class name
                 );
               },
             ),
             ListTile(
               leading: Icon(Icons.book),
-              title: Text('คู่มือการใช้งาน'),
+              title: Text('คู่มือการชําระเงิน'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StorePage()), // Ensure correct class name
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HowtopayPage()), // Ensure correct class name
                 );
               },
             ),
@@ -76,28 +78,6 @@ class HowtopayPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
                 );
               },
             ),
@@ -119,7 +99,9 @@ class HowtopayPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()), // Corrected to HomePage
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage()), // Corrected to HomePage
                 );
               },
             ),

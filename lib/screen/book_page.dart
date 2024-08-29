@@ -8,12 +8,10 @@ import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 // ignore: use_key_in_widget_constructors
-class FavoritesPage extends StatelessWidget {
+class Guide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +63,7 @@ class FavoritesPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()),
+                  MaterialPageRoute(builder: (context) => Guide()),
                 );
               },
             ),
@@ -80,28 +78,7 @@ class FavoritesPage extends StatelessWidget {
                 );
               },
             ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
-                );
-              },
-            ),
+           
             ListTile(
               leading: Icon(Icons.support),
               title: Text('แจ้งปัญหา'),

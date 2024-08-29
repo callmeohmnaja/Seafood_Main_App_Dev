@@ -1,18 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/book_page.dart';
-import 'package:seafood_app/screen/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // นำเข้า Firestore
-import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/oder.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
-import 'package:seafood_app/screen/support_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:seafood_app/screen/profile/editprofile_page.dart';
+import 'package:seafood_app/screen/home.dart'; // For File
 
-// ignore: use_key_in_widget_constructors
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final auth = FirebaseAuth.instance;
-  final firestore = FirebaseFirestore.instance; // สร้าง instance ของ Firestore
+  final firestore = FirebaseFirestore.instance;
+  final storage = FirebaseStorage.instance;
+  final picker = ImagePicker();
+
+  String? profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final user = auth.currentUser;
+    if (user != null) {
+      final doc = await firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        setState(() {
+          var userData = doc.data() as Map<String, dynamic>;
+          profileImageUrl = userData['profileImageUrl'];
+        });
+      }
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      _uploadImage(imageFile);
+    }
+  }
+
+  Future<void> _uploadImage(File imageFile) async {
+    try {
+      final user = auth.currentUser;
+      if (user != null) {
+        String fileName =
+            '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        Reference storageRef =
+            storage.ref().child('profile_images').child(fileName);
+        UploadTask uploadTask = storageRef.putFile(imageFile);
+        TaskSnapshot snapshot = await uploadTask;
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+
+        await firestore.collection('users').doc(user.uid).update({
+          'profileImageUrl': downloadUrl,
+        });
+
+        setState(() {
+          profileImageUrl = downloadUrl;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile image updated!')),
+        );
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,94 +98,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('หน้าแรก'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('ออเดอร์ของฉัน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RecipesPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.favorite),
-              title: Text('สิ่งที่ถูกใจ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('โปรไฟล์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.support),
-              title: Text('แจ้งปัญหา'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ออกจากระบบ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
-            ),
+            // Add other drawer items here...
           ],
         ),
       ),
@@ -140,36 +115,50 @@ class ProfilePage extends StatelessWidget {
             return Center(child: Text('โปรไฟล์ไม่พบ'));
           }
 
-          // ดึงข้อมูลจาก Firestore
           var userData = snapshot.data!.data() as Map<String, dynamic>;
-          String username = userData['username'] ?? 'ไม่ระบุ'; // ดึงชื่อผู้ใช้
-          String role = userData['role'] ?? 'ไม่ระบุ'; // ดึงบทบาท
+          String username = userData['username'] ?? 'ไม่ระบุ';
+          String role = userData['role'] ?? 'ไม่ระบุ';
 
           return Column(
             children: <Widget>[
-              // Profile Section
               Container(
                 padding: EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('images/seafood_logo.png'), // เปลี่ยนที่อยู่ของภาพโปรไฟล์
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.grey[
+                            300], // Background color if no image is present
+                        child: profileImageUrl != null
+                            ? CircleAvatar(
+                                radius: 40,
+                                backgroundImage: NetworkImage(profileImageUrl!),
+                              )
+                            : Icon(Icons.camera_alt,
+                                size: 40,
+                                color:
+                                    Colors.white), // Icon for uploading image
+                      ),
                     ),
                     SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'ชื่อผู้ใช้: $username', // แสดงชื่อผู้ใช้ที่ดึงจาก Firestore
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          'ชื่อผู้ใช้: $username',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                          'บทบาท: $role', // แสดงบทบาทที่ดึงจาก Firestore
+                          'บทบาท: $role',
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
-                          'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}', // แสดงอีเมลของผู้ใช้
+                          'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -178,36 +167,44 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
               Divider(),
-              // List of options in the ListView
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     ListTile(
-                      title: Text('แก้ไขโปรไฟล์'), // ตัวเลือกแก้ไขโปรไฟล์
+                      title: Text('แก้ไขโปรไฟล์'),
                       onTap: () {
-                        // นำไปหน้าแก้ไขโปรไฟล์ (ถ้ามี)
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditprofilePage(),
+                          ),
+                        );
                       },
                     ),
                     ListTile(
-                      title: Text('การตั้งค่าบัญชี'), // ตัวเลือกการตั้งค่าบัญชี
+                      title: Text('การตั้งค่าบัญชี'),
                       onTap: () {
-                        // นำไปหน้าการตั้งค่าบัญชี (ถ้ามี)
+                        // Navigate to account settings page if needed
                       },
                     ),
                     ListTile(
-                      title: Text('ประวัติการสั่งซื้อ'), // ตัวเลือกประวัติการสั่งซื้อ
+                      title: Text('ประวัติการสั่งซื้อ'),
                       onTap: () {
-                        // นำไปหน้าประวัติการสั่งซื้อ (ถ้ามี)
+                        // Navigate to order history page if needed
                       },
                     ),
                     ListTile(
-                      title: Text('ออกจากระบบ'), // ตัวเลือกออกจากระบบ
+                      title: Text('ออกจากระบบ'),
                       onTap: () {
-                        // Implement logout functionality here
                         auth.signOut().then((_) {
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) => HomeScreen()));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                          );
                         });
                       },
                     ),

@@ -3,19 +3,17 @@ import 'package:seafood_app/BookGuide/oderguide_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class StoreguidePage extends StatelessWidget {
   const StoreguidePage({super.key});
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "วิธีการชําระ",
+          "คู่มือการเปิดร้านอาหาร",
           style: TextStyle(fontSize: 20, color: Colors.green),
         ),
       ),
@@ -53,18 +51,22 @@ class StoreguidePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OderguidePage()), // Ensure correct class name
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          OderguidePage()), // Ensure correct class name
                 );
               },
             ),
             ListTile(
               leading: Icon(Icons.book),
-              title: Text('คู่มือการใช้งาน'),
+              title: Text('คู่มือการเปิดร้านอาหาร'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StorePage()), // Ensure correct class name
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          StoreguidePage()), // Ensure correct class name
                 );
               },
             ),
@@ -76,28 +78,6 @@ class StoreguidePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
                 );
               },
             ),
@@ -119,7 +99,9 @@ class StoreguidePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()), // Corrected to HomePage
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage()), // Corrected to HomePage
                 );
               },
             ),
@@ -132,7 +114,7 @@ class StoreguidePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'คู่มือการชําระเงิน',
+              'คู่มือการเปิดร้านอาหาร',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

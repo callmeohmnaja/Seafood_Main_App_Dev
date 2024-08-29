@@ -1,17 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
-import 'package:seafood_app/screen/menu.dart';
-import 'package:seafood_app/screen/menu_page.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 import 'book_page.dart';
-
 
 // ignore: use_key_in_widget_constructors
 class HomePage extends StatefulWidget {
@@ -20,15 +13,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final controller = TextEditingController();
-  List<Book> books = allBook;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home')
-      ),
+      appBar: AppBar(title: Text('Home')),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -74,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()),
+                  MaterialPageRoute(builder: (context) => Guide()),
                 );
               },
             ),
@@ -86,28 +74,6 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
                 );
               },
             ),
@@ -129,8 +95,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => HomeScreen()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
             ),
@@ -139,88 +104,20 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          // Search TextField
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  hintText: 'Search',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(color: Colors.green))),
-              onChanged: searchBook,
-            ),
-          ),
-          // Image Carousel
-          // ignore: sized_box_for_whitespace
-          Container(
-            height: 200, // Height of the carousel
-            child: PageView(
-              children: [
-                Image.network(
-                  'https://example.com/image1.jpg',
-                  fit: BoxFit.cover,
-                ),
-                Image.network(
-                  'https://example.com/image2.jpg',
-                  fit: BoxFit.cover,
-                ),
-                Image.network(
-                  'https://example.com/image3.jpg',
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
-          ),
           // Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ElevatedButton(onPressed: () {}, child: Text('รถเข็นของฉัน',style: TextStyle(color: Colors.blue))),
+              ElevatedButton(
+                  onPressed: () {},
+                  child: Text('รถเข็นของฉัน',
+                      style: TextStyle(color: Colors.blue))),
               ElevatedButton(onPressed: () {}, child: Text('Text2')),
               ElevatedButton(onPressed: () {}, child: Text('Text3')),
             ],
           ),
-          // Book List
-          Expanded(
-            child: ListView.builder(
-              itemCount: books.length,
-              itemBuilder: (context, index) {
-                final book = books[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  leading: Image.network(
-                    book.urlImages,
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                  ),
-                  title: Text(book.title),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BookPage(book: book),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
         ],
       ),
     );
-  }
-
-  void searchBook(String query) {
-    final suggestions = allBook.where((book) {
-      final bookTitle = book.title.toLowerCase();
-      final input = query.toLowerCase();
-
-      return bookTitle.contains(input);
-    }).toList();
-    
-    setState(() => books = suggestions);
   }
 }

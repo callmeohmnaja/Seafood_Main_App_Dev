@@ -1,14 +1,30 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/patment_page.dart'; // Assuming this exists
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:seafood_app/model/cart.dart';
+import 'package:seafood_app/screen/foodDetail_page.dart';
 
 class Food {
+  final String id; // Add an ID field to uniquely identify each document
   final String name;
   final double price;
   final String imageUrl;
 
-  Food({required this.name, required this.price, required this.imageUrl});
+  Food({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.imageUrl,
+  });
+
+  factory Food.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Food(
+      id: doc.id, // Assign the document ID
+      name: data['name'] ?? 'Unknown',
+      price: (data['price'] as num).toDouble(),
+      imageUrl: data['imageUrl'] ?? '',
+    );
+  }
 }
 
 class Cart {
@@ -23,7 +39,6 @@ class Cart {
   }
 }
 
-// ignore: use_key_in_widget_constructors
 class FoodOrderPage extends StatefulWidget {
   @override
   _FoodOrderPageState createState() => _FoodOrderPageState();
@@ -31,17 +46,18 @@ class FoodOrderPage extends StatefulWidget {
 
 class _FoodOrderPageState extends State<FoodOrderPage> {
   final Cart cart = Cart();
+  late Future<List<Food>> foodItemsFuture;
 
-  final List<Food> foodItems = [
-    Food(name: 'พิซซ่า ', price: 85.0, imageUrl: 'https://www.foodandwine.com/thmb/Wd4lBRZz3X_8qBr69UOu2m7I2iw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-cheese-pizza-FT-RECIPE0422-31a2c938fc2546c9a07b7011658cfd05.jpg'),
-    Food(name: 'กะเพราหมูสับไข่ดาว', price: 45.5, imageUrl: 'https://images.deliveryhero.io/image/fd-th/LH/ws9f-listing.jpg'),
-    Food(name: '?', price: 35.0, imageUrl: 'https://f.ptcdn.info/457/080/000/rtr3pk1uuh69g6yUBOqkp-o.jpg'),
-    Food(name: '?', price: 35.0, imageUrl: 'https://f.ptcdn.info/457/080/000/rtr3pk1uuh69g6yUBOqkp-o.jpg'),
-    Food(name: '?', price: 35.0, imageUrl: 'https://f.ptcdn.info/457/080/000/rtr3pk1uuh69g6yUBOqkp-o.jpg'),
-    Food(name: '?', price: 35.0, imageUrl: 'https://f.ptcdn.info/457/080/000/rtr3pk1uuh69g6yUBOqkp-o.jpg'),
-    
-    // Add more food items here
-  ];
+  @override
+  void initState() {
+    super.initState();
+    foodItemsFuture = fetchFoodItems();
+  }
+
+  Future<List<Food>> fetchFoodItems() async {
+    final snapshot = await FirebaseFirestore.instance.collection('menu').get();
+    return snapshot.docs.map((doc) => Food.fromDocument(doc)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +68,6 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Show cart or navigate to cart page
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -63,82 +78,80 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: foodItems.length,
-        itemBuilder: (context, index) {
-          final food = foodItems[index];
-          return Card(
-            child: ListTile(
-              leading: Image.network(food.imageUrl, width: 50, height: 50),
-              title: Text(food.name),
-              subtitle: Text('THB${food.price}'),
-              trailing: ElevatedButton(
-                child: Text('เพิ่มเข้าตะกร้า'),
-                onPressed: () {
-                  setState(() {
-                    cart.addItem(food);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${food.name} added to cart')),
+      body: FutureBuilder<List<Food>>(
+        future: foodItemsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No food items found.'));
+          }
+
+          final foodItems = snapshot.data!;
+          return ListView.builder(
+            itemCount: foodItems.length,
+            itemBuilder: (context, index) {
+              final food = foodItems[index];
+              return Card(
+                child: ListTile(
+                  leading: food.imageUrl.isNotEmpty
+                      ? Image.network(
+                          food.imageUrl,
+                          width: 50,
+                          height: 50,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            }
+                          },
+                          errorBuilder: (BuildContext context, Object error,
+                              StackTrace? stackTrace) {
+                            return Icon(Icons.error, size: 50);
+                          },
+                        )
+                      : Icon(Icons.image_not_supported, size: 50),
+                  title: Text(food.name),
+                  subtitle: Text('THB${food.price}'),
+                  onTap: () {
+                    // Navigate to the food detail page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FoodDetailPage(food: food),
+                      ),
                     );
-                  });
-                },
-              ),
-            ),
+                  },
+                  trailing: ElevatedButton(
+                    child: Text('เพิ่มเข้าตะกร้า'),
+                    onPressed: () {
+                      setState(() {
+                        cart.addItem(food);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${food.name} added to cart')),
+                        );
+                      });
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 }
-
-class CartPage extends StatelessWidget {
-  final Cart cart;
-
-  // ignore: use_super_parameters
-  const CartPage({Key? key, required this.cart}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('รายการสินค้าของคุณ'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cart.items.length,
-              itemBuilder: (context, index) {
-                final food = cart.items[index];
-                return ListTile(
-                  title: Text(food.name),
-                  subtitle: Text('THB${food.price}'),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'ทั้งหมด: THB${cart.totalPrice}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Navigate to the payment page with total amount
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PaymentPage(totalAmount: cart.totalPrice),
-                ),
-              );
-            },
-            child: Text('Checkout'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-

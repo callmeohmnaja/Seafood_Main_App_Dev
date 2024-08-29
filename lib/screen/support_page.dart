@@ -1,16 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/book_page.dart';
-import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/oder.dart';
 import 'package:seafood_app/screen/profile.dart';
-import 'package:seafood_app/screen/raider_page.dart';
-import 'package:seafood_app/screen/store_page.dart';
 
-
-// ignore: use_key_in_widget_constructors
 class SupportPage extends StatelessWidget {
   final TextEditingController _issueController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +38,8 @@ class SupportPage extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => HomePage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodApp()),
                 );
               },
             ),
@@ -51,7 +50,7 @@ class SupportPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RecipesPage()),
+                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
                 );
               },
             ),
@@ -62,7 +61,7 @@ class SupportPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()),
+                  MaterialPageRoute(builder: (context) => Guide()),
                 );
               },
             ),
@@ -74,28 +73,6 @@ class SupportPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.motorcycle),
-              title: Text('สมัครไรเดอร์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RaiderPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.store),
-              title: Text('เปิดร้านอาหาร'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => StorePage()),
                 );
               },
             ),
@@ -117,7 +94,8 @@ class SupportPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()), // แก้ให้กลับไปหน้าหลัก
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()), // แก้ให้กลับไปหน้าหลัก
                 );
               },
             ),
@@ -143,29 +121,39 @@ class SupportPage extends StatelessWidget {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: ()  {
-                // ส่งข้อมูลไปยัง Firestore
+              onPressed: () async {
                 String issue = _issueController.text;
                 if (issue.isNotEmpty) {
-                  
-                  
-                  // แสดงข้อความยืนยัน
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('แจ้งปัญหา'),
-                      content: Text('คุณได้แจ้งปัญหาดังนี้: \n\n$issue'),
-                      actions: [
-                        TextButton(
-                          child: Text('ตกลง'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            _issueController.clear(); // ล้างข้อมูลใน TextField
-                          },
-                        ),
-                      ],
-                    ),
-                  );
+                  // เก็บข้อมูลลง Firestore
+                  await _firestore.collection('support_issues').add({
+                    'issue': issue,
+                    'timestamp':
+                        FieldValue.serverTimestamp(), // เพิ่ม timestamp
+                  }).then((_) {
+                    // แสดงข้อความยืนยัน
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('แจ้งปัญหา'),
+                        content: Text('คุณได้แจ้งปัญหาดังนี้: \n\n$issue'),
+                        actions: [
+                          TextButton(
+                            child: Text('ตกลง'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _issueController
+                                  .clear(); // ล้างข้อมูลใน TextField
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }).catchError((error) {
+                    // แสดงข้อผิดพลาด
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
+                    );
+                  });
                 } else {
                   // แจ้งให้ผู้ใช้กรอกปัญหา
                   ScaffoldMessenger.of(context).showSnackBar(
