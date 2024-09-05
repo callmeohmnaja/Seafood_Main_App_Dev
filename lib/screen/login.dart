@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:seafood_app/model/profile.dart';
-import 'package:seafood_app/screen/food_app.dart';
-import 'package:seafood_app/storepage/store_dashboard.dart';
+import 'package:seafood_app/screen/mainhome_page.dart'; // นำเข้า HomePage ที่นี่
+import 'package:seafood_app/storepage/store_dashboard.dart'; // นำเข้า StoreDashboard ที่นี่
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -73,40 +73,47 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (formKey.currentState!.validate()) {
                               formKey.currentState!.save();
                               try {
+                                // เข้าสู่ระบบด้วย Firebase Authentication
+                                // ignore: unused_local_variable
                                 UserCredential userCredential =
                                     await FirebaseAuth.instance
                                         .signInWithEmailAndPassword(
                                   email: profile.email.toString(),
                                   password: profile.password.toString(),
                                 );
-                                // ดึงข้อมูลบทบาทจาก Firestore
-                                DocumentSnapshot userDoc =
+
+                                // Query ข้อมูลจาก Firestore ตามอีเมลของผู้ใช้
+                                QuerySnapshot querySnapshot =
                                     await FirebaseFirestore.instance
                                         .collection('users')
-                                        .doc(userCredential.user!.uid)
+                                        .where('email',
+                                            isEqualTo:
+                                                profile.email) // ค้นหาตามอีเมล
+                                        .limit(1)
                                         .get();
-                                String role = userDoc['role'];
 
-                                // นำทางไปยังหน้าตามบทบาท
-                                if (role == 'ลูกค้า') {
+                                if (querySnapshot.docs.isNotEmpty) {
+                                  // ถ้าพบผู้ใช้ที่มีอีเมลตรงกับที่ค้นหา
+                                  var userDoc = querySnapshot.docs.first;
+                                  String role = userDoc['role'];
+
+                                  // นำทางไปยังหน้าที่เหมาะสมตามบทบาท
+                                  Widget nextPage;
+                                  if (role == 'ร้านอาหาร') {
+                                    nextPage = StoreDashboard();
+                                  } else {
+                                    nextPage = HomePage();
+                                  }
+
                                   Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => FoodApp()));
-                                } else if (role == 'ไรเดอร์') {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => FoodApp()));
-                                } else if (role == 'ร้านอาหาร') {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              StoreDashboard())); //กลับไปหน้าเปิดร้านอาหาร
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => nextPage,
+                                    ),
+                                  );
                                 } else {
                                   Fluttertoast.showToast(
-                                      msg: 'บทบาทไม่ถูกต้อง');
+                                      msg: 'ไม่พบข้อมูลผู้ใช้ในระบบ');
                                 }
                               } on FirebaseAuthException catch (e) {
                                 Fluttertoast.showToast(

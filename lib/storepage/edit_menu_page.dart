@@ -24,7 +24,7 @@ class _EditMenuPageState extends State<EditMenuPage> {
 
   Future<void> _loadMenuData() async {
     final doc = await FirebaseFirestore.instance
-        .collection('menus')
+        .collection('menu') // Corrected collection name
         .doc(widget.menuId)
         .get();
     final data = doc.data() as Map<String, dynamic>;
@@ -36,7 +36,7 @@ class _EditMenuPageState extends State<EditMenuPage> {
   Future<void> _updateMenu() async {
     if (_formKey.currentState!.validate()) {
       await FirebaseFirestore.instance
-          .collection('menus')
+          .collection('menu') // Corrected collection name
           .doc(widget.menuId)
           .update({
         'name': _nameController.text,

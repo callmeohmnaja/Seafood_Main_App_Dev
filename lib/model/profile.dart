@@ -3,6 +3,25 @@ class Profile {
   String? password;
   String? username;
   String? role;
+  String? passwordConfirm;
 
-  Profile({this.email, this.password,this.username,this.role});
+  String address;
+  String phone;
+  String vehicle;
+  String menu;
+  String customUid;
+
+  // Constructor ที่มีค่าพรีดีฟอลต์ให้ฟิลด์อื่นๆ
+  Profile({
+    this.email,
+    this.password,
+    this.username,
+    this.role,
+    this.passwordConfirm,
+    this.address = '', // ค่าพรีดีฟอลต์
+    this.phone = '', // ค่าพรีดีฟอลต์
+    this.vehicle = '', // ค่าพรีดีฟอลต์
+    this.menu = '', // ค่าพรีดีฟอลต์
+    this.customUid = '',
+  });
 }

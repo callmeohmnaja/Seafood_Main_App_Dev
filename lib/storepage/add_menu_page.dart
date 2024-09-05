@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
@@ -84,11 +85,28 @@ class _AddMenuPageState extends State<AddMenuPage> {
       final snapshot = await uploadTask.whenComplete(() {});
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('User not logged in.');
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // ดึง customUid จาก Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final customUid = userDoc.data()?['uid'] ?? '';
+
       await FirebaseFirestore.instance.collection('menu').add({
         'name': _nameController.text,
         'description': _descriptionController.text,
         'price': double.tryParse(_priceController.text) ?? 0.0,
         'image_url': downloadUrl,
+        'customUid': customUid, // ใช้ customUid แทน user.uid
       });
 
       print('Menu item added successfully.');
