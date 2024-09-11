@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:seafood_app/model/cart.dart';
 import 'package:seafood_app/screen/foodDetail_page.dart';
 
+// Model class for Food
 class Food {
   final String id; // Add an ID field to uniquely identify each document
   final String name;
@@ -27,6 +28,7 @@ class Food {
   }
 }
 
+// Cart class to manage cart items
 class Cart {
   final List<Food> items = [];
 
@@ -55,6 +57,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
   }
 
   Future<List<Food>> fetchFoodItems() async {
+    // Fetch food items from Firestore
     final snapshot = await FirebaseFirestore.instance.collection('menu').get();
     return snapshot.docs.map((doc) => Food.fromDocument(doc)).toList();
   }

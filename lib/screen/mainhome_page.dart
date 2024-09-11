@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // นำเข้า Cloud Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
-import 'book_page.dart';
+import 'package:seafood_app/storepage/restaurant_menu_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,12 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _searchQuery = ''; // ค่าของการค้นหา
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      appBar: AppBar(title: Text('หน้าแรก')),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.green,
               ),
               child: Text(
-                'Menu',
+                'เมนู',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -106,7 +107,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          // SearchBar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -122,50 +122,88 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          // Restaurant List
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .where('role', isEqualTo: 'ร้านอาหาร')
-                  .where('name', isGreaterThanOrEqualTo: _searchQuery)
-                  .where('name', isLessThanOrEqualTo: '$_searchQuery\uf8ff')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                      child:
-                          Text('เกิดข้อผิดพลาด: ${snapshot.error.toString()}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('ไม่พบร้านอาหาร'));
-                }
+            child: _searchQuery.isEmpty
+                ? Center(child: Text('กรุณาพิมพ์เพื่อค้นหาร้านอาหาร'))
+                : StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .where('role', isEqualTo: 'ร้านอาหาร')
+                        .where('username', isGreaterThanOrEqualTo: _searchQuery)
+                        .where('username',
+                            isLessThanOrEqualTo: '$_searchQuery\uf8ff')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(
+                            child: Text(
+                                'เกิดข้อผิดพลาด: ${snapshot.error.toString()}'));
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(child: Text('ไม่พบร้านอาหาร'));
+                      }
 
-                final restaurants = snapshot.data!.docs;
+                      final restaurants = snapshot.data!.docs;
 
-                return ListView.builder(
-                  itemCount: restaurants.length,
-                  itemBuilder: (context, index) {
-                    final restaurant = restaurants[index];
-                    final name = restaurant['name'];
-                    final menu = restaurant['menu'] ??
-                        []; // Assumes menu is a list of items
+                      return ListView.builder(
+                        itemCount: restaurants.length,
+                        itemBuilder: (context, index) {
+                          final restaurant = restaurants[index];
+                          final username = restaurant['username'];
+                          final restaurantUid = restaurant['uid'];
 
-                    return ListTile(
-                      title: Text(name),
-                      subtitle:
-                          Text('เมนู: ${menu.join(', ')}'), // แสดงเมนูที่ร้านมี
-                      onTap: () {
-                        // Navigate to restaurant details or menu page
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+                          return FutureBuilder<QuerySnapshot>(
+                            future: FirebaseFirestore.instance
+                                .collection('menu')
+                                .where('customUid', isEqualTo: restaurantUid)
+                                .get(),
+                            builder: (context, menuSnapshot) {
+                              if (menuSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return ListTile(
+                                  title: Text(username),
+                                  subtitle: Text('กำลังโหลดเมนู...'),
+                                );
+                              }
+                              if (menuSnapshot.hasError) {
+                                return ListTile(
+                                  title: Text(username),
+                                  subtitle: Text(
+                                      'เกิดข้อผิดพลาดในการดึงเมนู: ${menuSnapshot.error.toString()}'),
+                                );
+                              }
+
+                              final menuItems = menuSnapshot.data?.docs ?? [];
+
+                              return ListTile(
+                                title: Text(username),
+                                subtitle: menuItems.isNotEmpty
+                                    ? Text(
+                                        'เมนู: ${menuItems.map((menu) => menu['name']).join(', ')}')
+                                    : Text('ไม่มีเมนูในร้าน'),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.arrow_forward),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            RestaurantMenuPage(
+                                                restaurantUid: restaurantUid),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
