@@ -50,7 +50,10 @@ class SupportPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
+                  MaterialPageRoute(
+                      builder: (context) => FoodOrderPage(
+                            initialCartItems: [],
+                          )),
                 );
               },
             ),

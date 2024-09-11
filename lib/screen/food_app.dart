@@ -6,7 +6,6 @@ import 'package:seafood_app/screen/support_page.dart';
 import 'mainhome_page.dart';
 import 'book_page.dart';
 
-
 class FoodApp extends StatelessWidget {
   const FoodApp({super.key});
 
@@ -34,11 +33,12 @@ class _MainScreenState extends State<MainScreen> {
 
   final _pageOptions = [
     HomePage(),
-    FoodOrderPage(),
+    FoodOrderPage(
+      initialCartItems: [],
+    ),
     Guide(),
     SupportPage(),
     ProfilePage(),
-    
   ];
 
   @override
@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
           Icon(Icons.home, size: 30),
           Icon(Icons.restaurant_menu, size: 30),
           Icon(Icons.book, size: 30),
-          Icon(Icons.support_agent,size: 30),
+          Icon(Icons.support_agent, size: 30),
           Icon(Icons.person, size: 30),
         ],
         onTap: (index) {

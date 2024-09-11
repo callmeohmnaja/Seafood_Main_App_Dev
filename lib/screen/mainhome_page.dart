@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:seafood_app/model/food.dart';
 import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
-import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/screen/ordered_list.dart';
 import 'package:seafood_app/screen/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 import 'package:seafood_app/storepage/restaurant_menu_page.dart';
@@ -54,7 +55,11 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
+                  MaterialPageRoute(
+                      builder: (context) => OrderedListPage(
+                            // ส่งข้อมูลการสั่งซื้อไปยังหน้า OrderedListPage
+                            orderedItems: [], userUid: '',
+                          )),
                 );
               },
             ),
@@ -192,7 +197,13 @@ class _HomePageState extends State<HomePage> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             RestaurantMenuPage(
-                                                restaurantUid: restaurantUid),
+                                          restaurantUid: restaurantUid,
+                                          onAddToCart: (Food food) {
+                                            // Implement your add to cart functionality here
+                                            print(
+                                                'Added to cart: ${food.name}');
+                                          },
+                                        ),
                                       ),
                                     );
                                   },

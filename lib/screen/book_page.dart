@@ -52,7 +52,10 @@ class Guide extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FoodOrderPage()),
+                  MaterialPageRoute(
+                      builder: (context) => FoodOrderPage(
+                            initialCartItems: [],
+                          )),
                 );
               },
             ),
@@ -78,7 +81,6 @@ class Guide extends StatelessWidget {
                 );
               },
             ),
-           
             ListTile(
               leading: Icon(Icons.support),
               title: Text('แจ้งปัญหา'),
@@ -97,7 +99,9 @@ class Guide extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()), //แก้ให้กลับไปหน้าหลัก
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomeScreen()), //แก้ให้กลับไปหน้าหลัก
                 );
               },
             ),
@@ -113,14 +117,18 @@ class Guide extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HowtousePage()), // Navigate to LoginScreen
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HowtousePage()), // Navigate to LoginScreen
                 );
               },
               icon: Icon(Icons.info), // Add an icon
               label: Text("คู่มือการใช้งานเบื้องต้น"),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15), // Increase vertical padding
-                minimumSize: Size(double.infinity, 50), // Set fixed width and height
+                padding: EdgeInsets.symmetric(
+                    vertical: 15), // Increase vertical padding
+                minimumSize:
+                    Size(double.infinity, 50), // Set fixed width and height
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30), // Rounded corners
                 ),
@@ -131,7 +139,9 @@ class Guide extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OderguidePage()), // Navigate to LoginScreen
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          OderguidePage()), // Navigate to LoginScreen
                 );
               },
               icon: Icon(Icons.food_bank),
@@ -149,7 +159,9 @@ class Guide extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => StoreguidePage()), // Navigate to LoginScreen
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          StoreguidePage()), // Navigate to LoginScreen
                 );
               },
               icon: Icon(Icons.store_mall_directory),
@@ -167,7 +179,9 @@ class Guide extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HowtopayPage()), // Navigate to LoginScreen
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HowtopayPage()), // Navigate to LoginScreen
                 );
               },
               icon: Icon(Icons.payment),
@@ -185,7 +199,9 @@ class Guide extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RuleappPage()), // Navigate to LoginScreen
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          RuleappPage()), // Navigate to LoginScreen
                 );
               },
               icon: Icon(Icons.article),

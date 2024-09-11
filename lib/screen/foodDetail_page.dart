@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/food_oderpage.dart';
+import 'package:seafood_app/model/food.dart';
 
 class FoodDetailPage extends StatelessWidget {
   final Food food;

@@ -1,65 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:seafood_app/model/cart.dart';
-import 'package:seafood_app/screen/foodDetail_page.dart';
-
-// Model class for Food
-class Food {
-  final String id; // Add an ID field to uniquely identify each document
-  final String name;
-  final double price;
-  final String imageUrl;
-
-  Food({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.imageUrl,
-  });
-
-  factory Food.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Food(
-      id: doc.id, // Assign the document ID
-      name: data['name'] ?? 'Unknown',
-      price: (data['price'] as num).toDouble(),
-      imageUrl: data['imageUrl'] ?? '',
-    );
-  }
-}
-
-// Cart class to manage cart items
-class Cart {
-  final List<Food> items = [];
-
-  void addItem(Food food) {
-    items.add(food);
-  }
-
-  double get totalPrice {
-    return items.fold(0, (total, current) => total + current.price);
-  }
-}
+import 'package:seafood_app/model/food.dart';
+import 'package:seafood_app/model/cart_page.dart'; // นำเข้าหน้า CartPage
+import 'package:cloud_firestore/cloud_firestore.dart'; // นำเข้า Firestore
+import 'package:seafood_app/screen/ordered_list.dart'; // นำเข้าหน้า OrderedListPage
 
 class FoodOrderPage extends StatefulWidget {
+  final List<Food> initialCartItems;
+
+  FoodOrderPage({required this.initialCartItems});
+
   @override
   _FoodOrderPageState createState() => _FoodOrderPageState();
 }
 
 class _FoodOrderPageState extends State<FoodOrderPage> {
-  final Cart cart = Cart();
-  late Future<List<Food>> foodItemsFuture;
+  late List<Food> cartItems;
 
   @override
   void initState() {
     super.initState();
-    foodItemsFuture = fetchFoodItems();
+    cartItems = widget.initialCartItems;
   }
 
-  Future<List<Food>> fetchFoodItems() async {
-    // Fetch food items from Firestore
-    final snapshot = await FirebaseFirestore.instance.collection('menu').get();
-    return snapshot.docs.map((doc) => Food.fromDocument(doc)).toList();
+  void addToCart(Food food) {
+    setState(() {
+      cartItems.add(food);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${food.name} added to cart')),
+      );
+    });
+  }
+
+  Future<void> confirmOrder() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('ยืนยันการสั่งอาหาร'),
+        content: Text('คุณต้องการยืนยันการสั่งอาหารหรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // ปิด dialog
+
+              try {
+                // บันทึกการสั่งอาหารลง Firestore
+                final orderRef =
+                    FirebaseFirestore.instance.collection('orders').doc();
+                await orderRef.set({
+                  'items': cartItems
+                      .map((food) => {
+                            'name': food.name,
+                            'price': food.price,
+                            'imageUrl': food.imageUrl,
+                          })
+                      .toList(),
+                  'createdAt': Timestamp.now(),
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('การสั่งอาหารได้รับการยืนยัน')),
+                );
+
+                setState(() {
+                  cartItems.clear(); // ล้างตะกร้า
+                });
+
+                // นำทางไปหน้า OrderedListPage
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrderedListPage(
+                      orderedItems: cartItems,
+                      userUid: '',
+                    ),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('เกิดข้อผิดพลาดในการบันทึกการสั่งซื้อ')),
+                );
+              }
+            },
+            child: Text('ยืนยัน'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('ยกเลิก'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -74,87 +105,45 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CartPage(cart: cart),
+                  builder: (context) => CartPage(
+                    items: cartItems,
+                    onConfirmOrder: confirmOrder,
+                    userUid: '',
+                  ),
                 ),
-              );
+              ).then((_) {
+                // รีเฟรชตะกร้าหลังจากกลับมาจากหน้า CartPage
+                setState(() {});
+              });
             },
           ),
         ],
       ),
-      body: FutureBuilder<List<Food>>(
-        future: foodItemsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No food items found.'));
-          }
-
-          final foodItems = snapshot.data!;
-          return ListView.builder(
-            itemCount: foodItems.length,
-            itemBuilder: (context, index) {
-              final food = foodItems[index];
-              return Card(
-                child: ListTile(
-                  leading: food.imageUrl.isNotEmpty
-                      ? Image.network(
-                          food.imageUrl,
-                          width: 50,
-                          height: 50,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            } else {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ??
-                                              1)
-                                      : null,
-                                ),
-                              );
-                            }
-                          },
-                          errorBuilder: (BuildContext context, Object error,
-                              StackTrace? stackTrace) {
-                            return Icon(Icons.error, size: 50);
-                          },
-                        )
-                      : Icon(Icons.image_not_supported, size: 50),
-                  title: Text(food.name),
-                  subtitle: Text('THB${food.price}'),
-                  onTap: () {
-                    // Navigate to the food detail page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FoodDetailPage(food: food),
-                      ),
-                    );
-                  },
-                  trailing: ElevatedButton(
-                    child: Text('เพิ่มเข้าตะกร้า'),
-                    onPressed: () {
-                      setState(() {
-                        cart.addItem(food);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${food.name} added to cart')),
-                        );
-                      });
-                    },
+      body: cartItems.isEmpty
+          ? Center(child: Text('ไม่มีรายการอาหารในตะกร้า'))
+          : ListView.builder(
+              itemCount: cartItems.length,
+              itemBuilder: (context, index) {
+                final food = cartItems[index];
+                return Card(
+                  child: ListTile(
+                    leading: food.imageUrl.isNotEmpty
+                        ? Image.network(
+                            food.imageUrl,
+                            width: 50,
+                            height: 50,
+                          )
+                        : Icon(Icons.image_not_supported, size: 50),
+                    title: Text(food.name),
+                    subtitle: Text('THB${food.price}'),
+                    trailing: ElevatedButton(
+                      child: Text('เพิ่มเข้าตะกร้า'),
+                      onPressed: () => addToCart(food),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+                );
+              },
+            ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -55,6 +56,12 @@ class _AddMenuPageState extends State<AddMenuPage> {
     }
   }
 
+  // ฟังก์ชันในการสร้าง menuItemUid เป็นตัวเลขล้วน
+  String _generateMenuItemUid() {
+    final Random random = Random();
+    return (random.nextInt(1000000000) + 1000000000).toString();
+  }
+
   Future<void> _submitForm() async {
     if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
       print('กรุณากรอกข้อมูลให้ครบถ้วน');
@@ -101,12 +108,17 @@ class _AddMenuPageState extends State<AddMenuPage> {
           .get();
       final customUid = userDoc.data()?['uid'] ?? '';
 
-      await FirebaseFirestore.instance.collection('menu').add({
+      final menuRef = FirebaseFirestore.instance.collection('menu').doc();
+      final menuItemUid =
+          _generateMenuItemUid(); // สร้าง menuItemUid เป็นตัวเลขล้วน
+
+      await menuRef.set({
         'name': _nameController.text,
         'description': _descriptionController.text,
         'price': double.tryParse(_priceController.text) ?? 0.0,
         'image_url': downloadUrl,
-        'customUid': customUid, // ใช้ customUid แทน user.uid
+        'customUid': customUid,
+        'menuItemUid': menuItemUid, // เพิ่ม menuItemUid ลงในเอกสาร
       });
 
       print('Menu item added successfully.');

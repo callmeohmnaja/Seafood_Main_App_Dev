@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:seafood_app/model/food.dart';
+import 'package:seafood_app/screen/food_oderpage.dart'; // นำเข้าคลาส Food
 
 class RestaurantMenuPage extends StatelessWidget {
   final String restaurantUid;
 
-  RestaurantMenuPage({required this.restaurantUid});
+  RestaurantMenuPage({
+    required this.restaurantUid,
+    required Function(Food food) onAddToCart,
+  });
 
   Future<String?> _getImageUrl(String imagePath) async {
     try {
@@ -18,20 +23,27 @@ class RestaurantMenuPage extends StatelessWidget {
     }
   }
 
-  void _orderItem(BuildContext context, String name) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('คุณสั่งซื้อ $name เรียบร้อยแล้ว')),
+  void _navigateToOrderPage(BuildContext context, List<Food> cartItems) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FoodOrderPage(initialCartItems: cartItems),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Food> cartItems = [];
+
     return Scaffold(
       appBar: AppBar(title: Text('เมนูของร้าน')),
       body: FutureBuilder<QuerySnapshot>(
         future: FirebaseFirestore.instance
             .collection('menu')
-            .where('customUid', isEqualTo: restaurantUid)
+            .where('customUid',
+                isEqualTo:
+                    restaurantUid) // เปลี่ยนจาก 'restaurantUid' เป็น 'customUid'
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -51,10 +63,10 @@ class RestaurantMenuPage extends StatelessWidget {
             itemCount: menuItems.length,
             itemBuilder: (context, index) {
               final menuItem = menuItems[index];
-              final name = menuItem['name'];
-              final description = menuItem['description'];
-              final price = menuItem['price'];
-              final imagePath = menuItem['image_url'];
+              final name = menuItem['name'] ?? 'ไม่ระบุชื่อ';
+              final description = menuItem['description'] ?? 'ไม่มีรายละเอียด';
+              final price = menuItem['price']?.toString() ?? '0.0';
+              final imagePath = menuItem['image_url'] ?? '';
 
               return FutureBuilder<String?>(
                 future: _getImageUrl(imagePath),
@@ -92,7 +104,19 @@ class RestaurantMenuPage extends StatelessWidget {
                     title: Text(name),
                     subtitle: Text('$description - ฿$price'),
                     trailing: ElevatedButton(
-                      onPressed: () => _orderItem(context, name),
+                      onPressed: () {
+                        final food = Food(
+                          name: name,
+                          store: restaurantUid,
+                          price: double.tryParse(price) ?? 0.0,
+                          imageUrl: imageUrl ?? '',
+                        );
+                        cartItems.add(food);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('$name ถูกเพิ่มเข้าตะกร้า')),
+                        );
+                        _navigateToOrderPage(context, cartItems);
+                      },
                       child: Text('สั่งซื้อ'),
                     ),
                   );
