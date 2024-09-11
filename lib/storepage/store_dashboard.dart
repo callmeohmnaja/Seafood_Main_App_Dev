@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -82,7 +81,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('โปรไฟล์'),
+        title: Text('จัดการร้านค้า'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -114,12 +113,13 @@ class _StoreDashboardState extends State<StoreDashboard> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('โปรไฟล์ไม่พบ'));
+            return Center(child: Text('ไม่พบโปรไฟล์'));
           }
 
           var userData = snapshot.data!.data() as Map<String, dynamic>;
           String username = userData['username'] ?? 'ไม่ระบุ';
           String role = userData['role'] ?? 'ไม่ระบุ';
+          String phone = userData['phone'] ?? 'ไม่ระบุ';
 
           return Column(
             children: <Widget>[
@@ -131,17 +131,14 @@ class _StoreDashboardState extends State<StoreDashboard> {
                       onTap: _pickImage,
                       child: CircleAvatar(
                         radius: 40,
-                        backgroundColor: Colors.grey[
-                            300], // Background color if no image is present
+                        backgroundColor: Colors.grey[300],
                         child: profileImageUrl != null
                             ? CircleAvatar(
                                 radius: 40,
                                 backgroundImage: NetworkImage(profileImageUrl!),
                               )
                             : Icon(Icons.camera_alt,
-                                size: 40,
-                                color:
-                                    Colors.white), // Icon for uploading image
+                                size: 40, color: Colors.white),
                       ),
                     ),
                     SizedBox(width: 16),
@@ -161,6 +158,10 @@ class _StoreDashboardState extends State<StoreDashboard> {
                         ),
                         Text(
                           'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'โทรศัพท์: $phone',
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -194,6 +195,12 @@ class _StoreDashboardState extends State<StoreDashboard> {
                             MaterialPageRoute(
                               builder: (context) => EditOrDeleteMenuPage(),
                             ));
+                      },
+                    ),
+                    ListTile(
+                      title: Text('ค้นหาไรเดอร์'),
+                      onTap: () {
+                        // Navigate to order history page if needed
                       },
                     ),
                     ListTile(

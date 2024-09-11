@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart'; // นำเข้า StoreDashboard ที่นี่
 
 class LoginScreen extends StatefulWidget {
@@ -101,6 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Widget nextPage;
                                   if (role == 'ร้านอาหาร') {
                                     nextPage = StoreDashboard();
+                                  } else if (role == 'ไรเดอร์') {
+                                    nextPage = RaiderDashboard();
                                   } else {
                                     nextPage = FoodApp();
                                   }
