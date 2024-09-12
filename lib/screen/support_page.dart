@@ -4,7 +4,7 @@ import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 
 class SupportPage extends StatelessWidget {
   final TextEditingController _issueController = TextEditingController();

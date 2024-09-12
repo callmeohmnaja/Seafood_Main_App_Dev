@@ -7,7 +7,7 @@ import 'package:seafood_app/BookGuide/storeguide_page.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 // ignore: use_key_in_widget_constructors

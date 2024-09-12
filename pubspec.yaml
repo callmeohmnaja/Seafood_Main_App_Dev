@@ -47,6 +47,9 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   uuid: ^3.0.4
   firebase_database: ^11.1.1
+  cached_network_image: ^3.2.0
+  carousel_slider: ^4.0.0
+
 
 flutter_icons:
   android: true

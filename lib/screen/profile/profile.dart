@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:seafood_app/BookGuide/howtouse_page.dart';
+import 'package:seafood_app/screen/profile/Purchasehistory.dart';
 import 'dart:io';
 import 'package:seafood_app/screen/profile/editprofile_page.dart';
 import 'package:seafood_app/screen/home.dart'; // For File
@@ -184,15 +186,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                     ),
                     ListTile(
-                      title: Text('การตั้งค่าบัญชี'),
+                      title: Text('คู่มือการใช้งาน'),
                       onTap: () {
-                        // Navigate to account settings page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HowtousePage()));
                       },
                     ),
                     ListTile(
                       title: Text('ประวัติการสั่งซื้อ'),
                       onTap: () {
-                        // Navigate to order history page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Purchasehistory()));
                       },
                     ),
                     ListTile(

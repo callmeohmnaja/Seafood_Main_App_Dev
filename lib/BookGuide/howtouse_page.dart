@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/BookGuide/oderguide_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class HowtousePage extends StatelessWidget {

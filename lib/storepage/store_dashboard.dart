@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/storepage/add_menu_page.dart';
 import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
+import 'package:seafood_app/storepage/find_raider_page.dart';
 
 class StoreDashboard extends StatefulWidget {
   @override
@@ -200,11 +201,15 @@ class _StoreDashboardState extends State<StoreDashboard> {
                     ListTile(
                       title: Text('ค้นหาไรเดอร์'),
                       onTap: () {
-                        // Navigate to order history page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FindRaiderPage()));
                       },
                     ),
                     ListTile(
-                      title: Text('?????'),
+                      title: Text('ไรเดอร์ของฉัน'),
                       onTap: () {
                         // Navigate to order history page if needed
                       },

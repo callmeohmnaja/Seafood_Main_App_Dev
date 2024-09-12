@@ -5,7 +5,7 @@ import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/ordered_list.dart';
-import 'package:seafood_app/screen/profile.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 import 'package:seafood_app/storepage/restaurant_menu_page.dart';
 
