@@ -7,7 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart'
     as formValidators;
 import 'package:seafood_app/model/profile.dart';
-import 'package:seafood_app/screen/mainhome_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart'; // Import the StoreDashboard screen
 
 class RegisterScreen extends StatefulWidget {
@@ -202,10 +203,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 // Navigate based on role
                                 Widget nextPage;
                                 if (_currentRole == 'ร้านอาหาร') {
-                                  nextPage =
-                                      StoreDashboard(); // Navigate to StoreDashboard
+                                  nextPage = StoreDashboard();
+                                } else if (_currentRole == 'ไรเดอร์') {
+                                  nextPage = RaiderDashboard();
                                 } else {
-                                  nextPage = HomePage();
+                                  nextPage = FoodApp();
                                 }
 
                                 Navigator.of(context).pushReplacement(

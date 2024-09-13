@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:seafood_app/BookGuide/for_store_storeguild.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/storepage/add_menu_page.dart';
 import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
-import 'package:seafood_app/storepage/find_raider_page.dart';
+import 'package:seafood_app/storepage/raiderinfo_page.dart';
 
 class StoreDashboard extends StatefulWidget {
   @override
@@ -205,13 +206,17 @@ class _StoreDashboardState extends State<StoreDashboard> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => FindRaiderPage()));
+                                builder: (context) => RaiderinfoPage()));
                       },
                     ),
                     ListTile(
-                      title: Text('ไรเดอร์ของฉัน'),
+                      title: Text('คู่มือร้านอาหาร'),
                       onTap: () {
-                        // Navigate to order history page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForStoreStoreguild()));
                       },
                     ),
                     ListTile(

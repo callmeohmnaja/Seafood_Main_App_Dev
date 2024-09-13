@@ -176,7 +176,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     ListTile(
-                      title: Text('ค้นหาร้าน'),
+                      title: Text('ตรวจสอบร้าน'),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(

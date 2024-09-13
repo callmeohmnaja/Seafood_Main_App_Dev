@@ -8,7 +8,7 @@ class FindStorePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ค้นหาร้านอาหาร'),
+        title: Text('ตรวจสอบร้าน'),
         backgroundColor: Colors.grey, // ใช้สีพื้นหลังของแอปที่เข้ากับธีม
       ),
       body: Column(
