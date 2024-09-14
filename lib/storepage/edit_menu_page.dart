@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class EditMenuPage extends StatefulWidget {
   final String menuId;
@@ -52,6 +53,13 @@ class _EditMenuPageState extends State<EditMenuPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('แก้ไขเมนูอาหาร'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => StoreDashboard()));
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

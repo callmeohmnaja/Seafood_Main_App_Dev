@@ -6,9 +6,14 @@ class ForStoreStoreguild extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "คู่มือการเปิดร้านอาหาร",
-          style: TextStyle(fontSize: 20, color: Colors.green),
+        title: Text("คู่มือการเปิดร้านอาหาร",
+            style: TextStyle(fontSize: 20, color: Colors.green)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => StoreDashboard()));
+          },
         ),
       ),
       body: Column(

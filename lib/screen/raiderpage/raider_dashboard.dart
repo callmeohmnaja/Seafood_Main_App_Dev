@@ -186,7 +186,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                       },
                     ),
                     ListTile(
-                      title: Text('ประวัติออเดอร์'),
+                      title: Text('???'),
                       onTap: () {},
                     ),
                     ListTile(
@@ -196,7 +196,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                       },
                     ),
                     ListTile(
-                      title: Text('?????'),
+                      title: Text('คู่มือไรเดอร์'),
                       onTap: () {
                         // Navigate to order history page if needed
                       },

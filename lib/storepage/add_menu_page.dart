@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:seafood_app/storepage/store_dashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -143,6 +144,13 @@ class _AddMenuPageState extends State<AddMenuPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('เพิ่มเมนูอาหาร'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => StoreDashboard()));
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

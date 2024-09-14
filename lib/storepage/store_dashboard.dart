@@ -84,25 +84,12 @@ class _StoreDashboardState extends State<StoreDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: Text('จัดการร้านค้า'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            // Add other drawer items here...
-          ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          },
         ),
       ),
       body: FutureBuilder<DocumentSnapshot>(
@@ -200,7 +187,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
                       },
                     ),
                     ListTile(
-                      title: Text('ค้นหาไรเดอร์'),
+                      title: Text('ไรเดอร์ที่ลงทะเบียน'),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(

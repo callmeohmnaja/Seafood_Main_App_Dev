@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/BookGuide/howtopay_page.dart';
 import 'package:seafood_app/BookGuide/howtouse_page.dart';
 import 'package:seafood_app/BookGuide/oderguide_page.dart';
+import 'package:seafood_app/BookGuide/raider_guide_page.dart';
 import 'package:seafood_app/BookGuide/ruleapp_page.dart';
 import 'package:seafood_app/BookGuide/storeguide_page.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
@@ -109,8 +110,8 @@ class Guide extends StatelessWidget {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20), // Add padding around the container
-        color: Colors.green[50], // Light background color for comfort
+        padding: EdgeInsets.all(20),
+        color: Colors.green[50],
         child: ListView(
           children: [
             ElevatedButton.icon(
@@ -161,7 +162,25 @@ class Guide extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          StoreguidePage()), // Navigate to LoginScreen
+                          RaiderPageGuide()), // Navigate to LoginScreen
+                );
+              },
+              icon: Icon(Icons.motorcycle),
+              label: Text("คู่มือไรเดอร์"),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => StoreguidePage()),
                 );
               },
               icon: Icon(Icons.store_mall_directory),

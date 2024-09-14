@@ -9,7 +9,14 @@ class FindStorePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('ตรวจสอบร้าน'),
-        backgroundColor: Colors.grey, // ใช้สีพื้นหลังของแอปที่เข้ากับธีม
+        backgroundColor: Colors.green, // ใช้สีพื้นหลังของแอปที่เข้ากับธีม
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => RaiderDashboard()));
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -77,16 +84,31 @@ class FindStorePage extends StatelessWidget {
                                     size: 40, color: Colors.grey),
                               ),
                         title: Text(
-                          restaurant['username'] ?? 'ไม่มีชื่อ',
+                          'ร้าน: ${restaurant['username'] ?? 'ไม่มีชื่อ'}',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
-                        subtitle: Text(
-                          restaurant['menu'] ?? 'ไม่มีรายละเอียด',
-                          style: TextStyle(color: Colors.grey[600]),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ประเภท: ${restaurant['menu'] ?? 'ไม่มีรายละเอียด'}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'ที่อยู่: ${restaurant['address'] ?? 'ไม่พบที่อยู่'}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'เบอร์: ${restaurant['phone'] ?? 'ไม่พบเบอร์'}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
                         ),
                         onTap: () {
-                          // TODO: Implement navigation to restaurant detail page
+                          // TODO: เชือมไปหน้ารายละเอียดร้าน
                         },
                       ),
                     );
@@ -101,9 +123,7 @@ class FindStorePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          RaiderDashboard()), // ตรวจสอบให้แน่ใจว่า RaiderDashboard ถูกกำหนดไว้
+                  MaterialPageRoute(builder: (context) => RaiderDashboard()),
                 );
               },
               style: ElevatedButton.styleFrom(
