@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/BookGuide/howtopay_page.dart';
 import 'package:seafood_app/BookGuide/oderguide_page.dart';
-import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class ForRaiderRaiderPage extends StatelessWidget {
@@ -12,7 +12,7 @@ class ForRaiderRaiderPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "gml",
+          "คู่มือไรเดอร์",
           style: TextStyle(fontSize: 20, color: Colors.green),
         ),
       ),
@@ -145,7 +145,7 @@ class ForRaiderRaiderPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FoodApp()),
+                  MaterialPageRoute(builder: (context) => RaiderDashboard()),
                 );
               },
               style: ElevatedButton.styleFrom(

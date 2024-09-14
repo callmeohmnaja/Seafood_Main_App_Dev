@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
+// ignore: use_key_in_widget_constructors
 class ForStoreStoreguild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,8 @@ class ForStoreStoreguild extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'กรุณาใส่ข้อมูลเกี่ยวกับวิธีการชําระเงินที่นี่',
-                  style: TextStyle(fontSize: 16),
+                  'สําหรับคู่มือร้านอาหาร ประกอบไปด้วย 5 ตัวเลือก (Option) 1.เพิ่มเมนูอาหารร้านค้าสามารถเพิ่มเมนูอาหารตามที่ต้องการได้ \n 2.แก้ไขหรือลบมนูอาหาร 3.ไรเดอร์ที่ลงทะเบียน ',
+                  style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
               ),

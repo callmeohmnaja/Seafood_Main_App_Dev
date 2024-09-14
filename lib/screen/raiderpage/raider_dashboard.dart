@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:seafood_app/BookGuide/for_raider_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/raiderpage/find_store_page.dart';
 
@@ -198,7 +199,11 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                     ListTile(
                       title: Text('คู่มือไรเดอร์'),
                       onTap: () {
-                        // Navigate to order history page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForRaiderRaiderPage()));
                       },
                     ),
                     ListTile(
