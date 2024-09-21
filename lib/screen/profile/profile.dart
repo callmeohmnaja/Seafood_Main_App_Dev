@@ -4,13 +4,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:seafood_app/BookGuide/howtouse_page.dart';
+import 'package:seafood_app/screen/book_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
+import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile/Purchasehistory.dart';
 import 'dart:io';
 import 'package:seafood_app/screen/profile/editprofile_page.dart';
-import 'package:seafood_app/screen/home.dart'; // For File
+import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/screen/support_page.dart'; // For File
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _ProfilePageState createState() => _ProfilePageState();
 }
 
@@ -100,7 +108,76 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            // Add other drawer items here...
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('หน้าแรก'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodApp()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.restaurant_menu),
+              title: Text('ออเดอร์ของฉัน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FoodOrderPage(
+                            initialCartItems: [],
+                          )),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Guide()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('โปรไฟล์'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.support),
+              title: Text('แจ้งปัญหา'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SupportPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ออกจากระบบ'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage()), 
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -197,6 +274,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     ListTile(
                       title: Text('ประวัติการสั่งซื้อ'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Purchasehistory()));
+                      },
+                    ),
+                     ListTile(
+                      title: Text('ออเดอร์ของฉัน'),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(

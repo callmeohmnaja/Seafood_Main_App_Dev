@@ -37,6 +37,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController vehicleController = TextEditingController();
   final TextEditingController menuController = TextEditingController();
+  final TextEditingController contactNumberController =
+      TextEditingController(); // ใหม่
+  final TextEditingController fullNameController =
+      TextEditingController(); // ใหม่
+  final TextEditingController facultyController =
+      TextEditingController(); // ใหม่
+  final TextEditingController departmentController =
+      TextEditingController(); // ใหม่
 
   @override
   Widget build(BuildContext context) {
@@ -132,16 +140,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onSaved: (value) => profile.phone = value!,
                         ),
                       ],
-                      if (_currentRole == 'ไรเดอร์')
+                      if (_currentRole == 'ไรเดอร์') ...[
                         _buildTextFormField(
                           controller: vehicleController,
-                          hintText: 'ข้อมูลรถ',
+                          hintText: 'ข้อมูลรถ/รถยนต์หรือมอไซค์',
                           label: 'ข้อมูลรถ',
                           validator: formValidators.RequiredValidator(
                               errorText: 'กรุณาป้อนข้อมูลรถ'),
                           onSaved: (value) => profile.vehicle = value!,
                         ),
-                      if (_currentRole == 'ร้านอาหาร')
+                        _buildTextFormField(
+                          controller: contactNumberController,
+                          hintText: 'เบอร์ติดต่อ',
+                          label: 'เบอร์ติดต่อ',
+                          validator: formValidators.RequiredValidator(
+                              errorText: 'กรุณาป้อนเบอร์ติดต่อ'),
+                          onSaved: (value) => profile.contactNumber = value!,
+                        ),
+                        _buildTextFormField(
+                          controller: fullNameController,
+                          hintText: 'ชื่อจริง-นามสกุล',
+                          label: 'ชื่อจริง-นามสกุล',
+                          validator: formValidators.RequiredValidator(
+                              errorText: 'กรุณาป้อนชื่อจริง-นามสกุล'),
+                          onSaved: (value) => profile.fullname = value!,
+                        ),
+                        _buildTextFormField(
+                          controller: facultyController,
+                          hintText: 'ไม่มีให้กรอก - ',
+                          label: 'คณะ',
+                          validator: formValidators.RequiredValidator(
+                              errorText: 'กรุณาป้อนคณะ'),
+                          onSaved: (value) => profile.faculty = value!,
+                        ),
+                        _buildTextFormField(
+                          controller: departmentController,
+                          hintText: 'ไม่มีให้กรอก -',
+                          label: 'สาขา',
+                          validator: formValidators.RequiredValidator(
+                              errorText: 'กรุณาป้อนสาขา'),
+                          onSaved: (value) => profile.department = value!,
+                        ),
+                      ],
+                      if (_currentRole == 'ร้านอาหาร') ...[
                         _buildTextFormField(
                           controller: menuController,
                           hintText: 'เมนู (ใช้คอมม่าแยกแต่ละรายการ)',
@@ -150,6 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               errorText: 'กรุณาป้อนเมนู'),
                           onSaved: (value) => profile.menu = value!,
                         ),
+                      ],
                       SizedBox(height: 15),
                       SizedBox(
                         width: double.infinity,
@@ -186,6 +228,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   'phone': profile.phone,
                                   'vehicle': profile.vehicle,
                                   'menu': profile.menu,
+                                  'contactNumber':
+                                      profile.contactNumber, // ใหม่
+                                  'fullName': profile.fullname, // ใหม่
+                                  'faculty': profile.faculty, // ใหม่
+                                  'department': profile.department, // ใหม่
                                   'uid': customUid,
                                   'role': _currentRole,
                                 });

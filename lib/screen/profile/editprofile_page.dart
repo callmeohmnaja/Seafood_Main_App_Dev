@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 
 // ignore: use_key_in_widget_constructors
 class EditprofilePage extends StatelessWidget {
@@ -8,6 +9,13 @@ class EditprofilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+          },
+        ),
         title: Text('ตั้งค่าบัญชี'),
         backgroundColor: Colors.green,
       ),
@@ -20,11 +28,11 @@ class EditprofilePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ตั้งค่าบัญชี',
+                  'แก้ไขข้อมูลส่วนตัว',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: Colors.green[700],
                   ),
                 ),
                 SizedBox(height: 20),
@@ -52,22 +60,26 @@ class EditprofilePage extends StatelessWidget {
                   label: 'ยืนยันรหัสผ่าน',
                   icon: Icons.lock,
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() == true) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('กำลังบันทึกข้อมูล')),
-                      );
-                    }
-                  },
-                  // ignore: sort_child_properties_last
-                  child: Text('บันทึก'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.green,
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    textStyle: TextStyle(fontSize: 16),
+                SizedBox(height: 30),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() == true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('กำลังบันทึกข้อมูล')),
+                        );
+                      }
+                    },
+                    child: Text('บันทึก'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green,
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      textStyle: TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -88,7 +100,9 @@ class EditprofilePage extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green),
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         filled: true,
         fillColor: Colors.grey[200],
       ),
@@ -111,7 +125,9 @@ class EditprofilePage extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green),
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         filled: true,
         fillColor: Colors.grey[200],
       ),

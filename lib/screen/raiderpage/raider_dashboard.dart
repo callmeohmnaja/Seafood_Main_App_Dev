@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:seafood_app/BookGuide/for_raider_page.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/raiderpage/find_store_page.dart';
+import 'package:seafood_app/screen/raiderpage/myinfo_raider.dart';
 
 class RaiderDashboard extends StatefulWidget {
   const RaiderDashboard({super.key});
@@ -83,28 +84,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ไรเดอร์'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            // Add other drawer items here...
-          ],
-        ),
-      ),
+          title: Text('จัดการหน้าไรเดอร์'), backgroundColor: Colors.green),
       body: FutureBuilder<DocumentSnapshot>(
         future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
         builder: (context, snapshot) {
@@ -121,7 +101,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
           var userData = snapshot.data!.data() as Map<String, dynamic>;
           String username = userData['username'] ?? 'ไม่ระบุ';
           String role = userData['role'] ?? 'ไม่ระบุ';
-          String phone = userData['phone'] ?? 'ไม่ระบุ';
+          String contactNumber = userData['contactNumber'] ?? 'ไม่ระบุ';
 
           return Column(
             children: <Widget>[
@@ -163,7 +143,7 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
-                          'โทรศัพท์: $phone',
+                          'โทรศัพท์: $contactNumber',
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -193,7 +173,11 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
                     ListTile(
                       title: Text('ข้อมูลของฉัน'),
                       onTap: () {
-                        // Navigate to order history page if needed
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyinfoRaider()));
                       },
                     ),
                     ListTile(

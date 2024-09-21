@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:seafood_app/storepage/raider_detailPage.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class RaiderinfoPage extends StatelessWidget {
@@ -10,7 +11,7 @@ class RaiderinfoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("ข้อมูลไรเดอร์"),
-        backgroundColor: Colors.green[700], // สีเขียวเข้มสำหรับแถบด้านบน
+        backgroundColor: Colors.green[700],
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -79,6 +80,16 @@ class RaiderinfoPage extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   tileColor: Color.fromARGB(255, 241, 241, 241),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RaiderDetailPage(
+                          raiderData: data,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },

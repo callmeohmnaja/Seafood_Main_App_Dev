@@ -4,6 +4,10 @@ class Profile {
   String? username;
   String? role;
   String? passwordConfirm;
+  String? contactNumber;
+  String? fullname;
+  String? faculty;
+  String? department;
 
   String address;
   String phone;

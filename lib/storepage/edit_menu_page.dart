@@ -25,24 +25,26 @@ class _EditMenuPageState extends State<EditMenuPage> {
 
   Future<void> _loadMenuData() async {
     final doc = await FirebaseFirestore.instance
-        .collection('menu') // Corrected collection name
+        .collection('menu')
         .doc(widget.menuId)
         .get();
     final data = doc.data() as Map<String, dynamic>;
+
+    // Convert the price to a string
     _nameController.text = data['name'] ?? '';
     _descriptionController.text = data['description'] ?? '';
-    _priceController.text = data['price'] ?? '';
+    _priceController.text = (data['price'] != null) ? data['price'].toString() : '';
   }
 
   Future<void> _updateMenu() async {
     if (_formKey.currentState!.validate()) {
       await FirebaseFirestore.instance
-          .collection('menu') // Corrected collection name
+          .collection('menu')
           .doc(widget.menuId)
           .update({
         'name': _nameController.text,
         'description': _descriptionController.text,
-        'price': _priceController.text,
+        'price': double.tryParse(_priceController.text) ?? 0, // Convert price back to number
       });
       Navigator.pop(context);
     }

@@ -8,6 +8,7 @@ import 'package:seafood_app/BookGuide/for_store_storeguild.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/storepage/add_menu_page.dart';
 import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
+import 'package:seafood_app/storepage/myoder_storepage.dart';
 import 'package:seafood_app/storepage/raiderinfo_page.dart';
 
 class StoreDashboard extends StatefulWidget {
@@ -85,7 +86,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
       appBar: AppBar(
         title: Text('จัดการร้านค้า'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.food_bank),
           onPressed: () {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => HomeScreen()));
@@ -164,7 +165,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     ListTile(
-                      title: Text('เพิ่มเมนู'),
+                      title: Text('เพิ่มรายการเมนูอาหาร'),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -183,6 +184,17 @@ class _StoreDashboardState extends State<StoreDashboard> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => EditOrDeleteMenuPage(),
+                            ));
+                      },
+                    ),
+                    ListTile(
+                      title: Text('ออเดอร์ของฉัน(ยังไม่เขียน)'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MyoderStorepage(),
                             ));
                       },
                     ),
