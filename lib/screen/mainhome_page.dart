@@ -1,222 +1,216 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:seafood_app/model/food.dart';
-import 'package:seafood_app/screen/book_page.dart';
-import 'package:seafood_app/screen/food_app.dart';
-import 'package:seafood_app/screen/home.dart';
-import 'package:seafood_app/screen/ordered_list.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
-import 'package:seafood_app/screen/support_page.dart';
-import 'package:seafood_app/storepage/restaurant_menu_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart'; // อย่าลืมเพิ่มแพ็คเก็ตนี้
+import 'dart:math'; // สำหรับสุ่มข้อความ
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Food Menu',
+      theme: ThemeData(
+        primarySwatch: Colors.deepOrange,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: HomePage(),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String _searchQuery = '';
+  String searchQuery = "";
+  TextEditingController searchController = TextEditingController();
+
+  // คำพูดที่สุ่มขึ้นมา
+  final List<String> randomMessages = [
+    "พบกับกิจกรรมสุดพิเศษได้ที่นี่!",
+    "ร่วมสนุกกับโปรโมชั่นพิเศษจากร้านค้าชั้นนำ!",
+    "กิจกรรมใหม่ๆ กำลังจะมาถึง รอติดตามได้เลย!",
+    "ร่วมเป็นส่วนหนึ่งของกิจกรรมสนุกๆ วันนี้!"
+  ];
+
+  // ฟังก์ชันสุ่มคำพูด
+  String getRandomMessage() {
+    final random = Random();
+    return randomMessages[random.nextInt(randomMessages.length)];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('หน้าแรก')),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
+      appBar: AppBar(
+        title: const Text('หน้าหลัก'),
+        elevation: 0,
+        backgroundColor: Colors.deepOrange,
+      ),
+      body: SingleChildScrollView( // ใช้ SingleChildScrollView
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.orange[100],
+                  hintText: 'ค้นหาร้านอาหารหรือเมนู',
+                  prefixIcon: Icon(Icons.search, color: Colors.deepOrange),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.close, color: Colors.deepOrange),
+                    onPressed: () {
+                      setState(() {
+                        searchController.clear();
+                        searchQuery = '';
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                  });
+                },
               ),
-              child: Text(
-                'เมนู',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.deepOrange),
+                  _buildActionButton('โปรไฟล์', Icons.person, Colors.blue),
+                  _buildActionButton('คิดก่อน', Icons.lightbulb, Colors.green),
+                ],
+              ),
+            ),
+            StreamBuilder<QuerySnapshot>(
+              stream: (searchQuery.isEmpty)
+                  ? FirebaseFirestore.instance.collection('menu').snapshots()
+                  : FirebaseFirestore.instance
+                      .collection('menu')
+                      .where('name', isGreaterThanOrEqualTo: searchQuery)
+                      .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+                      .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                final menuItems = snapshot.data?.docs ?? [];
+
+                return CarouselSlider.builder(
+                  itemCount: menuItems.length,
+                  options: CarouselOptions(
+                    height: 250,
+                    enlargeCenterPage: true,
+                    autoPlay: true,
+                  ),
+                  itemBuilder: (context, index, realIndex) {
+                    final item = menuItems[index];
+                    final name = item['name'];
+                    final imageUrl = item['image_url'];
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 8,
+                        shadowColor: Colors.black54,
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                              child: Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                height: 200, // ปรับขนาดภาพให้เล็กลง
+                                width: double.infinity,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                name,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.orange[50],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    getRandomMessage(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('หน้าแรก'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FoodApp()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('ออเดอร์ของฉัน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => OrderedListPage(
-                            // ส่งข้อมูลการสั่งซื้อไปยังหน้า OrderedListPage
-                            orderedItems: [], userUid: '',
-                          )),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('คู่มือการใช้งาน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Guide()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('โปรไฟล์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.support_agent),
-              title: Text('แจ้งปัญหา'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ออกจากระบบ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'ค้นหาร้านอาหาร',
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: (query) {
-                setState(() {
-                  _searchQuery = query;
-                });
-              },
-            ),
-          ),
-          Expanded(
-            child: _searchQuery.isEmpty
-                ? Center(child: Text('กรุณาพิมพ์เพื่อค้นหาร้านอาหาร'))
-                : StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .where('role', isEqualTo: 'ร้านอาหาร')
-                        .where('username', isGreaterThanOrEqualTo: _searchQuery)
-                        .where('username',
-                            isLessThanOrEqualTo: '$_searchQuery\uf8ff')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return Center(
-                            child: Text(
-                                'เกิดข้อผิดพลาด: ${snapshot.error.toString()}'));
-                      }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return Center(child: Text('ไม่พบร้านอาหาร'));
-                      }
+    );
+  }
 
-                      final restaurants = snapshot.data!.docs;
-
-                      return ListView.builder(
-                        itemCount: restaurants.length,
-                        itemBuilder: (context, index) {
-                          final restaurant = restaurants[index];
-                          final username = restaurant['username'];
-                          final restaurantUid = restaurant['uid'];
-
-                          return FutureBuilder<QuerySnapshot>(
-                            future: FirebaseFirestore.instance
-                                .collection('menu')
-                                .where('customUid', isEqualTo: restaurantUid)
-                                .get(),
-                            builder: (context, menuSnapshot) {
-                              if (menuSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return ListTile(
-                                  title: Text(username),
-                                  subtitle: Text('กำลังโหลดเมนู...'),
-                                );
-                              }
-                              if (menuSnapshot.hasError) {
-                                return ListTile(
-                                  title: Text(username),
-                                  subtitle: Text(
-                                      'เกิดข้อผิดพลาดในการดึงเมนู: ${menuSnapshot.error.toString()}'),
-                                );
-                              }
-
-                              final menuItems = menuSnapshot.data?.docs ?? [];
-
-                              return ListTile(
-                                title: Text(username),
-                                subtitle: menuItems.isNotEmpty
-                                    ? Text(
-                                        'เมนู: ${menuItems.map((menu) => menu['name']).join(', ')}')
-                                    : Text('ไม่มีเมนูในร้าน'),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.arrow_forward),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            RestaurantMenuPage(
-                                          restaurantUid: restaurantUid,
-                                          onAddToCart: (Food food) {
-                                            // Implement your add to cart functionality here
-                                            print(
-                                                'Added to cart: ${food.name}');
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
+  // ปุ่มที่มีไอคอนและสีตกแต่ง
+  Widget _buildActionButton(String label, IconData icon, Color color) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        // เว้น onPressed ไว้ให้เขียน
+      },
+      icon: Icon(icon, color: Colors.white),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }
