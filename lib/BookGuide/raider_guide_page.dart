@@ -7,6 +7,8 @@ import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class RaiderPageGuide extends StatelessWidget {
+  const RaiderPageGuide({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

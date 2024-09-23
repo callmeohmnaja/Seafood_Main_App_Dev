@@ -7,6 +7,8 @@ import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class ForRaiderRaiderPage extends StatelessWidget {
+  const ForRaiderRaiderPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

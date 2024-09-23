@@ -18,6 +18,7 @@ class RestaurantMenuPage extends StatelessWidget {
       final url = await storageRef.getDownloadURL();
       return url;
     } catch (e) {
+      // ignore: avoid_print
       print('Error fetching image URL: $e');
       return null;
     }

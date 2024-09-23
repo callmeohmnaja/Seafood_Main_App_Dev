@@ -8,7 +8,9 @@ import 'dart:math';
 String generateNumericOrderId() {
   final random = Random();
   // Generate a numeric order ID with 6 digits (e.g., 100000 - 999999) or 7 digits (e.g., 1000000 - 9999999)
+  // ignore: prefer_const_declarations
   final min = 100000; // Minimum value for 6-digit ID
+  // ignore: prefer_const_declarations
   final max = 999999; // Maximum value for 6-digit ID
   final orderId = (random.nextInt(max - min + 1) + min).toString();
   return orderId;
@@ -19,7 +21,7 @@ class CartPage extends StatelessWidget {
   final String userUid; // เพิ่ม userUid เพื่อใช้ในการเก็บข้อมูลการสั่งซื้อ
   final VoidCallback onConfirmOrder;
 
-  CartPage({
+    CartPage({
     required this.items,
     required this.userUid,
     required this.onConfirmOrder,
