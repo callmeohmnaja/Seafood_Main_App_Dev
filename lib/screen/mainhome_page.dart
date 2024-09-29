@@ -1,8 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart'; // อย่าลืมเพิ่มแพ็คเก็ตนี้
-import 'dart:math'; // สำหรับสุ่มข้อความ
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:seafood_app/screen/book_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:seafood_app/screen/food_oderpage.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
+import 'dart:math';
+
+import 'package:seafood_app/screen/support_page.dart'; // สำหรับสุ่มข้อความ
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +41,6 @@ class _HomePageState extends State<HomePage> {
   String searchQuery = "";
   TextEditingController searchController = TextEditingController();
 
-  // คำพูดที่สุ่มขึ้นมา
   final List<String> randomMessages = [
     "พบกับกิจกรรมสุดพิเศษได้ที่นี่!",
     "ร่วมสนุกกับโปรโมชั่นพิเศษจากร้านค้าชั้นนำ!",
@@ -43,7 +48,14 @@ class _HomePageState extends State<HomePage> {
     "ร่วมเป็นส่วนหนึ่งของกิจกรรมสนุกๆ วันนี้!"
   ];
 
-  // ฟังก์ชันสุ่มคำพูด
+  late String _randomMessage; // เพิ่มตัวแปรสถานะเพื่อเก็บข้อความสุ่ม
+
+  @override
+  void initState() {
+    super.initState();
+    _randomMessage = getRandomMessage(); // สุ่มข้อความครั้งเดียวใน initState
+  }
+
   String getRandomMessage() {
     final random = Random();
     return randomMessages[random.nextInt(randomMessages.length)];
@@ -55,9 +67,94 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('หน้าหลัก'),
         elevation: 0,
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Colors.green,
       ),
-      body: SingleChildScrollView( // ใช้ SingleChildScrollView
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.green,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('หน้าแรก'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FoodApp()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.restaurant_menu),
+              title: Text('ออเดอร์ของฉัน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FoodOrderPage(
+                            initialCartItems: [],
+                          )),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.book),
+              title: Text('คู่มือการใช้งาน'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Guide()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('โปรไฟล์'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.support),
+              title: Text('แจ้งปัญหา'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SupportPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('ออกจากระบบ'),
+              onTap: () {
+                Navigator.pop(context); // ใช้ pop เพื่อปิด drawer
+                // สามารถเพิ่มฟังก์ชัน logout ได้ที่นี่
+              },
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
@@ -119,53 +216,61 @@ class _HomePageState extends State<HomePage> {
 
                 final menuItems = snapshot.data?.docs ?? [];
 
-                return CarouselSlider.builder(
-                  itemCount: menuItems.length,
-                  options: CarouselOptions(
-                    height: 250,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                  ),
-                  itemBuilder: (context, index, realIndex) {
-                    final item = menuItems[index];
-                    final name = item['name'];
-                    final imageUrl = item['image_url'];
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      CarouselSlider.builder(
+                        itemCount: menuItems.length,
+                        options: CarouselOptions(
+                          height: 250,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                        ),
+                        itemBuilder: (context, index, realIndex) {
+                          final item = menuItems[index];
+                          final name = item['name'];
+                          final imageUrl = item['image_url'];
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 8,
-                        shadowColor: Colors.black54,
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                              child: Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
-                                height: 200, // ปรับขนาดภาพให้เล็กลง
-                                width: double.infinity,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 8,
+                              shadowColor: Colors.black54,
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                    child: Image.network(
+                                      imageUrl,
+                                      fit: BoxFit.cover,
+                                      height: 200,
+                                      width: double.infinity,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Text(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.deepOrange,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(
-                                name,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.deepOrange,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                      SizedBox(height: 16), // เพิ่มช่องว่างเพื่อหลีกเลี่ยงการ overflow
+                    ],
+                  ),
                 );
               },
             ),
@@ -180,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    getRandomMessage(),
+                    _randomMessage, // แสดงข้อความสุ่มที่เก็บไว้
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -197,7 +302,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ปุ่มที่มีไอคอนและสีตกแต่ง
   Widget _buildActionButton(String label, IconData icon, Color color) {
     return ElevatedButton.icon(
       onPressed: () {

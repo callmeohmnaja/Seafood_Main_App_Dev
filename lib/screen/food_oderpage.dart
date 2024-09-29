@@ -44,16 +44,13 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
 
               try {
                 // บันทึกการสั่งอาหารลง Firestore
-                final orderRef =
-                    FirebaseFirestore.instance.collection('orders').doc();
+                final orderRef = FirebaseFirestore.instance.collection('orders').doc();
                 await orderRef.set({
-                  'items': cartItems
-                      .map((food) => {
-                            'name': food.name,
-                            'price': food.price,
-                            'imageUrl': food.imageUrl,
-                          })
-                      .toList(),
+                  'items': cartItems.map((food) => {
+                    'name': food.name,
+                    'price': (food.price as num).toDouble(), // แปลงเป็น double
+                    'imageUrl': food.imageUrl,
+                  }).toList(),
                   'createdAt': Timestamp.now(),
                 });
 
@@ -77,8 +74,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('เกิดข้อผิดพลาดในการบันทึกการสั่งซื้อ')),
+                  SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกการสั่งซื้อ')),
                 );
               }
             },
@@ -91,6 +87,18 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         ],
       ),
     );
+  }
+
+  Future<List<Food>> fetchMenuItems() async {
+    final snapshot = await FirebaseFirestore.instance.collection('menu').get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return Food(
+        name: data['name'],
+        price: (data['price'] as num).toDouble(), // แปลงเป็น double
+        imageUrl: data['image_url'], store: '',
+      );
+    }).toList();
   }
 
   @override
@@ -119,31 +127,44 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           ),
         ],
       ),
-      body: cartItems.isEmpty
-          ? Center(child: Text('ไม่มีรายการอาหารในตะกร้า'))
-          : ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (context, index) {
-                final food = cartItems[index];
-                return Card(
-                  child: ListTile(
-                    leading: food.imageUrl.isNotEmpty
-                        ? Image.network(
-                            food.imageUrl,
-                            width: 50,
-                            height: 50,
-                          )
-                        : Icon(Icons.image_not_supported, size: 50),
-                    title: Text(food.name),
-                    subtitle: Text('THB${food.price}'),
-                    trailing: ElevatedButton(
-                      child: Text('เพิ่มเข้าตะกร้า'),
-                      onPressed: () => addToCart(food),
-                    ),
+      body: FutureBuilder<List<Food>>(
+        future: fetchMenuItems(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('ไม่มีเมนูอาหาร'));
+          }
+
+          final menuItems = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: menuItems.length,
+            itemBuilder: (context, index) {
+              final food = menuItems[index];
+              return Card(
+                child: ListTile(
+                  leading: food.imageUrl.isNotEmpty
+                      ? Image.network(
+                          food.imageUrl,
+                          width: 50,
+                          height: 50,
+                        )
+                      : Icon(Icons.image_not_supported, size: 50),
+                  title: Text(food.name),
+                  subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
+                  trailing: ElevatedButton(
+                    child: Text('เพิ่มเข้าตะกร้า'),
+                    onPressed: () => addToCart(food),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
