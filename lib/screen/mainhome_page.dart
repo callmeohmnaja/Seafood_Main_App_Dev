@@ -1,34 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:seafood_app/main.dart';
 import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:seafood_app/screen/showstorepage.dart';
 import 'dart:math';
+import 'package:seafood_app/screen/support_page.dart'; 
 
-import 'package:seafood_app/screen/support_page.dart'; // สำหรับสุ่มข้อความ
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Food Menu',
-      theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: HomePage(),
-    );
-  }
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,10 +23,11 @@ class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
 
   final List<String> randomMessages = [
-    "พบกับกิจกรรมสุดพิเศษได้ที่นี่!",
-    "ร่วมสนุกกับโปรโมชั่นพิเศษจากร้านค้าชั้นนำ!",
-    "กิจกรรมใหม่ๆ กำลังจะมาถึง รอติดตามได้เลย!",
-    "ร่วมเป็นส่วนหนึ่งของกิจกรรมสนุกๆ วันนี้!"
+    //todo เพิ่มข้อความเข้าไปนะจ๊ะขอเยอะๆเบิ้มๆ
+    "รู้หรือไม่ชื่อกลุ่มSeafood นั้นไม่ได้มาจากอาหารทะเล \nแต่เป็นการที่พวกเราเล่นเกมแล้วสร้างบ้านริมทะเล \n และขี่เรือไปบุกบ้านคนอื่นเลยกําเนิดเป็น กลุ่ม Seafood!",
+    "สวัสดีครับผม นาย อิราธิวัฒน์ บันโสภา ชื่อเล่น โอม เรียน คณะ วิทยาศาสตร์และวิศวกรรมศาสตร์ สาขา วิศวกรรมคอมพิวเตอร์",
+    "สวัสดีครับผม นาย อิราธิวัฒน์ บันโสภา ชื่อเล่น โอม เรียน คณะ วิทยาศาสตร์และวิศวกรรมศาสตร์ สาขา วิศวกรรมคอมพิวเตอร์",
+    "สวัสดีครับผม นาย อิราธิวัฒน์ บันโสภา ชื่อเล่น โอม เรียน คณะ วิทยาศาสตร์และวิศวกรรมศาสตร์ สาขา วิศวกรรมคอมพิวเตอร์"
   ];
 
   late String _randomMessage; // เพิ่มตัวแปรสถานะเพื่อเก็บข้อความสุ่ม
@@ -67,7 +49,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('หน้าหลัก'),
         elevation: 0,
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
       ),
       drawer: Drawer(
         child: ListView(
@@ -75,7 +57,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.blue,
               ),
               child: Text(
                 'Menu',
@@ -147,13 +129,15 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.logout),
               title: Text('ออกจากระบบ'),
               onTap: () {
-                Navigator.pop(context); // ใช้ pop เพื่อปิด drawer
-                // สามารถเพิ่มฟังก์ชัน logout ได้ที่นี่
+                Navigator.pop(context); 
+                Navigator.push(context ,
+                MaterialPageRoute(builder: (context) => MyHomePage()));
               },
             ),
           ],
         ),
       ),
+      backgroundColor: Color.fromARGB(255, 174, 197, 216),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -163,11 +147,11 @@ class _HomePageState extends State<HomePage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.orange[100],
+                  fillColor: Color.fromARGB(255, 54, 155, 238),
                   hintText: 'ค้นหาร้านอาหารหรือเมนู',
-                  prefixIcon: Icon(Icons.search, color: Colors.deepOrange),
+                  prefixIcon: Icon(Icons.search, color: Colors.deepPurple),
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.close, color: Colors.deepOrange),
+                    icon: Icon(Icons.close, color: Colors.deepPurple),
                     onPressed: () {
                       setState(() {
                         searchController.clear();
@@ -192,9 +176,16 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.deepOrange),
-                  _buildActionButton('โปรไฟล์', Icons.person, Colors.blue),
-                  _buildActionButton('คิดก่อน', Icons.lightbulb, Colors.green),
+                  _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.deepOrange, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Showstorepage())
+                    );
+                  }),
+                  _buildActionButton('โปรไฟล์', Icons.person, Colors.blue, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+                  }),
+                  _buildActionButton('คู่มือ', Icons.book, Colors.green, () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Guide()));
+                  }),
                 ],
               ),
             ),
@@ -223,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                       CarouselSlider.builder(
                         itemCount: menuItems.length,
                         options: CarouselOptions(
-                          height: 250,
+                          height: 300,
                           enlargeCenterPage: true,
                           autoPlay: true,
                         ),
@@ -231,6 +222,8 @@ class _HomePageState extends State<HomePage> {
                           final item = menuItems[index];
                           final name = item['name'];
                           final imageUrl = item['image_url'];
+                          
+                          
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -258,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.deepOrange,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ),
@@ -268,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                       ),
-                      SizedBox(height: 16), // เพิ่มช่องว่างเพื่อหลีกเลี่ยงการ overflow
+                      // SizedBox(height: 16), // เพิ่มช่องว่างเพื่อหลีกเลี่ยงการ overflow
                     ],
                   ),
                 );
@@ -281,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Colors.orange[50],
+                color: Colors.blue[50],
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
@@ -289,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepOrange,
+                      color: Color.fromARGB(255, 24, 24, 24),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -302,20 +295,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, Color color) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        // เว้น onPressed ไว้ให้เขียน
-      },
-      icon: Icon(icon, color: Colors.white),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onPressed) {
+  return ElevatedButton.icon(
+    onPressed: onPressed, // แก้ไขเพื่อให้สามารถส่งฟังก์ชันการทำงานเข้ามาได้
+    icon: Icon(icon, color: Colors.white),
+    label: Text(label),
+    style: ElevatedButton.styleFrom(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      backgroundColor: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
-    );
-  }
+    ),
+  );
+}
 }

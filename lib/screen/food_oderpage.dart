@@ -7,9 +7,11 @@ import 'package:seafood_app/screen/ordered_list.dart'; // นำเข้าห�
 class FoodOrderPage extends StatefulWidget {
   final List<Food> initialCartItems;
 
+  // ignore: prefer_const_constructors_in_immutables, use_key_in_widget_constructors
   FoodOrderPage({required this.initialCartItems});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FoodOrderPageState createState() => _FoodOrderPageState();
 }
 
@@ -126,7 +128,10 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
             },
           ),
         ],
+       backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+
       ),
+      backgroundColor: Color.fromARGB(255, 174, 197, 216),
       body: FutureBuilder<List<Food>>(
         future: fetchMenuItems(),
         builder: (context, snapshot) {

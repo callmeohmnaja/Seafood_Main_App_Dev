@@ -12,13 +12,13 @@ import 'package:seafood_app/screen/profile/Purchasehistory.dart';
 import 'dart:io';
 import 'package:seafood_app/screen/profile/editprofile_page.dart';
 import 'package:seafood_app/screen/home.dart';
-import 'package:seafood_app/screen/support_page.dart'; // For File
+import 'package:seafood_app/screen/support_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
+  
   _ProfilePageState createState() => _ProfilePageState();
 }
 
@@ -91,6 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('โปรไฟล์'),
+        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
       ),
       drawer: Drawer(
         child: ListView(
@@ -173,14 +174,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage()), 
+                  MaterialPageRoute(builder: (context) => HomePage()),
                 );
               },
             ),
           ],
         ),
       ),
+      backgroundColor: Color.fromARGB(255, 174, 197, 216).withOpacity(0.9), // Slightly muted background
       body: FutureBuilder<DocumentSnapshot>(
         future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
         builder: (context, snapshot) {
@@ -202,47 +203,58 @@ class _ProfilePageState extends State<ProfilePage> {
             children: <Widget>[
               Container(
                 padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey[
-                            300], // Background color if no image is present
-                        child: profileImageUrl != null
-                            ? CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(profileImageUrl!),
-                              )
-                            : Icon(Icons.camera_alt,
-                                size: 40,
-                                color:
-                                    Colors.white), // Icon for uploading image
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                child: Card(color:Color.fromARGB(255, 116, 177, 228),
+                  elevation: 4,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        Text(
-                          'ชื่อผู้ใช้: $username',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 40,
+                            backgroundColor: Colors.grey[300],
+                            child: profileImageUrl != null
+                                ? CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage:
+                                        NetworkImage(profileImageUrl!),
+                                  )
+                                : Icon(Icons.camera_alt,
+                                    size: 40, color: Colors.white),
                           ),
                         ),
-                        Text(
-                          'บทบาท: $role',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
-                          style: TextStyle(fontSize: 16),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ชื่อผู้ใช้: $username',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'บทบาท: $role',
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.black),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.black),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
               Divider(),
@@ -250,60 +262,62 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: <Widget>[
-                    ListTile(
-                      title: Text('แก้ไขโปรไฟล์'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditprofilePage(),
-                          ),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text('คู่มือการใช้งาน'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
+                    Card(color:Color.fromARGB(255, 116, 177, 228),
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text('แก้ไขโปรไฟล์'),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HowtousePage()));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('ประวัติการสั่งซื้อ'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Purchasehistory()));
-                      },
-                    ),
-                     ListTile(
-                      title: Text('ออเดอร์ของฉัน'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Purchasehistory()));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('ออกจากระบบ'),
-                      onTap: () {
-                        auth.signOut().then((_) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(),
+                              builder: (context) => EditprofilePage(),
                             ),
                           );
-                        });
-                      },
+                        },
+                      ),
+                    ),
+                    Card(color:Color.fromARGB(255, 116, 177, 228),
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text('คู่มือการใช้งาน'),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HowtousePage()));
+                        },
+                      ),
+                    ),
+                    Card(color:Colors.blue,
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text('ประวัติการสั่งซื้อ'),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Purchasehistory()));
+                        },
+                      ),
+                    ),
+                    Card(color:Colors.blue,
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text('ออกจากระบบ'),
+                        onTap: () {
+                          auth.signOut().then((_) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(),
+                              ),
+                            );
+                          });
+                        },
+                      ),
                     ),
                   ],
                 ),

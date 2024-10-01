@@ -49,6 +49,9 @@ dependencies:
   firebase_database: ^11.1.1
   cached_network_image: ^3.2.0
   carousel_slider: ^4.0.0
+  dependencies:
+  intl: ^0.19.0
+  
 
 
 flutter_icons:

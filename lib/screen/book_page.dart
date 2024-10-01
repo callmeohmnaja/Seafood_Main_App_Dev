@@ -18,6 +18,8 @@ class Guide extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('คู่มือการใช้งาน'),
+        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+
       ),
       drawer: Drawer(
         child: ListView(
@@ -111,7 +113,7 @@ class Guide extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(20),
-        color: Colors.green[50],
+        color: Color.fromARGB(255, 174, 197, 216),
         child: ListView(
           children: [
             ElevatedButton.icon(

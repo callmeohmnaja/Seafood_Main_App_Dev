@@ -14,17 +14,15 @@ class FoodApp extends StatelessWidget {
     return MaterialApp(
       title: 'Seafood Main',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
       ),
       home: MainScreen(),
     );
   }
 }
 
-// ignore: use_key_in_widget_constructors
 class MainScreen extends StatefulWidget {
   @override
-  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
@@ -46,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _pageOptions[_pageIndex],
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.blue,
         // ignore: prefer_const_literals_to_create_immutables
         items: <Widget>[
           Icon(Icons.home, size: 30),

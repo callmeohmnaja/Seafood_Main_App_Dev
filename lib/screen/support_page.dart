@@ -15,6 +15,7 @@ class SupportPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('แจ้งปัญหา'),
+        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
       ),
       drawer: Drawer(
         child: ListView(
@@ -97,14 +98,14 @@ class SupportPage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage()), // แก้ให้กลับไปหน้าหลัก
+                  MaterialPageRoute(builder: (context) => HomePage()),
                 );
               },
             ),
           ],
         ),
       ),
+      backgroundColor: Color.fromARGB(255, 174, 197, 216),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -120,6 +121,14 @@ class SupportPage extends StatelessWidget {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'กรุณากรอกปัญหาของคุณที่นี่...',
+                hintStyle: TextStyle(
+                  fontSize: 15, // Increased font size
+                  fontWeight: FontWeight.bold, // Bold hint text
+                  color: Colors.black, // Change hint text color
+                ),
+                filled: true, // Use filled background
+                fillColor: Colors.white, // Background color
+                contentPadding: EdgeInsets.all(16), // Add padding inside the field
               ),
             ),
             SizedBox(height: 16),
@@ -144,8 +153,7 @@ class SupportPage extends StatelessWidget {
                             child: Text('ตกลง'),
                             onPressed: () {
                               Navigator.of(context).pop();
-                              _issueController
-                                  .clear(); // ล้างข้อมูลใน TextField
+                              _issueController.clear(); // ล้างข้อมูลใน TextField
                             },
                           ),
                         ],

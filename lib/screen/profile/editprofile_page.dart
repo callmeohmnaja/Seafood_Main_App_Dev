@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:seafood_app/screen/food_app.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// ignore: use_key_in_widget_constructors
 class EditprofilePage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +17,7 @@ class EditprofilePage extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
           },
         ),
         title: Text('ตั้งค่าบัญชี'),
@@ -39,32 +43,31 @@ class EditprofilePage extends StatelessWidget {
                 _buildTextField(
                   label: 'ชื่อผู้ใช้',
                   icon: Icons.person,
+                  controller: _usernameController,
                 ),
                 SizedBox(height: 10),
                 _buildTextField(
                   label: 'แก้ไขอีเมล',
                   icon: Icons.email,
+                  controller: _emailController,
                 ),
                 SizedBox(height: 10),
                 _buildTextField(
                   label: 'ที่อยู่',
                   icon: Icons.home,
-                ),
-                SizedBox(height: 10),
-                _buildPasswordTextField(
-                  label: 'รหัสผ่าน',
-                  icon: Icons.lock,
-                ),
-                SizedBox(height: 10),
-                _buildPasswordTextField(
-                  label: 'ยืนยันรหัสผ่าน',
-                  icon: Icons.lock,
+                  controller: _addressController,
                 ),
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState?.validate() == true) {
+                        _saveUserData(
+                          _usernameController.text,
+                          _emailController.text,
+                          _addressController.text,
+                        );
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('กำลังบันทึกข้อมูล')),
                         );
@@ -93,10 +96,12 @@ class EditprofilePage extends StatelessWidget {
   Widget _buildTextField({
     required String label,
     required IconData icon,
+    required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
   }) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green),
@@ -117,27 +122,19 @@ class EditprofilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPasswordTextField({
-    required String label,
-    required IconData icon,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.green),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        filled: true,
-        fillColor: Colors.grey[200],
-      ),
-      obscureText: true,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'กรุณากรอกรหัสผ่าน';
-        }
-        return null;
-      },
-    );
+  void _saveUserData(String username, String email, String address) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
+        'username': username,
+        'email': email,
+        'address': address,
+      }).then((_) {
+        print('ข้อมูลถูกบันทึกสำเร็จ');
+      }).catchError((error) {
+        print('เกิดข้อผิดพลาด: $error');
+      });
+    }
   }
 }
