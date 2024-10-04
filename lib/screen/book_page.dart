@@ -19,7 +19,6 @@ class Guide extends StatelessWidget {
       appBar: AppBar(
         title: Text('คู่มือการใช้งาน'),
         backgroundColor: const Color.fromARGB(255, 44, 135, 209),
-
       ),
       drawer: Drawer(
         child: ListView(
@@ -112,8 +111,14 @@ class Guide extends StatelessWidget {
         ),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.blueAccent], // สีพื้นหลังแบบไล่ระดับ
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         padding: EdgeInsets.all(20),
-        color: Color.fromARGB(255, 174, 197, 216),
         child: ListView(
           children: [
             ElevatedButton.icon(
@@ -122,29 +127,27 @@ class Guide extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          HowtousePage()), // Navigate to LoginScreen
+                          HowtousePage()), // Navigate to How to use page
                 );
               },
-              icon: Icon(Icons.info), // Add an icon
+              icon: Icon(Icons.info),
               label: Text("คู่มือการใช้งานเบื้องต้น"),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                    vertical: 15), // Increase vertical padding
-                minimumSize:
-                    Size(double.infinity, 50), // Set fixed width and height
+                padding: EdgeInsets.symmetric(vertical: 15),
+                minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30), // Rounded corners
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
             ),
-            SizedBox(height: 10), // Spacing between buttons
+            SizedBox(height: 10),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          OderguidePage()), // Navigate to LoginScreen
+                          OderguidePage()), // Navigate to Order guide page
                 );
               },
               icon: Icon(Icons.food_bank),
@@ -164,7 +167,7 @@ class Guide extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          RaiderPageGuide()), // Navigate to LoginScreen
+                          RaiderPageGuide()), // Navigate to Raider guide page
                 );
               },
               icon: Icon(Icons.motorcycle),
@@ -202,7 +205,7 @@ class Guide extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          HowtopayPage()), // Navigate to LoginScreen
+                          HowtopayPage()), // Navigate to How to pay page
                 );
               },
               icon: Icon(Icons.payment),
@@ -222,7 +225,7 @@ class Guide extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          RuleappPage()), // Navigate to LoginScreen
+                          RuleappPage()), // Navigate to Rules page
                 );
               },
               icon: Icon(Icons.article),

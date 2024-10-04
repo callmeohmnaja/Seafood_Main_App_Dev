@@ -23,13 +23,14 @@ class SupportPage extends StatelessWidget {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.teal, // เปลี่ยนสีให้ดึงดูดขึ้น
               ),
               child: Text(
-                'Menu',
+                'เมนู',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -105,76 +106,88 @@ class SupportPage extends StatelessWidget {
           ],
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 174, 197, 216),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'กรุณาแจ้งปัญหาที่คุณพบ:',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _issueController,
-              maxLines: 5, // จำนวนบรรทัดสูงสุด
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'กรุณากรอกปัญหาของคุณที่นี่...',
-                hintStyle: TextStyle(
-                  fontSize: 15, // Increased font size
-                  fontWeight: FontWeight.bold, // Bold hint text
-                  color: Colors.black, // Change hint text color
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.blueAccent], // สีพื้นหลังแบบไล่ระดับ
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                'กรุณาแจ้งปัญหาที่คุณพบ:',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // เปลี่ยนสีข้อความให้ดูสบายตา
                 ),
-                filled: true, // Use filled background
-                fillColor: Colors.white, // Background color
-                contentPadding: EdgeInsets.all(16), // Add padding inside the field
               ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                String issue = _issueController.text;
-                if (issue.isNotEmpty) {
-                  // เก็บข้อมูลลง Firestore
-                  await _firestore.collection('support_issues').add({
-                    'issue': issue,
-                    'timestamp':
-                        FieldValue.serverTimestamp(), // เพิ่ม timestamp
-                  }).then((_) {
-                    // แสดงข้อความยืนยัน
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('แจ้งปัญหา'),
-                        content: Text('คุณได้แจ้งปัญหาดังนี้: \n\n$issue'),
-                        actions: [
-                          TextButton(
-                            child: Text('ตกลง'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              _issueController.clear(); // ล้างข้อมูลใน TextField
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  }).catchError((error) {
-                    // แสดงข้อผิดพลาด
+              SizedBox(height: 16),
+              TextField(
+                controller: _issueController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'กรุณากรอกปัญหาของคุณที่นี่...',
+                  hintStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.all(16),
+                ),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  String issue = _issueController.text;
+                  if (issue.isNotEmpty) {
+                    await _firestore.collection('support_issues').add({
+                      'issue': issue,
+                      'timestamp': FieldValue.serverTimestamp(),
+                    }).then((_) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('แจ้งปัญหา'),
+                          content: Text('คุณได้แจ้งปัญหาดังนี้: \n\n$issue'),
+                          actions: [
+                            TextButton(
+                              child: Text('ตกลง'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _issueController.clear();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
+                      );
+                    });
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
+                      SnackBar(content: Text('กรุณากรอกปัญหาของคุณ')),
                     );
-                  });
-                } else {
-                  // แจ้งให้ผู้ใช้กรอกปัญหา
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('กรุณากรอกปัญหาของคุณ')),
-                  );
-                }
-              },
-              child: Text('ส่งปัญหา'),
-            ),
-          ],
+                  }
+                },
+                icon: Icon(Icons.send), // เพิ่มไอคอนที่ปุ่มส่ง
+                label: Text('ส่งปัญหา'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green, // เปลี่ยนสีปุ่ม
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

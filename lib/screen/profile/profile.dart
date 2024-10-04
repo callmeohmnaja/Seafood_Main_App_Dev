@@ -7,18 +7,17 @@ import 'package:seafood_app/BookGuide/howtouse_page.dart';
 import 'package:seafood_app/screen/book_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
-import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/profile/Purchasehistory.dart';
 import 'dart:io';
-import 'package:seafood_app/screen/profile/editprofile_page.dart';
+
 import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/screen/profile/Purchasehistory.dart';
+import 'package:seafood_app/screen/profile/editprofile_page.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  
   _ProfilePageState createState() => _ProfilePageState();
 }
 
@@ -91,21 +90,24 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('โปรไฟล์'),
-        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
+      extendBodyBehindAppBar: true,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.teal, // เปลี่ยนสีให้ดึงดูดขึ้น
               ),
               child: Text(
-                'Menu',
+                'เมนู',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -174,157 +176,157 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
             ),
           ],
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 174, 197, 216).withOpacity(0.9), // Slightly muted background
-      body: FutureBuilder<DocumentSnapshot>(
-        future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('โปรไฟล์ไม่พบ'));
-          }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.blueAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: FutureBuilder<DocumentSnapshot>(
+          future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Center(child: Text('โปรไฟล์ไม่พบ'));
+            }
 
-          var userData = snapshot.data!.data() as Map<String, dynamic>;
-          String username = userData['username'] ?? 'ไม่ระบุ';
-          String role = userData['role'] ?? 'ไม่ระบุ';
+            var userData = snapshot.data!.data() as Map<String, dynamic>;
+            String username = userData['username'] ?? 'ไม่ระบุ';
+            String role = userData['role'] ?? 'ไม่ระบุ';
 
-          return Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Card(color:Color.fromARGB(255, 116, 177, 228),
-                  elevation: 4,
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.grey[300],
-                            child: profileImageUrl != null
-                                ? CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage:
-                                        NetworkImage(profileImageUrl!),
-                                  )
-                                : Icon(Icons.camera_alt,
-                                    size: 40, color: Colors.white),
+            return ListView(
+              padding: EdgeInsets.only(top: 100), // เพิ่ม padding ด้านบน
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Card(
+                    color: Colors.white.withOpacity(0.9),
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.grey[300],
+                              child: profileImageUrl != null
+                                  ? CircleAvatar(
+                                      radius: 50,
+                                      backgroundImage:
+                                          NetworkImage(profileImageUrl!),
+                                    )
+                                  : Icon(Icons.camera_alt,
+                                      size: 40, color: Colors.blueAccent),
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'ชื่อผู้ใช้: $username',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ชื่อผู้ใช้: $username',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'บทบาท: $role',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ],
+                                SizedBox(height: 8),
+                                Text(
+                                  'บทบาท: $role',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black54),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Divider(),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    Card(color:Color.fromARGB(255, 116, 177, 228),
-                      elevation: 4,
-                      child: ListTile(
-                        title: Text('แก้ไขโปรไฟล์'),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditprofilePage(),
-                            ),
-                          );
-                        },
-                      ),
+                Divider(height: 40),
+                _buildProfileOption('แก้ไขโปรไฟล์', () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditprofilePage(),
                     ),
-                    Card(color:Color.fromARGB(255, 116, 177, 228),
-                      elevation: 4,
-                      child: ListTile(
-                        title: Text('คู่มือการใช้งาน'),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HowtousePage()));
-                        },
+                  );
+                }),
+                _buildProfileOption('คู่มือการใช้งาน', () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HowtousePage()),
+                  );
+                }),
+                _buildProfileOption('ประวัติการสั่งซื้อ', () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Purchasehistory()),
+                  );
+                }),
+                _buildProfileOption('ออกจากระบบ', () {
+                  auth.signOut().then((_) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
                       ),
-                    ),
-                    Card(color:Colors.blue,
-                      elevation: 4,
-                      child: ListTile(
-                        title: Text('ประวัติการสั่งซื้อ'),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Purchasehistory()));
-                        },
-                      ),
-                    ),
-                    Card(color:Colors.blue,
-                      elevation: 4,
-                      child: ListTile(
-                        title: Text('ออกจากระบบ'),
-                        onTap: () {
-                          auth.signOut().then((_) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeScreen(),
-                              ),
-                            );
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+                    );
+                  });
+                }),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileOption(String title, VoidCallback onTap) {
+    return Card(
+      color: Colors.white.withOpacity(0.9), // สี Card โปร่งใส
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.blueAccent), // ไอคอนลูกศร
+        onTap: onTap,
       ),
     );
   }

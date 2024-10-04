@@ -99,76 +99,86 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
             );
           },
         ),
+        backgroundColor: Colors.orange,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _menus.isEmpty
-            ? Center(
-                child: Text('ไม่มีเมนูอาหาร',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))
-            : ListView.builder(
-                itemCount: _menus.length,
-                itemBuilder: (context, index) {
-                  final menu = _menus[index];
-                  final menuId = menu.id;
-                  final menuData = menu.data() as Map<String, dynamic>;
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _menus.isEmpty
+              ? Center(
+                  child: Text('ไม่มีเมนูอาหาร',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))
+              : ListView.builder(
+                  itemCount: _menus.length,
+                  itemBuilder: (context, index) {
+                    final menu = _menus[index];
+                    final menuId = menu.id;
+                    final menuData = menu.data() as Map<String, dynamic>;
 
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8.0),
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(16.0),
-                      leading: menuData['image_url'] != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                menuData['image_url'],
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Icon(Icons.image, size: 60, color: Colors.grey),
-                      title: Text(
-                        menuData['name'] ?? 'ไม่มีชื่อ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            menuData['description'] ?? 'ไม่มีคำอธิบาย',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'ราคา: ${menuData['price'] ?? 'ไม่มีราคา'}',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ],
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(16.0),
+                        leading: menuData['image_url'] != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  menuData['image_url'],
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(Icons.image, size: 60, color: Colors.grey),
+                        title: Text(
+                          menuData['name'] ?? 'ไม่มีชื่อ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              menuData['description'] ?? 'ไม่มีคำอธิบาย',
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'ราคา: ${menuData['price'] ?? 'ไม่มีราคา'}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () => _navigateToEdit(menuId),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteMenu(menuId),
+                            ),
+                          ],
+                        ),
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _navigateToEdit(menuId),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteMenu(menuId),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }

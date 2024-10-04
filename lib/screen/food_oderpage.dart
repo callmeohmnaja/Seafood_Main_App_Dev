@@ -128,47 +128,54 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
             },
           ),
         ],
-       backgroundColor: const Color.fromARGB(255, 44, 135, 209),
-
+        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
       ),
-      backgroundColor: Color.fromARGB(255, 174, 197, 216),
-      body: FutureBuilder<List<Food>>(
-        future: fetchMenuItems(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('ไม่มีเมนูอาหาร'));
-          }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.blueAccent], // สีพื้นหลังแบบไล่ระดับ
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: FutureBuilder<List<Food>>(
+          future: fetchMenuItems(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('ไม่มีเมนูอาหาร'));
+            }
 
-          final menuItems = snapshot.data!;
+            final menuItems = snapshot.data!;
 
-          return ListView.builder(
-            itemCount: menuItems.length,
-            itemBuilder: (context, index) {
-              final food = menuItems[index];
-              return Card(
-                child: ListTile(
-                  leading: food.imageUrl.isNotEmpty
-                      ? Image.network(
-                          food.imageUrl,
-                          width: 50,
-                          height: 50,
-                        )
-                      : Icon(Icons.image_not_supported, size: 50),
-                  title: Text(food.name),
-                  subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
-                  trailing: ElevatedButton(
-                    child: Text('เพิ่มเข้าตะกร้า'),
-                    onPressed: () => addToCart(food),
+            return ListView.builder(
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final food = menuItems[index];
+                return Card(
+                  child: ListTile(
+                    leading: food.imageUrl.isNotEmpty
+                        ? Image.network(
+                            food.imageUrl,
+                            width: 50,
+                            height: 50,
+                          )
+                        : Icon(Icons.image_not_supported, size: 50),
+                    title: Text(food.name),
+                    subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
+                    trailing: ElevatedButton(
+                      child: Text('เพิ่มเข้าตะกร้า'),
+                      onPressed: () => addToCart(food),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

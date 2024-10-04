@@ -151,6 +151,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
                 MaterialPageRoute(builder: (context) => StoreDashboard()));
           },
         ),
+         backgroundColor: Colors.orange,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -197,7 +198,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
                   label: Text('อัปโหลดรูปภาพ'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.orange,
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -240,7 +241,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
                         child: Text('บันทึก'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.green,
+                          backgroundColor: Colors.orange,
                           padding: EdgeInsets.symmetric(
                               vertical: 16, horizontal: 32),
                           shape: RoundedRectangleBorder(

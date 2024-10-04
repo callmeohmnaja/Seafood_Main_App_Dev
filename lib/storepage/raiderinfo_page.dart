@@ -11,9 +11,9 @@ class RaiderinfoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("ข้อมูลไรเดอร์"),
-        backgroundColor: Colors.green[700],
+        backgroundColor: Colors.orange[500],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Navigator.pop(context);
             Navigator.push(
