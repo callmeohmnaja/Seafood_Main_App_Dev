@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }),
                 _buildProfileOption('ประวัติการสั่งซื้อ', Icons.history, () {
                     Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Purchasehistory() ));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage() ));
                 }),
                
                 _buildProfileOption('เติมเงินเข้าระบบ', Icons.money, () {

@@ -63,10 +63,9 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         actions: [
           TextButton(
             onPressed: () async {
-              Navigator.of(dialogContext).pop(); // Close the dialog using the correct context
+              Navigator.of(dialogContext).pop();
 
               try {
-                // ตรวจสอบว่ามีข้อมูลผู้ใช้หรือไม่
                 final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
                 if (!userDoc.exists || userDoc.data() == null || !userDoc.data()!.containsKey('balance')) {
@@ -97,13 +96,11 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                   return;
                 }
 
-                // หักยอดเงินออกจากยอดคงเหลือ
                 final newBalance = currentBalance - totalOrderAmount;
                 await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
                   'balance': newBalance,
                 });
 
-                // สร้างออเดอร์ใหม่ใน Firestore
                 final orderRef = FirebaseFirestore.instance.collection('orders').doc();
                 await orderRef.set({
                   'items': cartItems.map((food) => {
@@ -114,6 +111,24 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                   'createdAt': Timestamp.now(),
                   'userId': user.uid,
                   'totalAmount': totalOrderAmount,
+                });
+
+                // Save order history in the user's sub-collection called `order_history`
+                final userOrderHistoryRef = FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .collection('order_history')
+                    .doc();
+
+                await userOrderHistoryRef.set({
+                  'orderId': orderRef.id,
+                  'items': cartItems.map((food) => {
+                        'name': food.name,
+                        'price': food.price,
+                        'imageUrl': food.imageUrl,
+                      }).toList(),
+                  'totalAmount': totalOrderAmount,
+                  'orderDate': Timestamp.now(),
                 });
 
                 if (mounted) {
@@ -131,7 +146,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                 });
 
                 if (mounted) {
-                  Navigator.of(context).pop(newBalance); // ส่งข้อมูลยอดเงินกลับไปยังหน้า mainhome_page
+                  Navigator.of(context).pop(newBalance);
                 }
               } catch (e) {
                 if (mounted) {
@@ -148,7 +163,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
             child: Text('ยืนยัน'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(), // Use the dialog context to close the dialog
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text('ยกเลิก'),
           ),
         ],
@@ -176,76 +191,39 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         title: Text('รายการอาหาร'),
         backgroundColor: const Color.fromARGB(255, 44, 135, 209),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal, Colors.blueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: FutureBuilder<List<Food>>(
-          future: fetchMenuItems(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('ไม่มีเมนูอาหาร'));
-            }
+      body: FutureBuilder<List<Food>>(
+        future: fetchMenuItems(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('ไม่มีเมนูอาหาร'));
+          }
 
-            final menuItems = snapshot.data!;
-
-            return ListView.builder(
-              padding: EdgeInsets.all(10),
-              itemCount: menuItems.length,
-              itemBuilder: (context, index) {
-                final food = menuItems[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+          final menuItems = snapshot.data!;
+          return ListView.builder(
+            itemCount: menuItems.length,
+            itemBuilder: (context, index) {
+              final food = menuItems[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                child: ListTile(
+                  leading: food.imageUrl.isNotEmpty
+                      ? Image.network(food.imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                      : Icon(Icons.image_not_supported, size: 60),
+                  title: Text(food.name),
+                  subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
+                  trailing: ElevatedButton(
+                    onPressed: () => addToCart(food),
+                    child: Text('เพิ่มเข้าตะกร้า'),
                   ),
-                  elevation: 5,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(10),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: food.imageUrl.isNotEmpty
-                          ? Image.network(
-                              food.imageUrl,
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(Icons.image_not_supported, size: 60),
-                    ),
-                    title: Text(
-                      food.name,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    subtitle: Text(
-                      'THB ${food.price.toStringAsFixed(2)}',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      ),
-                      child: Text('เพิ่มเข้าตะกร้า'),
-                      onPressed: () => addToCart(food),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
+                ),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -255,7 +233,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
               builder: (context) => CartPage(
                 items: cartItems,
                 onConfirmOrder: confirmOrder,
-                userUid: '',
+                userUid: FirebaseAuth.instance.currentUser?.uid ?? '',
               ),
             ),
           ).then((_) {
