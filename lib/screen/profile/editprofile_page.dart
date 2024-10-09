@@ -1,88 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/food_app.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
-class EditprofilePage extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+class EditprofilePage extends StatefulWidget {
+  const EditprofilePage({super.key});
+
+  @override
+  _EditprofilePageState createState() => _EditprofilePageState();
+}
+
+class _EditprofilePageState extends State<EditprofilePage> {
+  final formKey = GlobalKey<FormState>();
+
+  String? _name;
+  String? _email;
+  String? _phone;
+  String? _password;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
-          },
-        ),
-        title: Text('ตั้งค่าบัญชี'),
-        backgroundColor: Colors.green,
+        title: Text("แก้ไขโปรไฟล์"),
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
+      body: Container(
+        padding: EdgeInsets.all(16),
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.blueAccent], 
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'แก้ไขข้อมูลส่วนตัว',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
-                  ),
+                // ฟิลด์กรอกชื่อ
+                Text("ชื่อผู้ใช้", style: TextStyle(color: Colors.white, fontSize: 18)),
+                SizedBox(height: 10),
+                _buildTextFormField(
+                  hintText: 'กรอกชื่อของคุณ',
+                  validator: RequiredValidator(errorText: 'กรุณากรอกชื่อ'),
+                  onSaved: (value) {
+                    _name = value;
+                  },
                 ),
                 SizedBox(height: 20),
-                _buildTextField(
-                  label: 'ชื่อผู้ใช้',
-                  icon: Icons.person,
-                  controller: _usernameController,
-                ),
-                SizedBox(height: 10),
-                _buildTextField(
-                  label: 'แก้ไขอีเมล',
-                  icon: Icons.email,
-                  controller: _emailController,
-                ),
-                SizedBox(height: 10),
-                _buildTextField(
-                  label: 'ที่อยู่',
-                  icon: Icons.home,
-                  controller: _addressController,
-                ),
-                SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() == true) {
-                        _saveUserData(
-                          _usernameController.text,
-                          _emailController.text,
-                          _addressController.text,
-                        );
 
+
+
+                Text("อีเมล", style: TextStyle(color: Colors.white, fontSize: 18)),
+                SizedBox(height: 10),
+                _buildTextFormField(
+                  hintText: 'กรอกอีเมลของคุณ',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: 'กรุณากรอกอีเมล'),
+                    EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
+                  ]),
+                  onSaved: (value) {
+                    _email = value;
+                  },
+                ),
+                SizedBox(height: 20),
+
+                Text("หมายเลขโทรศัพท์", style: TextStyle(color: Colors.white, fontSize: 18)),
+                SizedBox(height: 10),
+                _buildTextFormField(
+                  hintText: 'กรอกหมายเลขโทรศัพท์ของคุณ',
+                  keyboardType: TextInputType.phone,
+                  validator: RequiredValidator(errorText: 'กรุณากรอกหมายเลขโทรศัพท์'),
+                  onSaved: (value) {
+                    _phone = value;
+                  },
+                ),
+                SizedBox(height: 40),
+
+                Text("รหัสผ่าน", style: TextStyle(color: Colors.white, fontSize: 18)),
+                SizedBox(height: 10),
+                _buildTextFormField(
+                  hintText: 'กรอกรหัสของคุณ',
+                  keyboardType: TextInputType.phone,
+                  validator: RequiredValidator(errorText: 'กรุณากกรอกรหัสของคุณ'),
+                  onSaved: (value) {
+                    _password = value;
+                  },
+                ),
+                SizedBox(height: 40),
+
+
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        formKey.currentState!.save();
+                        
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('กำลังบันทึกข้อมูล')),
+                          SnackBar(content: Text('บันทึกข้อมูลสำเร็จ')),
+                      
                         );
                       }
                     },
-                    child: Text('บันทึก'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green,
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      textStyle: TextStyle(fontSize: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                    child: Text('บันทึกข้อมูล', style: TextStyle(fontSize: 18)),
+                    
                   ),
                 ),
               ],
@@ -93,48 +126,25 @@ class EditprofilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
+  // ฟังก์ชันสร้าง TextFormField
+  Widget _buildTextFormField({
+    required String hintText,
+    String? Function(String?)? validator,
+    Function(String?)? onSaved,
+    TextInputType? keyboardType,
   }) {
     return TextFormField(
-      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      onSaved: onSaved,
       decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: Colors.green),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.8),
+        hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        filled: true,
-        fillColor: Colors.grey[200],
       ),
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'กรุณากรอกข้อมูล';
-        }
-        return null;
-      },
     );
-  }
-
-  void _saveUserData(String username, String email, String address) async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
-        'username': username,
-        'email': email,
-        'address': address,
-      }).then((_) {
-        print('ข้อมูลถูกบันทึกสำเร็จ');
-      }).catchError((error) {
-        print('เกิดข้อผิดพลาด: $error');
-      });
-    }
   }
 }

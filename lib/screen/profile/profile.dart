@@ -3,16 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seafood_app/BookGuide/howtouse_page.dart';
-import 'package:seafood_app/screen/book_page.dart';
-import 'package:seafood_app/screen/food_app.dart';
-import 'package:seafood_app/screen/food_oderpage.dart';
+import 'package:seafood_app/screen/addmoney_page.dart';
+import 'package:seafood_app/screen/home.dart';
 import 'dart:io';
 
-import 'package:seafood_app/screen/home.dart';
-import 'package:seafood_app/screen/profile/Purchasehistory.dart';
-import 'package:seafood_app/screen/profile/editprofile_page.dart';
-import 'package:seafood_app/screen/support_page.dart';
+import 'package:seafood_app/screen/mainhome_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -89,100 +84,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('โปรไฟล์'),
-        backgroundColor: Colors.transparent,
+        title: Text('โปรไฟล์ของฉัน'),
+        backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
       extendBodyBehindAppBar: true,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.teal, // เปลี่ยนสีให้ดึงดูดขึ้น
-              ),
-              child: Text(
-                'เมนู',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('หน้าแรก'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FoodApp()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('ออเดอร์ของฉัน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FoodOrderPage(
-                            initialCartItems: [],
-                          )),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('คู่มือการใช้งาน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Guide()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('โปรไฟล์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.support),
-              title: Text('แจ้งปัญหา'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ออกจากระบบ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -201,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
             if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('โปรไฟล์ไม่พบ'));
+              return Center(child: Text('ไม่พบข้อมูลโปรไฟล์'));
             }
 
             var userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -211,97 +117,30 @@ class _ProfilePageState extends State<ProfilePage> {
             return ListView(
               padding: EdgeInsets.only(top: 100), // เพิ่ม padding ด้านบน
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: Card(
-                    color: Colors.white.withOpacity(0.9),
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: _pickImage,
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.grey[300],
-                              child: profileImageUrl != null
-                                  ? CircleAvatar(
-                                      radius: 50,
-                                      backgroundImage:
-                                          NetworkImage(profileImageUrl!),
-                                    )
-                                  : Icon(Icons.camera_alt,
-                                      size: 40, color: Colors.blueAccent),
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'ชื่อผู้ใช้: $username',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'บทบาท: $role',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black54),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                _buildProfileHeader(username, role),
                 Divider(height: 40),
-                _buildProfileOption('แก้ไขโปรไฟล์', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditprofilePage(),
-                    ),
-                  );
+                _buildProfileOption('แก้ไขโปรไฟล์', Icons.edit, () {
+                  // เพิ่มการนำทางไปยังหน้าแก้ไขโปรไฟล์
                 }),
-                _buildProfileOption('คู่มือการใช้งาน', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HowtousePage()),
-                  );
+                _buildProfileOption('คู่มือการใช้งาน', Icons.book, () {
+                  // เพิ่มการนำทางไปยังหน้า How to use
                 }),
-                _buildProfileOption('ประวัติการสั่งซื้อ', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Purchasehistory()),
-                  );
+                _buildProfileOption('ประวัติการสั่งซื้อ', Icons.history, () {
+                  // เพิ่มการนำทางไปยังหน้า Purchase History
                 }),
-                _buildProfileOption('ออกจากระบบ', () {
+               
+                _buildProfileOption('เติมเงินเข้าระบบ', Icons.money, () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddMoneyPage() ));
+                }),
+                _buildProfileOption('ออกจากระบบ', Icons.logout, () {
                   auth.signOut().then((_) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(),
-                      ),
-                    );
+                     Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomeScreen()));
                   });
                 }),
               ],
@@ -312,20 +151,87 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildProfileOption(String title, VoidCallback onTap) {
+  Widget _buildProfileHeader(String username, String role) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Card(
+        color: Colors.white.withOpacity(0.9),
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.blueAccent,
+                  child: CircleAvatar(
+                    radius: 46,
+                    backgroundColor: Colors.white,
+                    backgroundImage: profileImageUrl != null
+                        ? NetworkImage(profileImageUrl!)
+                        : null,
+                    child: profileImageUrl == null
+                        ? Icon(Icons.camera_alt, size: 40, color: Colors.grey)
+                        : null,
+                  ),
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'ชื่อผู้ใช้: $username',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'บทบาท: $role',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'อีเมล: ${auth.currentUser?.email ?? ''}',
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileOption(String title, IconData icon, VoidCallback onTap) {
     return Card(
-      color: Colors.white.withOpacity(0.9), // สี Card โปร่งใส
+      color: Colors.white.withOpacity(0.9),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
+        leading: Icon(icon, color: Colors.blueAccent),
         title: Text(
           title,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.blueAccent), // ไอคอนลูกศร
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.blueAccent),
         onTap: onTap,
       ),
     );
