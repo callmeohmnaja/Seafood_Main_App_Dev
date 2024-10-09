@@ -35,34 +35,28 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _randomMessage = getRandomMessage();
-    _fetchUserBalanceFromTransactions();
+    _fetchUserBalance();
   }
 
   String getRandomMessage() {
     return randomMessages[Random().nextInt(randomMessages.length)];
   }
 
-  Future<void> _fetchUserBalanceFromTransactions() async {
+  Future<void> _fetchUserBalance() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        final QuerySnapshot transactionsSnapshot = await FirebaseFirestore.instance
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .collection('transactions')
             .get();
 
-        double totalAmount = 0.0;
-        for (var doc in transactionsSnapshot.docs) {
-          totalAmount += (doc['amount'] ?? 0).toDouble();
-        }
-
         setState(() {
-          userBalance = totalAmount;
+          userBalance = (userDoc['balance'] ?? 0.0).toDouble();
         });
       }
     } catch (e) {
-      print('Error fetching user transactions: $e');
+      print('Error fetching user balance: $e');
     }
   }
 
@@ -70,7 +64,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Seafood App'),
+        title: const Text('Ku Food Delivery'),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
       ),
@@ -92,9 +86,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                _buildWelcomeMessage(), // ย้ายข้อความต้อนรับมาที่ด้านบนสุด
-                const SizedBox(height: 20),
-                _buildBalanceCard(), // ย้ายยอดเงินมาอยู่ข้างล่างข้อความต้อนรับ
+                _buildBalanceCard(),
                 const SizedBox(height: 20),
                 _buildSearchBar(),
                 const SizedBox(height: 20),
@@ -135,16 +127,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildWelcomeMessage() {
-    return Text(
-      'ยินดีต้อนรับสู่ Seafood App!',
-      style: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    );
-  }
+ 
 
   Widget _buildSearchBar() {
     return Padding(

@@ -33,106 +33,92 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
-            appBar: AppBar(title: Text('ลงชื่อเข้าใช้')),
+            appBar: AppBar(
+              title: Text(''),
+              backgroundColor: Colors.blueAccent,
+              elevation: 0,
+            ),
             body: Container(
-              padding: const EdgeInsets.all(20),
-              color: Colors.white,
-              child: Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('อีเมล',
-                          style: TextStyle(fontSize: 20, color: Colors.black)),
-                      _buildTextFormField(
-                        validator: MultiValidator([
-                          RequiredValidator(errorText: 'กรุณาป้อนอีเมล'),
-                          EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
-                        ]),
-                        keyboardType: TextInputType.emailAddress,
-                        onSaved: (email) {
-                          profile.email = email;
-                        },
-                      ),
-                      SizedBox(height: 15),
-                      Text('รหัสผ่าน',
-                          style: TextStyle(fontSize: 20, color: Colors.black)),
-                      _buildPasswordFormField(),
-                      SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+              width: double.infinity, // Full-width
+              height: double.infinity, // Full-height
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.teal, Colors.blueAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 30),
+                        Text(
+                          'ยินดีต้อนรับ!',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'กรุณาลงชื่อเข้าใช้เพื่อเข้าถึงแอปพลิเคชัน Ku Food Delivery',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        SizedBox(height: 40),
+                        Text('อีเมล',
+                            style: TextStyle(fontSize: 20, color: Colors.white)),
+                        SizedBox(height: 8),
+                        _buildTextFormField(
+                          validator: MultiValidator([
+                            RequiredValidator(errorText: 'กรุณาป้อนอีเมล'),
+                            EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
+                          ]),
+                          keyboardType: TextInputType.emailAddress,
+                          onSaved: (email) {
+                            profile.email = email;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        Text('รหัสผ่าน',
+                            style: TextStyle(fontSize: 20, color: Colors.white)),
+                        SizedBox(height: 8),
+                        _buildPasswordFormField(),
+                        SizedBox(height: 30),
+                        Center(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                elevation: 5,
+                              ),
+                              onPressed: () async {
+                                if (formKey.currentState!.validate()) {
+                                  formKey.currentState!.save();
+                                  _loginUser();
+                                }
+                              },
+                              icon: Icon(Icons.login_sharp, color: Colors.white),
+                              label: Text('ลงชื่อเข้าใช้',
+                                  style: TextStyle(fontSize: 20, color: Colors.white)),
                             ),
                           ),
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              formKey.currentState!.save();
-                              try {
-                                // เข้าสู่ระบบด้วย Firebase Authentication
-                                // ignore: unused_local_variable
-                                UserCredential userCredential =
-                                    await FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
-                                  email: profile.email.toString(),
-                                  password: profile.password.toString(),
-                                );
-
-                                // Query ข้อมูลจาก Firestore ตามอีเมลของผู้ใช้
-                                QuerySnapshot querySnapshot =
-                                    await FirebaseFirestore.instance
-                                        .collection('users')
-                                        .where('email',
-                                            isEqualTo:
-                                                profile.email) // ค้นหาตามอีเมล
-                                        .limit(1)
-                                        .get();
-
-                                if (querySnapshot.docs.isNotEmpty) {
-                                  // ถ้าพบผู้ใช้ที่มีอีเมลตรงกับที่ค้นหา
-                                  var userDoc = querySnapshot.docs.first;
-                                  String role = userDoc['role'];
-
-                                  // นำทางไปยังหน้าที่เหมาะสมตามบทบาท
-                                  Widget nextPage;
-                                  if (role == 'ร้านอาหาร') {
-                                    nextPage = StoreDashboard();
-                                  } else if (role == 'ไรเดอร์') {
-                                    nextPage = RaiderDashboard();
-                                  } else {
-                                    nextPage = FoodApp();
-                                  }
-
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => nextPage,
-                                    ),
-                                  );
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: 'ไม่พบข้อมูลผู้ใช้ในระบบ');
-                                }
-                              } on FirebaseAuthException catch (e) {
-                                Fluttertoast.showToast(
-                                    msg: e.message.toString());
-                              } catch (e) {
-                                Fluttertoast.showToast(
-                                    msg: 'เกิดข้อผิดพลาด: ${e.toString()}');
-                              }
-                            }
-                          },
-                          icon: Icon(Icons.login_sharp),
-                          label: Text('ลงชื่อเข้าใช้',
-                              style: TextStyle(fontSize: 20)),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -148,11 +134,56 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextFormField(
-      {bool obscureText = false,
-      String? Function(String?)? validator,
-      Function(String?)? onSaved,
-      TextInputType? keyboardType}) {
+  Future<void> _loginUser() async {
+    try {
+      // ignore: unused_local_variable
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: profile.email.toString(),
+        password: profile.password.toString(),
+      );
+
+      // Query ข้อมูลจาก Firestore ตามอีเมลของผู้ใช้
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: profile.email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var userDoc = querySnapshot.docs.first;
+        String role = userDoc['role'];
+
+        // นำทางไปยังหน้าที่เหมาะสมตามบทบาท
+        Widget nextPage;
+        if (role == 'ร้านอาหาร') {
+          nextPage = StoreDashboard();
+        } else if (role == 'ไรเดอร์') {
+          nextPage = RaiderDashboard();
+        } else {
+          nextPage = FoodApp();
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => nextPage),
+        );
+      } else {
+        Fluttertoast.showToast(msg: 'ไม่พบข้อมูลผู้ใช้ในระบบ');
+      }
+    } on FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(msg: e.message.toString());
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'เกิดข้อผิดพลาด: ${e.toString()}');
+    }
+  }
+
+  Widget _buildTextFormField({
+    bool obscureText = false,
+    String? Function(String?)? validator,
+    Function(String?)? onSaved,
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
       obscureText: obscureText,
       validator: validator,
@@ -160,8 +191,14 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.grey[200],
-        border: OutlineInputBorder(),
+        fillColor: Colors.white.withOpacity(0.9),
+        hintText: 'กรอกข้อมูลของคุณ',
+        hintStyle: TextStyle(color: Colors.grey),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
     );
   }
@@ -175,15 +212,22 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.grey[200],
-        border: OutlineInputBorder(),
+        fillColor: Colors.white.withOpacity(0.9),
+        hintText: 'กรอกรหัสผ่านของคุณ',
+        hintStyle: TextStyle(color: Colors.grey),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         suffixIcon: IconButton(
           icon: Icon(
             _obscurePassword ? Icons.visibility_off : Icons.visibility,
+            color: Colors.grey,
           ),
           onPressed: () {
             setState(() {
-              _obscurePassword = !_obscurePassword; // สลับสถานะการซ่อนรหัสผ่าน
+              _obscurePassword = !_obscurePassword;
             });
           },
         ),

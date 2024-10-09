@@ -9,7 +9,7 @@ import 'package:form_field_validator/form_field_validator.dart'
 import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
-import 'package:seafood_app/storepage/store_dashboard.dart'; // Import the StoreDashboard screen
+import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -18,33 +18,27 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
-  final Profile profile =
-      Profile(); // Ensure Profile class has all the required fields
+  final Profile profile = Profile();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
 
   bool _isObscure = true;
   bool _isObscureConfirm = true;
 
-  String _currentRole = 'ลูกค้า'; // Default role
+  String _currentRole = 'ลูกค้า';
   final List<String> _roles = ['ลูกค้า', 'ไรเดอร์', 'ร้านอาหาร'];
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController vehicleController = TextEditingController();
   final TextEditingController menuController = TextEditingController();
-  final TextEditingController contactNumberController =
-      TextEditingController(); // ใหม่
-  final TextEditingController fullNameController =
-      TextEditingController(); // ใหม่
-  final TextEditingController facultyController =
-      TextEditingController(); // ใหม่
-  final TextEditingController departmentController =
-      TextEditingController(); // ใหม่
+  final TextEditingController contactNumberController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController facultyController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,226 +53,182 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           }
           return Scaffold(
-            appBar: AppBar(title: Text('สร้างบัญชีผู้ใช้')),
+            appBar: AppBar(
+              title: Text(''),
+              backgroundColor: Colors.blueAccent,
+              elevation: 0,
+            ),
             body: Container(
-              padding: const EdgeInsets.all(20),
-              color: Colors.white,
-              child: Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTextFormField(
-                        controller: usernameController,
-                        hintText: 'ชื่อผู้ใช้',
-                        label: 'ชื่อผู้ใช้',
-                        validator: formValidators.RequiredValidator(
-                            errorText: 'กรุณาป้อนชื่อผู้ใช้'),
-                        onSaved: (value) => profile.username = value!,
-                      ),
-                      _buildTextFormField(
-                        controller: emailController,
-                        hintText: 'อีเมล',
-                        label: 'อีเมล',
-                        keyboardType: TextInputType.emailAddress,
-                        validator: formValidators.MultiValidator([
-                          formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนอีเมล'),
-                          formValidators.EmailValidator(
-                              errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
-                        ]),
-                        onSaved: (value) => profile.email = value!,
-                      ),
-                      _buildPasswordFormField(
-                        controller: passwordController,
-                        obscureText: _isObscure,
-                        toggleVisibility: () =>
-                            setState(() => _isObscure = !_isObscure),
-                        label: 'รหัสผ่าน',
-                        validator: formValidators.RequiredValidator(
-                            errorText: 'กรุณาป้อนรหัสผ่าน'),
-                        onSaved: (value) => profile.password = value!,
-                      ),
-                      _buildPasswordFormField(
-                        controller: confirmPasswordController,
-                        obscureText: _isObscureConfirm,
-                        toggleVisibility: () => setState(
-                            () => _isObscureConfirm = !_isObscureConfirm),
-                        label: 'ยืนยันรหัสผ่าน',
-                        validator: (value) {
-                          if (value == null || value.isEmpty)
-                            return 'กรุณาป้อนรหัสผ่านยืนยัน';
-                          if (value != passwordController.text)
-                            return 'รหัสผ่านไม่ตรงกัน';
-                          return null;
-                        },
-                        onSaved: (value) => profile.passwordConfirm = value!,
-                      ),
-                      _buildDropdownField(
-                        currentRole: _currentRole,
-                        roles: _roles,
-                        onChanged: (newValue) =>
-                            setState(() => _currentRole = newValue!),
-                      ),
-                      if (_currentRole == 'ร้านอาหาร' ||
-                          _currentRole == 'ลูกค้า') ...[
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.teal, Colors.blueAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 20),
+                        Text(
+                          'ลงทะเบียน',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'กรุณากรอกข้อมูลให้ครบถ้วนเพื่อสร้างบัญชีผู้ใช้ใหม่',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        SizedBox(height: 30),
                         _buildTextFormField(
-                          controller: addressController,
-                          hintText: 'ที่อยู่',
-                          label: 'ที่อยู่',
+                          controller: usernameController,
+                          hintText: 'ชื่อผู้ใช้',
+                          label: 'ชื่อผู้ใช้',
                           validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนที่อยู่'),
-                          onSaved: (value) => profile.address = value!,
+                              errorText: 'กรุณาป้อนชื่อผู้ใช้'),
+                          onSaved: (value) => profile.username = value!,
                         ),
                         _buildTextFormField(
-                          controller: phoneController,
-                          hintText: 'เบอร์โทรศัพท์',
-                          label: 'เบอร์โทรศัพท์',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนเบอร์โทรศัพท์'),
-                          onSaved: (value) => profile.phone = value!,
+                          controller: emailController,
+                          hintText: 'อีเมล',
+                          label: 'อีเมล',
+                          keyboardType: TextInputType.emailAddress,
+                          validator: formValidators.MultiValidator([
+                            formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนอีเมล'),
+                            formValidators.EmailValidator(
+                                errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
+                          ]),
+                          onSaved: (value) => profile.email = value!,
                         ),
-                      ],
-                      if (_currentRole == 'ไรเดอร์') ...[
-                        _buildTextFormField(
-                          controller: vehicleController,
-                          hintText: 'ข้อมูลรถ/รถยนต์หรือมอไซค์',
-                          label: 'ข้อมูลรถ',
+                        _buildPasswordFormField(
+                          controller: passwordController,
+                          obscureText: _isObscure,
+                          toggleVisibility: () =>
+                              setState(() => _isObscure = !_isObscure),
+                          label: 'รหัสผ่าน',
                           validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนข้อมูลรถ'),
-                          onSaved: (value) => profile.vehicle = value!,
+                              errorText: 'กรุณาป้อนรหัสผ่าน'),
+                          onSaved: (value) => profile.password = value!,
                         ),
-                        _buildTextFormField(
-                          controller: contactNumberController,
-                          hintText: 'เบอร์ติดต่อ',
-                          label: 'เบอร์ติดต่อ',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนเบอร์ติดต่อ'),
-                          onSaved: (value) => profile.contactNumber = value!,
+                        _buildPasswordFormField(
+                          controller: confirmPasswordController,
+                          obscureText: _isObscureConfirm,
+                          toggleVisibility: () => setState(
+                              () => _isObscureConfirm = !_isObscureConfirm),
+                          label: 'ยืนยันรหัสผ่าน',
+                          validator: (value) {
+                            if (value == null || value.isEmpty)
+                              return 'กรุณาป้อนรหัสผ่านยืนยัน';
+                            if (value != passwordController.text)
+                              return 'รหัสผ่านไม่ตรงกัน';
+                            return null;
+                          },
+                          onSaved: (value) => profile.passwordConfirm = value!,
                         ),
-                        _buildTextFormField(
-                          controller: fullNameController,
-                          hintText: 'ชื่อจริง-นามสกุล',
-                          label: 'ชื่อจริง-นามสกุล',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนชื่อจริง-นามสกุล'),
-                          onSaved: (value) => profile.fullname = value!,
+                        _buildDropdownField(
+                          currentRole: _currentRole,
+                          roles: _roles,
+                          onChanged: (newValue) =>
+                              setState(() => _currentRole = newValue!),
                         ),
-                        _buildTextFormField(
-                          controller: facultyController,
-                          hintText: 'ไม่มีให้กรอก - ',
-                          label: 'คณะ',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนคณะ'),
-                          onSaved: (value) => profile.faculty = value!,
-                        ),
-                        _buildTextFormField(
-                          controller: departmentController,
-                          hintText: 'ไม่มีให้กรอก -',
-                          label: 'สาขา',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนสาขา'),
-                          onSaved: (value) => profile.department = value!,
-                        ),
-                      ],
-                      if (_currentRole == 'ร้านอาหาร') ...[
-                        _buildTextFormField(
-                          controller: menuController,
-                          hintText: 'เมนู (ใช้คอมม่าแยกแต่ละรายการ)',
-                          label: 'เมนู',
-                          validator: formValidators.RequiredValidator(
-                              errorText: 'กรุณาป้อนเมนู'),
-                          onSaved: (value) => profile.menu = value!,
-                        ),
-                      ],
-                      SizedBox(height: 15),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        if (_currentRole == 'ร้านอาหาร' || _currentRole == 'ลูกค้า') ...[
+                          _buildTextFormField(
+                            controller: addressController,
+                            hintText: 'ที่อยู่',
+                            label: 'ที่อยู่',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนที่อยู่'),
+                            onSaved: (value) => profile.address = value!,
+                          ),
+                          _buildTextFormField(
+                            controller: phoneController,
+                            hintText: 'เบอร์โทรศัพท์',
+                            label: 'เบอร์โทรศัพท์',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนเบอร์โทรศัพท์'),
+                            onSaved: (value) => profile.phone = value!,
+                          ),
+                        ],
+                        if (_currentRole == 'ไรเดอร์') ...[
+                          _buildTextFormField(
+                            controller: vehicleController,
+                            hintText: 'ข้อมูลรถ/รถยนต์หรือมอไซค์',
+                            label: 'ข้อมูลรถ',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนข้อมูลรถ'),
+                            onSaved: (value) => profile.vehicle = value!,
+                          ),
+                          _buildTextFormField(
+                            controller: contactNumberController,
+                            hintText: 'เบอร์ติดต่อ',
+                            label: 'เบอร์ติดต่อ',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนเบอร์ติดต่อ'),
+                            onSaved: (value) => profile.contactNumber = value!,
+                          ),
+                          _buildTextFormField(
+                            controller: fullNameController,
+                            hintText: 'ชื่อจริง-นามสกุล',
+                            label: 'ชื่อจริง-นามสกุล',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนชื่อจริง-นามสกุล'),
+                            onSaved: (value) => profile.fullname = value!,
+                          ),
+                        ],
+                        if (_currentRole == 'ร้านอาหาร') ...[
+                          _buildTextFormField(
+                            controller: menuController,
+                            hintText: 'เมนู (ใช้คอมม่าแยกแต่ละรายการ)',
+                            label: 'เมนู',
+                            validator: formValidators.RequiredValidator(
+                                errorText: 'กรุณาป้อนเมนู'),
+                            onSaved: (value) => profile.menu = value!,
+                          ),
+                        ],
+                        SizedBox(height: 20),
+                        Center(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 15),
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                elevation: 5,
+                              ),
+                              onPressed: () async {
+                                if (formKey.currentState!.validate()) {
+                                  formKey.currentState!.save();
+                                  _registerUser();
+                                }
+                              },
+                              icon: Icon(Icons.create, color: Colors.white),
+                              label: Text(
+                                'ลงทะเบียน',
+                                style: TextStyle(fontSize: 18, color: Colors.white),
+                              ),
                             ),
                           ),
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              formKey.currentState!.save();
-                              try {
-                                UserCredential userCredential =
-                                    await FirebaseAuth.instance
-                                        .createUserWithEmailAndPassword(
-                                  email: profile.email.toString(),
-                                  password: profile.password.toString(),
-                                );
-
-                                // Generate UID
-                                String customUid = _generateRandomString(10);
-
-                                // Save to Firestore
-                                await FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(userCredential.user!.uid)
-                                    .set({
-                                  'username': profile.username,
-                                  'email': profile.email,
-                                  'address': profile.address,
-                                  'phone': profile.phone,
-                                  'vehicle': profile.vehicle,
-                                  'menu': profile.menu,
-                                  'contactNumber':
-                                      profile.contactNumber, // ใหม่
-                                  'fullName': profile.fullname, // ใหม่
-                                  'faculty': profile.faculty, // ใหม่
-                                  'department': profile.department, // ใหม่
-                                  'uid': customUid,
-                                  'role': _currentRole,
-                                });
-
-                                Fluttertoast.showToast(
-                                  msg: "ลงทะเบียนสำเร็จ",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.green,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0,
-                                );
-
-                                // Navigate based on role
-                                Widget nextPage;
-                                if (_currentRole == 'ร้านอาหาร') {
-                                  nextPage = StoreDashboard();
-                                } else if (_currentRole == 'ไรเดอร์') {
-                                  nextPage = RaiderDashboard();
-                                } else {
-                                  nextPage = FoodApp();
-                                }
-
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => nextPage),
-                                );
-                              } catch (e) {
-                                Fluttertoast.showToast(
-                                  msg: "ลงทะเบียนไม่สำเร็จ: $e",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.CENTER,
-                                  timeInSecForIosWeb: 1,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 16.0,
-                                );
-                              }
-                            }
-                          },
-                          icon: Icon(Icons.create),
-                          label: Text('ลงทะเบียน'),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -288,6 +238,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return Center(child: CircularProgressIndicator());
       },
     );
+  }
+
+  void _registerUser() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: profile.email.toString(),
+        password: profile.password.toString(),
+      );
+
+      String customUid = _generateRandomString(10);
+
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'username': profile.username,
+        'email': profile.email,
+        'address': profile.address,
+        'phone': profile.phone,
+        'vehicle': profile.vehicle,
+        'menu': profile.menu,
+        'contactNumber': profile.contactNumber,
+        'fullName': profile.fullname,
+        'uid': customUid,
+        'role': _currentRole,
+      });
+
+      Fluttertoast.showToast(
+        msg: "ลงทะเบียนสำเร็จ",
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+
+      Widget nextPage = _currentRole == 'ร้านอาหาร'
+          ? StoreDashboard()
+          : _currentRole == 'ไรเดอร์'
+              ? RaiderDashboard()
+              : FoodApp();
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => nextPage));
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "ลงทะเบียนไม่สำเร็จ: $e",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
   }
 
   Widget _buildTextFormField({
@@ -304,12 +301,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         controller: controller,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Colors.white.withOpacity(0.9),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
           ),
           hintText: hintText,
           labelText: label,
+          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
         keyboardType: keyboardType,
         validator: validator,
@@ -333,16 +332,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         obscureText: obscureText,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Colors.white.withOpacity(0.9),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
           ),
           hintText: '********',
           labelText: label,
+          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
           suffixIcon: IconButton(
-            icon: Icon(
-              obscureText ? Icons.visibility : Icons.visibility_off,
-            ),
+            icon: Icon(obscureText ? Icons.visibility : Icons.visibility_off),
             onPressed: toggleVisibility,
           ),
         ),
@@ -370,11 +369,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         onChanged: onChanged,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Colors.white.withOpacity(0.9),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
           ),
-          hintText: 'เลือกบทบาท',
+          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         ),
         validator: (value) => value == null ? 'กรุณาเลือกบทบาท' : null,
       ),
@@ -384,7 +384,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _generateRandomString(int length) {
     const _chars = '0123456789';
     Random _rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
-        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+    return String.fromCharCodes(
+      Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))),
+    );
   }
 }

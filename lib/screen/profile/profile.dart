@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:seafood_app/BookGuide/howtouse_page.dart';
 import 'package:seafood_app/screen/addmoney_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'dart:io';
-
-import 'package:seafood_app/screen/mainhome_page.dart';
+import 'package:seafood_app/screen/profile/Purchasehistory.dart';
+import 'package:seafood_app/screen/profile/editprofile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -23,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final picker = ImagePicker();
 
   String? profileImageUrl;
+  double? userBalance; // New variable to store user's balance
 
   @override
   void initState() {
@@ -38,6 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           var userData = doc.data() as Map<String, dynamic>;
           profileImageUrl = userData['profileImageUrl'];
+          userBalance = userData['balance']?.toDouble() ?? 0.0; // Load user's balance
         });
       }
     }
@@ -87,6 +91,16 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Text('โปรไฟล์ของฉัน'),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FoodApp()),
+            );
+          },
+        ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -117,16 +131,19 @@ class _ProfilePageState extends State<ProfilePage> {
             return ListView(
               padding: EdgeInsets.only(top: 100), // เพิ่ม padding ด้านบน
               children: <Widget>[
-                _buildProfileHeader(username, role),
+                _buildProfileHeader(username, role, userBalance),
                 Divider(height: 40),
                 _buildProfileOption('แก้ไขโปรไฟล์', Icons.edit, () {
-                  // เพิ่มการนำทางไปยังหน้าแก้ไขโปรไฟล์
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditprofilePage() ));
                 }),
                 _buildProfileOption('คู่มือการใช้งาน', Icons.book, () {
-                  // เพิ่มการนำทางไปยังหน้า How to use
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HowtousePage() ));
                 }),
                 _buildProfileOption('ประวัติการสั่งซื้อ', Icons.history, () {
-                  // เพิ่มการนำทางไปยังหน้า Purchase History
+                    Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Purchasehistory() ));
                 }),
                
                 _buildProfileOption('เติมเงินเข้าระบบ', Icons.money, () {
@@ -151,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader(String username, String role) {
+  Widget _buildProfileHeader(String username, String role, double? balance) {
     return Container(
       padding: EdgeInsets.all(16),
       child: Card(
@@ -201,6 +218,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         fontSize: 18,
                         color: Colors.black87,
                       ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'ยอดเงินคงเหลือ: ${balance != null ? '${balance.toStringAsFixed(2)} บาท' : 'ไม่ระบุ'}',
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
                     ),
                     SizedBox(height: 8),
                     Text(

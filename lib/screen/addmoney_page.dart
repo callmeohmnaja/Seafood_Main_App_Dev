@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
 class AddMoneyPage extends StatefulWidget {
@@ -47,7 +48,18 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
         imageUrl = await storageRef.getDownloadURL();
       }
 
-      // Save data to Firestore in the user's collection
+      // Fetch the current balance from Firestore
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      double currentBalance = (userDoc['balance'] ?? 0).toDouble();
+
+      // Update the balance with the selected amount
+      double newBalance = currentBalance + (selectedAmount ?? 0);
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'balance': newBalance,
+      });
+
+      // Save transaction data to Firestore in the user's collection
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -58,14 +70,50 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
+      // Display a success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('การเติมเงินสำเร็จ!')),
       );
+
+      // Navigate back to the FoodApp page
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => FoodApp()),
+        (route) => false,
+      ); // Clears the stack and navigates to the FoodApp page
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
       );
     }
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ยืนยันการชำระเงิน'),
+          content: const Text('ท่านต้องการชำระเงินหรือไม่?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('ยกเลิก', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+              child: const Text('ยืนยัน'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _uploadData(); // Proceed with the data upload
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -75,7 +123,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
         title: const Text("เติมเงินเข้าสู่ระบบ"),
         backgroundColor: Colors.teal,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Navigator.pop(context);
             Navigator.push(
@@ -164,6 +212,40 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
+                // Payment Instructions Section
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade50,
+                      border: Border.all(color: Colors.teal),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.info, color: Colors.teal),
+                            SizedBox(width: 8),
+                            Text(
+                              'กรุณาชำระตามยอดที่ท่านเลือก',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'บัญชี 4400767701 กรุงไทย (นาย อิราธิวัฒน์ บันโสภา)',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -173,7 +255,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                     ),
                     onPressed: () {
                       if (selectedAmount != null && selectedImage != null) {
-                        _uploadData();
+                        _showConfirmationDialog();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('กรุณาเลือกจำนวนเงินและอัพโหลดสลิป')),
