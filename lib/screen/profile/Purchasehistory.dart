@@ -38,7 +38,7 @@ class OrderHistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('ประวัติการสั่งซื้อ'),
-        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+        backgroundColor:Colors.teal,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {

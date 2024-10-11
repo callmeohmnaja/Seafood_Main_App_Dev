@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:seafood_app/screen/book_page.dart';
+import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/mainhome_page.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
+// ignore: use_key_in_widget_constructors
 class SupportPage extends StatelessWidget {
   final TextEditingController _issueController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class SupportPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('แจ้งปัญหา'),
-        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+        backgroundColor:Colors.teal
       ),
       drawer: _buildDrawer(context),
       body: Container(
@@ -123,7 +124,7 @@ class SupportPage extends StatelessWidget {
         icon: Icon(Icons.send, color: Colors.white),
         label: Text('ส่งปัญหา', style: TextStyle(color: Colors.white)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.teal,
           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           elevation: 5,
@@ -151,8 +152,8 @@ class SupportPage extends StatelessWidget {
             ),
           ),
           _buildDrawerItem(Icons.home, 'หน้าแรก', context, FoodApp()),
-          _buildDrawerItem(Icons.restaurant_menu, 'ออเดอร์ของฉัน', context, FoodOrderPage(initialCartItems: [])),
-          _buildDrawerItem(Icons.book, 'คู่มือการใช้งาน', context, Guide()),
+          _buildDrawerItem(Icons.restaurant_menu, 'รายการอาหาร', context, FoodOrderPage(initialCartItems: [])),
+          _buildDrawerItem(Icons.chat, 'KU Chat', context, ChatBoardPage()),
           _buildDrawerItem(Icons.person, 'โปรไฟล์', context, ProfilePage()),
           _buildDrawerItem(Icons.support, 'แจ้งปัญหา', context, SupportPage()),
           _buildDrawerItem(Icons.logout, 'ออกจากระบบ', context, HomePage()),

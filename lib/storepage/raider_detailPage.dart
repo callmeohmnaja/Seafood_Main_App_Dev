@@ -1,10 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/storepage/raiderinfo_page.dart';
 
 class RaiderDetailPage extends StatelessWidget {
   final Map<String, dynamic> raiderData;
 
   const RaiderDetailPage({super.key, required this.raiderData});
+
+  // ฟังก์ชันสำหรับบันทึกการแจ้งเตือนใน Firestore
+  Future<void> _sendNotification(BuildContext context) async {
+    try {
+      String? restaurantName = 'ชื่อร้านอาหารที่ไม่ทราบ';
+      String? restaurantProfileImageUrl;
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        restaurantName = userDoc.data()?['username'] ?? 'ชื่อร้านอาหารที่ไม่ทราบ';
+        restaurantProfileImageUrl = userDoc.data()?['profileImageUrl'] ?? '';
+      }
+
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'message': 'คุณได้รับการกดรับการพิจารณาจากร้านอาหาร โปรดรอการติดต่อเร็วๆนี้!',
+        'userId': raiderData['uid'],
+        'restaurantName': restaurantName,
+        'restaurantProfileImageUrl': restaurantProfileImageUrl,
+        'timestamp': Timestamp.now(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('การแจ้งเตือนถูกส่งไปยังไรเดอร์แล้ว!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาดในการส่งการแจ้งเตือน: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +58,10 @@ class RaiderDetailPage extends StatelessWidget {
     final profileImageUrl = raiderData['profileImageUrl'] ?? '';
 
     return Scaffold(
-      backgroundColor: Colors.green[50],
+      backgroundColor: Colors.brown.shade50,
       appBar: AppBar(
         title: Text('รายละเอียดไรเดอร์'),
-        backgroundColor: Colors.green[700],
+        backgroundColor: Colors.brown.shade50,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -34,7 +74,7 @@ class RaiderDetailPage extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.green[700]!, width: 4),
+                  border: Border.all(color: Colors.brown.shade700, width: 4),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2),
@@ -82,7 +122,7 @@ class RaiderDetailPage extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
-                        color: Colors.green[800],
+                        color: Colors.brown.shade800,
                       ),
                     ),
                     SizedBox(height: 10),
@@ -105,7 +145,7 @@ class RaiderDetailPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.brown.shade700,
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -113,6 +153,23 @@ class RaiderDetailPage extends StatelessWidget {
               ),
               child: Text(
                 'ย้อนกลับ',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                _sendNotification(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'สนใจ',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
@@ -132,7 +189,7 @@ class RaiderDetailPage extends StatelessWidget {
             '$title ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.green[700],
+              color: Colors.brown.shade700,
             ),
           ),
           Expanded(

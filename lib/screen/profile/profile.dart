@@ -3,13 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seafood_app/BookGuide/howtouse_page.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'dart:io';
 import 'package:seafood_app/screen/profile/Purchasehistory.dart';
 import 'package:seafood_app/screen/profile/editprofile_page.dart';
+import 'package:seafood_app/screen/user_notification.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -25,7 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final picker = ImagePicker();
 
   String? profileImageUrl;
-  double? userBalance; // New variable to store user's balance
+  double? userBalance;
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           var userData = doc.data() as Map<String, dynamic>;
           profileImageUrl = userData['profileImageUrl'];
-          userBalance = userData['balance']?.toDouble() ?? 0.0; // Load user's balance
+          userBalance = userData['balance']?.toDouble() ?? 0.0;
         });
       }
     }
@@ -59,10 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final user = auth.currentUser;
       if (user != null) {
-        String fileName =
-            '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        Reference storageRef =
-            storage.ref().child('profile_images').child(fileName);
+        String fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        Reference storageRef = storage.ref().child('profile_images').child(fileName);
         UploadTask uploadTask = storageRef.putFile(imageFile);
         TaskSnapshot snapshot = await uploadTask;
         String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -88,17 +87,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('โปรไฟล์ของฉัน'),
-        backgroundColor: Colors.blueAccent,
+        title: Text('โปรไฟล์ของฉัน', style: GoogleFonts.prompt(fontSize: 20)),
+        backgroundColor: Colors.teal,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FoodApp()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
           },
         ),
       ),
@@ -118,10 +114,10 @@ class _ProfilePageState extends State<ProfilePage> {
               return Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(child: Text('Error: ${snapshot.error}', style: GoogleFonts.prompt()));
             }
             if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('ไม่พบข้อมูลโปรไฟล์'));
+              return Center(child: Text('ไม่พบข้อมูลโปรไฟล์', style: GoogleFonts.prompt()));
             }
 
             var userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -129,35 +125,26 @@ class _ProfilePageState extends State<ProfilePage> {
             String role = userData['role'] ?? 'ไม่ระบุ';
 
             return ListView(
-              padding: EdgeInsets.only(top: 100), // เพิ่ม padding ด้านบน
+              padding: EdgeInsets.only(top: 100),
               children: <Widget>[
                 _buildProfileHeader(username, role, userBalance),
                 Divider(height: 40),
                 _buildProfileOption('แก้ไขโปรไฟล์', Icons.edit, () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditprofilePage() ));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditprofilePage()));
                 }),
-                _buildProfileOption('คู่มือการใช้งาน', Icons.book, () {
+                _buildProfileOption('ออเดอร์ของฉัน', Icons.rotate_90_degrees_cw_outlined,() {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HowtousePage() ));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerOrderNotificationsPage()));
                 }),
                 _buildProfileOption('ประวัติการสั่งซื้อ', Icons.history, () {
-                    Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage() ));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage()));
                 }),
-               
                 _buildProfileOption('เติมเงินเข้าระบบ', Icons.money, () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddMoneyPage() ));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddMoneyPage()));
                 }),
                 _buildProfileOption('ออกจากระบบ', Icons.logout, () {
                   auth.signOut().then((_) {
-                     Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          HomeScreen()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 }),
               ],
@@ -189,12 +176,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: CircleAvatar(
                     radius: 46,
                     backgroundColor: Colors.white,
-                    backgroundImage: profileImageUrl != null
-                        ? NetworkImage(profileImageUrl!)
-                        : null,
-                    child: profileImageUrl == null
-                        ? Icon(Icons.camera_alt, size: 40, color: Colors.grey)
-                        : null,
+                    backgroundImage: profileImageUrl != null ? NetworkImage(profileImageUrl!) : null,
+                    child: profileImageUrl == null ? Icon(Icons.camera_alt, size: 40, color: Colors.grey) : null,
                   ),
                 ),
               ),
@@ -205,29 +188,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       'ชื่อผู้ใช้: $username',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'บทบาท: $role',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black87,
-                      ),
+                      style: GoogleFonts.prompt(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'ยอดเงินคงเหลือ: ${balance != null ? '${balance.toStringAsFixed(2)} บาท' : 'ไม่ระบุ'}',
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
+                      style: GoogleFonts.prompt(fontSize: 16, color: Colors.black87),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'อีเมล: ${auth.currentUser?.email ?? ''}',
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                      style: GoogleFonts.prompt(fontSize: 16, color: Colors.black54),
                     ),
                   ],
                 ),
@@ -251,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Icon(icon, color: Colors.blueAccent),
         title: Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         trailing: Icon(Icons.arrow_forward_ios, color: Colors.blueAccent),
         onTap: onTap,

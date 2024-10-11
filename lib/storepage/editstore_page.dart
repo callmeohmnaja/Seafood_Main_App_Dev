@@ -1,39 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:seafood_app/storepage/store_dashboard.dart';
 
-class EditprofilePage extends StatefulWidget {
-  const EditprofilePage({super.key});
+class EditstorePage extends StatefulWidget {
+  const EditstorePage({super.key});
 
   @override
-  _EditprofilePageState createState() => _EditprofilePageState();
+  State<EditstorePage> createState() => _EditstorePageState();
 }
 
-class _EditprofilePageState extends State<EditprofilePage> {
+class _EditstorePageState extends State<EditstorePage> {
   final formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-  String? _name;
-  String? _email;
-  String? _phone;
-  String? _address;
+  String? _namestore;
+  String? _emailstore;
+  String? _phonestore;
+  String? _menutype;
 
   Future<void> _updateUserProfile() async {
     try {
       final user = _auth.currentUser;
 
       if (user != null) {
-        // อัปเดตข้อมูลใน Firestore
-        await _firestore.collection('users').doc(user.uid).update({
-          'username': _name,
-          'email': _email,
-          'phone': _phone,
-          'address': _address,
+        await _fireStore.collection("users").doc(user.uid).update({
+          'username': _namestore,
+          'email': _emailstore,
+          'phone': _phonestore,
+          'menu': _menutype,
         });
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('บันทึกข้อมูลสำเร็จ')),
         );
@@ -50,13 +48,15 @@ class _EditprofilePageState extends State<EditprofilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("แก้ไขโปรไฟล์"),
-        backgroundColor: Colors.teal,
+        title: Text('แก้ไขข้อมูลร้านค้า'),
+        backgroundColor: Colors.brown.shade50,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProfilePage()));
+              context,
+              MaterialPageRoute(builder: (context) => StoreDashboard()),
+            );
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
@@ -66,7 +66,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal, Colors.blueAccent],
+            colors: [Colors.brown.shade50, Colors.brown.shade100, Colors.brown.shade600],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -77,19 +77,15 @@ class _EditprofilePageState extends State<EditprofilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ฟิลด์กรอกชื่อ
-                Text("ชื่อผู้ใช้", style: TextStyle(color: Colors.white, fontSize: 18)),
-                SizedBox(height: 10),
+                _buildFormFieldLabel("ชื่อผู้ใช้"),
                 _buildTextFormField(
                   hintText: 'กรอกชื่อของคุณ',
                   validator: RequiredValidator(errorText: 'กรุณากรอกชื่อ'),
                   onSaved: (value) {
-                    _name = value;
+                    _namestore = value;
                   },
                 ),
-                SizedBox(height: 20),
-                Text("อีเมล", style: TextStyle(color: Colors.white, fontSize: 18)),
-                SizedBox(height: 10),
+                _buildFormFieldLabel("อีเมล"),
                 _buildTextFormField(
                   hintText: 'กรอกอีเมลของคุณ',
                   keyboardType: TextInputType.emailAddress,
@@ -98,41 +94,33 @@ class _EditprofilePageState extends State<EditprofilePage> {
                     EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
                   ]),
                   onSaved: (value) {
-                    _email = value;
+                    _emailstore = value;
                   },
                 ),
-                SizedBox(height: 20),
-                Text('ที่อยู่',style:TextStyle(color: Colors.white,fontSize: 18)),
-                SizedBox(height: 10),
-                _buildTextFormField(hintText: 'กรอกที่อยู่',
-                keyboardType:TextInputType.emailAddress,
-                validator: MultiValidator([
-                  RequiredValidator(errorText: 'กรุณากรอกที่อยูา'),
-                ]),
-                onSaved: (value) {
-                  _address = value;
-                },
-                ),
-
-                SizedBox(height: 20),
-                Text("หมายเลขโทรศัพท์", style: TextStyle(color: Colors.white, fontSize: 18)),
-                SizedBox(height: 10),
+                _buildFormFieldLabel("หมายเลขโทรศัพท์"),
                 _buildTextFormField(
                   hintText: 'กรอกหมายเลขโทรศัพท์ของคุณ',
                   keyboardType: TextInputType.phone,
                   validator: RequiredValidator(errorText: 'กรุณากรอกหมายเลขโทรศัพท์'),
                   onSaved: (value) {
-                    _phone = value;
+                    _phonestore = value;
+                  },
+                ),
+                _buildFormFieldLabel("ประเภท"),
+                _buildTextFormField(
+                  hintText: 'กรอกประเภทที่ท่านจะจําหน่าย',
+                  validator: RequiredValidator(errorText: 'กรุณากรอกประเภทที่ท่านจะจําหน่าย'),
+                  onSaved: (value) {
+                    _menutype = value;
                   },
                 ),
                 SizedBox(height: 40),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green.shade50,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -140,7 +128,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
                         formKey.currentState!.save();
-                        _updateUserProfile(); // เรียกฟังก์ชันอัปเดตโปรไฟล์
+                        _updateUserProfile();
                       }
                     },
                     child: Text('บันทึกข้อมูล', style: TextStyle(fontSize: 18)),
@@ -154,7 +142,16 @@ class _EditprofilePageState extends State<EditprofilePage> {
     );
   }
 
-  // ฟังก์ชันสร้าง TextFormField
+  Widget _buildFormFieldLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.brown.shade900, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   Widget _buildTextFormField({
     required String hintText,
     String? Function(String?)? validator,
@@ -167,7 +164,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
       onSaved: onSaved,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.8),
+        fillColor: Colors.white.withOpacity(0.9),
         hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

@@ -1,37 +1,40 @@
-import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 
-class EditprofilePage extends StatefulWidget {
-  const EditprofilePage({super.key});
+class Editprofileforraider extends StatefulWidget {
+  const Editprofileforraider({super.key});
 
   @override
-  _EditprofilePageState createState() => _EditprofilePageState();
+  State<Editprofileforraider> createState() => _EditprofileforraiderState();
 }
 
-class _EditprofilePageState extends State<EditprofilePage> {
+class _EditprofileforraiderState extends State<Editprofileforraider> {
   final formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String? _name;
-  String? _email;
-  String? _phone;
-  String? _address;
-
-  Future<void> _updateUserProfile() async {
+  String? _nameraider;
+  String? _vehicleraider;
+  String? _phoneraider;
+  String? _factoryraider;
+  String? _departmentraider;
+  
+Future<void> _updateUserProfile() async {
     try {
       final user = _auth.currentUser;
 
       if (user != null) {
         // อัปเดตข้อมูลใน Firestore
         await _firestore.collection('users').doc(user.uid).update({
-          'username': _name,
-          'email': _email,
-          'phone': _phone,
-          'address': _address,
+          'username': _nameraider,
+          'vehicle': _vehicleraider,
+          'contactNumber': _phoneraider,
+          'faculty': _factoryraider,
+          'department': _departmentraider,
+         
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -39,6 +42,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
         );
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Error updating profile: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล')),
@@ -46,17 +50,17 @@ class _EditprofilePageState extends State<EditprofilePage> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("แก้ไขโปรไฟล์"),
+        title: Text(""),
         backgroundColor: Colors.teal,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProfilePage()));
+                context, MaterialPageRoute(builder: (context) => RaiderDashboard()));
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
@@ -66,7 +70,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal, Colors.blueAccent],
+            colors: [Colors.teal, Colors.tealAccent.shade100],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -84,35 +88,49 @@ class _EditprofilePageState extends State<EditprofilePage> {
                   hintText: 'กรอกชื่อของคุณ',
                   validator: RequiredValidator(errorText: 'กรุณากรอกชื่อ'),
                   onSaved: (value) {
-                    _name = value;
+                    _nameraider = value;
                   },
                 ),
                 SizedBox(height: 20),
-                Text("อีเมล", style: TextStyle(color: Colors.white, fontSize: 18)),
+                Text("รถ", style: TextStyle(color: Colors.white, fontSize: 18)),
                 SizedBox(height: 10),
                 _buildTextFormField(
-                  hintText: 'กรอกอีเมลของคุณ',
+                  hintText: 'กรอกข้อมูลรถของคุณ',
                   keyboardType: TextInputType.emailAddress,
                   validator: MultiValidator([
-                    RequiredValidator(errorText: 'กรุณากรอกอีเมล'),
-                    EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
+                    RequiredValidator(errorText: 'กรุณากรอกข้อมูลรถของคุณ'),
                   ]),
                   onSaved: (value) {
-                    _email = value;
+                    _vehicleraider = value;
                   },
                 ),
-                SizedBox(height: 20),
-                Text('ที่อยู่',style:TextStyle(color: Colors.white,fontSize: 18)),
+                    SizedBox(height: 20),
+                Text("คณะ", style: TextStyle(color: Colors.white, fontSize: 18)),
                 SizedBox(height: 10),
-                _buildTextFormField(hintText: 'กรอกที่อยู่',
-                keyboardType:TextInputType.emailAddress,
-                validator: MultiValidator([
-                  RequiredValidator(errorText: 'กรุณากรอกที่อยูา'),
-                ]),
-                onSaved: (value) {
-                  _address = value;
-                },
+                _buildTextFormField(
+                  hintText: 'กรอกคณะของคุณ',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: 'กรุณากรอกคณะของคุณ'),
+                  ]),
+                  onSaved: (value) {
+                    _factoryraider = value;
+                  },
                 ),
+                    SizedBox(height: 20),
+                Text("สาขา", style: TextStyle(color: Colors.white, fontSize: 18)),
+                SizedBox(height: 10),
+                _buildTextFormField(
+                  hintText: 'กรอกสาขาของคุณ',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: MultiValidator([
+                    RequiredValidator(errorText: 'กรุณากรอกสาขาของคุณ'),
+                  ]),
+                  onSaved: (value) {
+                    _departmentraider = value;
+                  },
+                ),
+          
 
                 SizedBox(height: 20),
                 Text("หมายเลขโทรศัพท์", style: TextStyle(color: Colors.white, fontSize: 18)),
@@ -122,7 +140,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
                   keyboardType: TextInputType.phone,
                   validator: RequiredValidator(errorText: 'กรุณากรอกหมายเลขโทรศัพท์'),
                   onSaved: (value) {
-                    _phone = value;
+                    _phoneraider = value;
                   },
                 ),
                 SizedBox(height: 40),

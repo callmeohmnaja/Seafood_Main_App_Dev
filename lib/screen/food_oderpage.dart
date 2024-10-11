@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/model/food.dart';
 import 'package:seafood_app/model/cart_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +36,25 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         );
       }
     });
+  }
+
+  // Function to send notification to the restaurant when an order is placed
+  Future<void> _sendOrderNotificationToStore(List<Food> orderedItems, String userId) async {
+    try {
+      for (var food in orderedItems) {
+        // Assuming each food item has a 'store' field indicating the restaurant/store ID
+        await FirebaseFirestore.instance.collection('food_store_notifications').add({
+          'message': 'คุณมีคำสั่งซื้อใหม่จากลูกค้า',
+          'items': orderedItems.map((item) => {'name': item.name, 'price': item.price}).toList(),
+          'restaurantId': food.store, // Link to specific restaurant
+          'userId': userId,
+          'timestamp': Timestamp.now(),
+        });
+      }
+      print('Notification sent to store successfully.');
+    } catch (e) {
+      print('Error sending notification to store: $e');
+    }
   }
 
   Future<void> confirmOrder() async {
@@ -107,6 +127,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                         'name': food.name,
                         'price': food.price,
                         'imageUrl': food.imageUrl,
+                        'restaurantId': food.store, // Link to specific restaurant
                       }).toList(),
                   'createdAt': Timestamp.now(),
                   'userId': user.uid,
@@ -130,6 +151,9 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                   'totalAmount': totalOrderAmount,
                   'orderDate': Timestamp.now(),
                 });
+
+                // Send notification to the store
+                await _sendOrderNotificationToStore(cartItems, user.uid);
 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -160,11 +184,11 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                 }
               }
             },
-            child: Text('ยืนยัน'),
+            child: Text('ยืนยัน', style: TextStyle(color: Colors.green)),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text('ยกเลิก'),
+            child: Text('ยกเลิก', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -179,7 +203,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         name: data['name'],
         price: (data['price'] as num).toDouble(),
         imageUrl: data['image_url'],
-        store: '',
+        store: data['storeId'] ?? '', // Store the restaurant/store ID here
       );
     }).toList();
   }
@@ -188,8 +212,8 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายการอาหาร'),
-        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
+        title: Text('รายการอาหาร', style: GoogleFonts.prompt()),
+        backgroundColor: Colors.teal,
       ),
       body: FutureBuilder<List<Food>>(
         future: fetchMenuItems(),
@@ -199,7 +223,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('ไม่มีเมนูอาหาร'));
+            return Center(child: Text('ไม่มีเมนูอาหาร', style: GoogleFonts.prompt()));
           }
 
           final menuItems = snapshot.data!;
@@ -217,7 +241,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                   subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
                   trailing: ElevatedButton(
                     onPressed: () => addToCart(food),
-                    child: Text('เพิ่มเข้าตะกร้า'),
+                    child: Text('เพิ่มเข้าตะกร้า', style: GoogleFonts.prompt()),
                   ),
                 ),
               );

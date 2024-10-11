@@ -5,11 +5,7 @@ import 'package:seafood_app/BookGuide/oderguide_page.dart';
 import 'package:seafood_app/BookGuide/raider_guide_page.dart';
 import 'package:seafood_app/BookGuide/ruleapp_page.dart';
 import 'package:seafood_app/BookGuide/storeguide_page.dart';
-import 'package:seafood_app/screen/food_oderpage.dart';
-import 'package:seafood_app/screen/home.dart';
-import 'package:seafood_app/screen/mainhome_page.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
-import 'package:seafood_app/screen/support_page.dart';
+import 'package:seafood_app/screen/food_app.dart';
 
 // ignore: use_key_in_widget_constructors
 class Guide extends StatelessWidget {
@@ -18,97 +14,11 @@ class Guide extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('คู่มือการใช้งาน'),
-        backgroundColor: const Color.fromARGB(255, 44, 135, 209),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.green,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('หน้าแรก'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.restaurant_menu),
-              title: Text('ออเดอร์ของฉัน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FoodOrderPage(
-                            initialCartItems: [],
-                          )),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text('คู่มือการใช้งาน'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Guide()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('โปรไฟล์'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.support),
-              title: Text('แจ้งปัญหา'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ออกจากระบบ'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          HomeScreen()), //แก้ให้กลับไปหน้าหลัก
-                );
-              },
-            ),
-          ],
-        ),
+        backgroundColor: Colors.teal,
+        leading: IconButton(onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
+        }, icon: Icon(Icons.arrow_back_ios)),
       ),
       body: Container(
         decoration: BoxDecoration(

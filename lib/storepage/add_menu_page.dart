@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'เพิ่มเมนูอาหาร',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.brown,
       ),
       home: AddMenuPage(),
     );
@@ -43,8 +43,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
 
   Future<void> _pickImage() async {
     try {
-      final XFile? pickedFile =
-          await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           _image = pickedFile;
@@ -57,7 +56,6 @@ class _AddMenuPageState extends State<AddMenuPage> {
     }
   }
 
-  // ฟังก์ชันในการสร้าง menuItemUid เป็นตัวเลขล้วน
   String _generateMenuItemUid() {
     final Random random = Random();
     return (random.nextInt(1000000000) + 1000000000).toString();
@@ -80,8 +78,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
       });
 
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final storageRef =
-          FirebaseStorage.instance.ref().child('menu_images/$fileName');
+      final storageRef = FirebaseStorage.instance.ref().child('menu_images/$fileName');
 
       UploadTask uploadTask;
       if (kIsWeb) {
@@ -102,16 +99,11 @@ class _AddMenuPageState extends State<AddMenuPage> {
         return;
       }
 
-      // ดึง customUid จาก Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final customUid = userDoc.data()?['uid'] ?? '';
 
       final menuRef = FirebaseFirestore.instance.collection('menu').doc();
-      final menuItemUid =
-          _generateMenuItemUid(); // สร้าง menuItemUid เป็นตัวเลขล้วน
+      final menuItemUid = _generateMenuItemUid();
 
       await menuRef.set({
         'name': _nameController.text,
@@ -119,7 +111,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
         'price': double.tryParse(_priceController.text) ?? 0.0,
         'image_url': downloadUrl,
         'customUid': customUid,
-        'menuItemUid': menuItemUid, // เพิ่ม menuItemUid ลงในเอกสาร
+        'menuItemUid': menuItemUid,
       });
 
       print('Menu item added successfully.');
@@ -147,13 +139,19 @@ class _AddMenuPageState extends State<AddMenuPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => StoreDashboard()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDashboard()));
           },
         ),
-         backgroundColor: Colors.orange,
+        backgroundColor: Colors.brown.shade50,
       ),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.brown.shade50, Colors.brown.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
@@ -166,12 +164,9 @@ class _AddMenuPageState extends State<AddMenuPage> {
                         height: 150,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey, width: 1),
+                          border: Border.all(color: Colors.brown, width: 1),
                           image: DecorationImage(
-                            image: kIsWeb
-                                ? NetworkImage(_image!.path)
-                                : FileImage(File(_image!.path))
-                                    as ImageProvider,
+                            image: kIsWeb ? NetworkImage(_image!.path) : FileImage(File(_image!.path)) as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -181,13 +176,9 @@ class _AddMenuPageState extends State<AddMenuPage> {
                         height: 150,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey, width: 1),
+                          border: Border.all(color: Colors.brown, width: 1),
                         ),
-                        child: Icon(
-                          Icons.add_a_photo,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
+                        child: Icon(Icons.add_a_photo, size: 50, color: Colors.brown),
                       ),
               ),
               SizedBox(height: 16),
@@ -198,40 +189,18 @@ class _AddMenuPageState extends State<AddMenuPage> {
                   label: Text('อัปโหลดรูปภาพ'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Colors.brown.shade600,
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
               ),
               SizedBox(height: 16),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'ชื่อเมนู',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              _buildTextField('ชื่อเมนู', _nameController),
               SizedBox(height: 16),
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'รายละเอียด',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
+              _buildTextField('รายละเอียด', _descriptionController, maxLines: 3),
               SizedBox(height: 16),
-              TextField(
-                controller: _priceController,
-                decoration: InputDecoration(
-                  labelText: 'ราคา',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-              ),
+              _buildTextField('ราคา', _priceController, keyboardType: TextInputType.number),
               SizedBox(height: 16),
               Center(
                 child: _isLoading
@@ -241,12 +210,9 @@ class _AddMenuPageState extends State<AddMenuPage> {
                         child: Text('บันทึก'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.orange,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 32),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          backgroundColor: Colors.brown.shade600,
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
                       ),
               ),
@@ -254,6 +220,22 @@ class _AddMenuPageState extends State<AddMenuPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1, TextInputType keyboardType = TextInputType.text}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      maxLines: maxLines,
+      keyboardType: keyboardType,
     );
   }
 }

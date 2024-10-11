@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:seafood_app/screen/food_app.dart';
-import 'package:seafood_app/screen/profile/profile.dart';
 
 class AddMoneyPage extends StatefulWidget {
   const AddMoneyPage({Key? key}) : super(key: key);
@@ -128,7 +127,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
             Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
+              MaterialPageRoute(builder: (context) => FoodApp()),
             );
           },
         ),
@@ -151,7 +150,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.teal),
+                    border: Border.all(color: Colors.green),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: DropdownButton<int>(
@@ -183,7 +182,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                     children: [
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
+                          backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         onPressed: _pickImage,
@@ -195,7 +194,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: selectedImage != null
@@ -249,7 +248,7 @@ class _AddMoneyPageState extends State<AddMoneyPage> {
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.green,
                       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     ),

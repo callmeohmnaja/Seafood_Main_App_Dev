@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seafood_app/BookGuide/for_raider_page.dart';
 import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/screen/raiderpage/NotificationsRaiderPage.dart';
+import 'package:seafood_app/screen/raiderpage/chatboradforraider.dart';
+import 'package:seafood_app/screen/raiderpage/editprofileforraider.dart';
 import 'package:seafood_app/screen/raiderpage/find_store_page.dart';
-import 'package:seafood_app/screen/raiderpage/myinfo_raider.dart';
 
 class RaiderDashboard extends StatefulWidget {
   const RaiderDashboard({super.key});
@@ -55,10 +56,8 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
     try {
       final user = auth.currentUser;
       if (user != null) {
-        String fileName =
-            '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        Reference storageRef =
-            storage.ref().child('profile_images').child(fileName);
+        String fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        Reference storageRef = storage.ref().child('profile_images').child(fileName);
         UploadTask uploadTask = storageRef.putFile(imageFile);
         TaskSnapshot snapshot = await uploadTask;
         String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -84,132 +83,115 @@ class _RaiderDashboardState extends State<RaiderDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('จัดการหน้าไรเดอร์'), backgroundColor: Colors.green),
-      body: FutureBuilder<DocumentSnapshot>(
-        future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('ไม่พบโปรไฟล์'));
-          }
-
-          var userData = snapshot.data!.data() as Map<String, dynamic>;
-          String username = userData['username'] ?? 'ไม่ระบุ';
-          String role = userData['role'] ?? 'ไม่ระบุ';
-          String contactNumber = userData['contactNumber'] ?? 'ไม่ระบุ';
-
-          return Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey[300],
-                        child: profileImageUrl != null
-                            ? CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(profileImageUrl!),
-                              )
-                            : Icon(Icons.camera_alt,
-                                size: 40, color: Colors.white),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'ชื่อผู้ใช้: $username',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'บทบาท: $role',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'โทรศัพท์: $contactNumber',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Divider(),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    ListTile(
-                      title: Text('ตรวจสอบร้าน'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => FindStorePage()));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('???'),
-                      onTap: () {},
-                    ),
-                    ListTile(
-                      title: Text('ข้อมูลของฉัน'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MyinfoRaider()));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('คู่มือไรเดอร์'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ForRaiderRaiderPage()));
-                      },
-                    ),
-                    ListTile(
-                      title: Text('ออกจากระบบ'),
-                      onTap: () {
-                        auth.signOut().then((_) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(),
-                            ),
-                          );
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+        title: Text(''),
+        backgroundColor: Colors.teal,
+        leading: IconButton(onPressed: () {}, icon: Icon(Icons.motorcycle)),
       ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.tealAccent.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: FutureBuilder<DocumentSnapshot>(
+          future: firestore.collection('users').doc(auth.currentUser?.uid).get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Center(child: Text('ไม่พบโปรไฟล์'));
+            }
+
+            var userData = snapshot.data!.data() as Map<String, dynamic>;
+            String username = userData['username'] ?? 'ไม่ระบุ';
+            String role = userData['role'] ?? 'ไม่ระบุ';
+            String contactNumber = userData['contactNumber'] ?? 'ไม่ระบุ';
+
+            return Column(
+              children: <Widget>[
+                _buildProfileHeader(username, role, contactNumber),
+                Divider(),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                      _buildMenuItem('ตรวจสอบร้าน', Icons.store, FindStorePage()),
+                      _buildMenuItem('แจ้งเตือนการสมัครงาน', Icons.notifications, NotificationsRaiderPage()),
+                      _buildMenuItem('แก้ไขโปรไฟล์', Icons.edit, Editprofileforraider()),
+                      _buildMenuItem('Ku Chat', Icons.chat, ChatBoardPageforraider()),
+                      _buildLogoutButton(),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(String username, String role, String contactNumber) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: _pickImage,
+            child: CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.grey[300],
+              child: profileImageUrl != null
+                  ? CircleAvatar(
+                      radius: 38,
+                      backgroundImage: NetworkImage(profileImageUrl!),
+                    )
+                  : Icon(Icons.camera_alt, size: 40, color: Colors.white),
+            ),
+          ),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ชื่อผู้ใช้: $username',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text('บทบาท: $role', style: TextStyle(fontSize: 16, color: Colors.white)),
+              Text('อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}', style: TextStyle(fontSize: 16, color: Colors.white)),
+              Text('โทรศัพท์: $contactNumber', style: TextStyle(fontSize: 16, color: Colors.white)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(String title, IconData icon, Widget page) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: TextStyle(fontSize: 18, color: Colors.white)),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      },
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return ListTile(
+      leading: Icon(Icons.logout, color: Colors.red),
+      title: Text('ออกจากระบบ', style: TextStyle(fontSize: 18, color: Colors.red)),
+      onTap: () {
+        auth.signOut().then((_) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        });
+      },
     );
   }
 }

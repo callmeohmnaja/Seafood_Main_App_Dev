@@ -1,10 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/support_page.dart';
 import 'mainhome_page.dart';
-import 'book_page.dart';
 
 class FoodApp extends StatelessWidget {
   const FoodApp({super.key});
@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
     FoodOrderPage(
       initialCartItems: [],
     ),
-    Guide(),
+    ChatBoardPage(),
     SupportPage(),
     ProfilePage(),
   ];
@@ -49,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
         items: <Widget>[
           Icon(Icons.home, size: 30),
           Icon(Icons.restaurant_menu, size: 30),
-          Icon(Icons.book, size: 30),
+          Icon(Icons.chat, size: 30),
           Icon(Icons.support_agent, size: 30),
           Icon(Icons.person, size: 30),
         ],

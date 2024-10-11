@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text(''),
-              backgroundColor: Colors.blueAccent,
+              backgroundColor: Colors.teal,
               elevation: 0,
             ),
             body: Container(
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 15),
-                                backgroundColor: Colors.green,
+                                backgroundColor: Colors.teal,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),

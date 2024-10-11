@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // นำเข้า Google Fonts
 import 'dart:math';
-
 import 'package:seafood_app/main.dart';
-import 'package:seafood_app/screen/book_page.dart';
+import 'package:seafood_app/screen/addmoney_page.dart';
+import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
@@ -24,8 +25,8 @@ class _HomePageState extends State<HomePage> {
   TextEditingController searchController = TextEditingController();
 
   final List<String> randomMessages = [
-    "รู้หรือไม่? กลุ่ม Seafood ของเราเริ่มต้นจากการสร้างบ้านริมทะเลแล้วพัฒนาเป็นทีม!",
-    "ยินดีต้อนรับสู่แอปอาหารทะเล! อิ่มอร่อยไปกับอาหารทะเลสดใหม่จากเรา"
+    "รู้หรือไม่? กลุ่ม Seafood ของเราเริ่มต้นจากการเล่นเกมแล้วสร้างบ้านริมทะเลแล้วพัฒนาเป็นชื่อทีม!",
+    "ยินดีต้อนรับสู่แอปพลิเคชันของเรา! อิ่มอร่อยไปกับอาหารจากเรา"
   ];
 
   late String _randomMessage;
@@ -64,8 +65,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ku Food Delivery'),
-        backgroundColor: Colors.blueAccent,
+        title: Text('Ku Food Delivery', style: GoogleFonts.prompt(fontSize: 26)),
+        backgroundColor: Colors.teal,
         elevation: 0,
       ),
       drawer: _buildDrawer(),
@@ -115,19 +116,17 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               'ยอดเงินในระบบ:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+              style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
             Text(
               '${userBalance.toStringAsFixed(2)} บาท',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+              style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
             ),
           ],
         ),
       ),
     );
   }
-
- 
 
   Widget _buildSearchBar() {
     return Padding(
@@ -138,6 +137,7 @@ class _HomePageState extends State<HomePage> {
           filled: true,
           fillColor: Colors.white,
           hintText: 'ค้นหาร้านอาหารหรือเมนู',
+          hintStyle: GoogleFonts.prompt(),
           prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
           suffixIcon: IconButton(
             icon: Icon(Icons.close, color: Colors.redAccent),
@@ -172,8 +172,8 @@ class _HomePageState extends State<HomePage> {
         _buildActionButton('โปรไฟล์', Icons.person, Colors.lightBlue, () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
         }),
-        _buildActionButton('คู่มือ', Icons.book, Colors.green, () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Guide()));
+        _buildActionButton('เติมเงิน', Icons.attach_money, Colors.green, () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddMoneyPage()));
         }),
       ],
     );
@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
               .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('Error: ${snapshot.error}', style: GoogleFonts.prompt()));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
 
             return GestureDetector(
               onTap: () {
-                // Implement navigation to the menu details page
+                //todo เพิ่มหน้ารายละเอียด
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -236,10 +236,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: GoogleFonts.prompt(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -261,7 +258,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Text(
           _randomMessage,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: GoogleFonts.prompt(fontSize: 16, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
       ),
@@ -274,17 +271,17 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            decoration: BoxDecoration(color: Colors.teal),
+            child: Text('Menu', style: GoogleFonts.prompt(color: Colors.white, fontSize: 24)),
           ),
           _buildDrawerItem(Icons.home, 'หน้าแรก', () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
           }),
-          _buildDrawerItem(Icons.restaurant_menu, 'ออเดอร์ของฉัน', () {
+          _buildDrawerItem(Icons.restaurant_menu, 'รายการอาหาร', () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => FoodOrderPage(initialCartItems: [])));
           }),
-          _buildDrawerItem(Icons.book, 'คู่มือการใช้งาน', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Guide()));
+          _buildDrawerItem(Icons.chat, 'Ku Chat', () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatBoardPage()));
           }),
           _buildDrawerItem(Icons.person, 'โปรไฟล์', () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
@@ -303,7 +300,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: Text(title, style: GoogleFonts.prompt()),
       onTap: () {
         Navigator.pop(context);
         onTap();
@@ -315,7 +312,7 @@ class _HomePageState extends State<HomePage> {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: Colors.white),
-      label: Text(label, style: TextStyle(color: Colors.white)),
+      label: Text(label, style: GoogleFonts.prompt(color: Colors.white)),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),

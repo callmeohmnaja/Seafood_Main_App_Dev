@@ -5,14 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart'
+    // ignore: library_prefixes
     as formValidators;
 import 'package:seafood_app/model/profile.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
+// ignore: use_key_in_widget_constructors
 class RegisterScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
@@ -55,14 +58,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text(''),
-              backgroundColor: Colors.blueAccent,
+              backgroundColor: Colors.teal,
               elevation: 0,
             ),
             body: Container(
               width: double.infinity,
               height: double.infinity,
+              // ignore: prefer_const_constructors
               decoration: BoxDecoration(
+                // ignore: prefer_const_constructors
                 gradient: LinearGradient(
+                  // ignore: prefer_const_literals_to_create_immutables
                   colors: [Colors.teal, Colors.blueAccent],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -133,8 +139,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           label: 'ยืนยันรหัสผ่าน',
                           validator: (value) {
                             if (value == null || value.isEmpty)
+                              // ignore: curly_braces_in_flow_control_structures
                               return 'กรุณาป้อนรหัสผ่านยืนยัน';
                             if (value != passwordController.text)
+                              // ignore: curly_braces_in_flow_control_structures
                               return 'รหัสผ่านไม่ตรงกัน';
                             return null;
                           },
@@ -207,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 15),
-                                backgroundColor: Colors.green,
+                                backgroundColor: Colors.blueAccent,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),

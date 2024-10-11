@@ -22,11 +22,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+     
+  
+
       title: 'Seafood App',
       theme: ThemeData(
         primarySwatch: Colors.lightGreen,
       ),
-      home: MyHomePage(),
+      // home: MyHomePage(),
+      home: HomeScreen(),
     );
   }
 }

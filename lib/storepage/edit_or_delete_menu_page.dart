@@ -48,19 +48,11 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
         return null;
       }
 
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
       if (doc.exists) {
         final uidString = doc.data()?['uid'] as String?;
-        if (uidString != null) {
-          return uidString;
-        } else {
-          print('UID not found in user document.');
-          return null;
-        }
+        return uidString;
       } else {
         print('User document does not exist.');
         return null;
@@ -93,18 +85,15 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => StoreDashboard()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDashboard()));
           },
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.brown.shade50,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+            colors: [Colors.brown.shade50, Colors.brown.shade100],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -113,9 +102,11 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
           padding: const EdgeInsets.all(16.0),
           child: _menus.isEmpty
               ? Center(
-                  child: Text('ไม่มีเมนูอาหาร',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))
+                  child: Text(
+                    'ไม่มีเมนูอาหาร',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.brown),
+                  ),
+                )
               : ListView.builder(
                   itemCount: _menus.length,
                   itemBuilder: (context, index) {
@@ -125,7 +116,7 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8.0),
-                      elevation: 5,
+                      elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -144,20 +135,19 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
                             : Icon(Icons.image, size: 60, color: Colors.grey),
                         title: Text(
                           menuData['name'] ?? 'ไม่มีชื่อ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.brown),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               menuData['description'] ?? 'ไม่มีคำอธิบาย',
-                              style: TextStyle(color: Colors.grey[600]),
+                              style: TextStyle(color: Colors.brown.shade600),
                             ),
                             SizedBox(height: 4),
                             Text(
                               'ราคา: ${menuData['price'] ?? 'ไม่มีราคา'}',
-                              style: TextStyle(color: Colors.black),
+                              style: TextStyle(color: Colors.brown),
                             ),
                           ],
                         ),

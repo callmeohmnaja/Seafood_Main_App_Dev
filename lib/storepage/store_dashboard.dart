@@ -4,12 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:seafood_app/BookGuide/for_store_storeguild.dart';
 import 'package:seafood_app/screen/home.dart';
+import 'package:seafood_app/storepage/ChatForStorePage.dart';
 import 'package:seafood_app/storepage/add_menu_page.dart';
 import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
-import 'package:seafood_app/storepage/myoder_storepage.dart';
+import 'package:seafood_app/storepage/editstore_page.dart';
+import 'package:seafood_app/storepage/order_storepage.dart';
+import 'package:seafood_app/storepage/notification_for_store.dart';
 import 'package:seafood_app/storepage/raiderinfo_page.dart';
+import 'package:seafood_app/storepage/test.dart';
 
 class StoreDashboard extends StatefulWidget {
   @override
@@ -55,10 +58,8 @@ class _StoreDashboardState extends State<StoreDashboard> {
     try {
       final user = auth.currentUser;
       if (user != null) {
-        String fileName =
-            '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-        Reference storageRef =
-            storage.ref().child('profile_images').child(fileName);
+        String fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        Reference storageRef = storage.ref().child('profile_images').child(fileName);
         UploadTask uploadTask = storageRef.putFile(imageFile);
         TaskSnapshot snapshot = await uploadTask;
         String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -86,18 +87,17 @@ class _StoreDashboardState extends State<StoreDashboard> {
       appBar: AppBar(
         title: Text('จัดการร้านค้า'),
         leading: IconButton(
-          icon: Icon(Icons.food_bank),
+          icon: Icon(Icons.home),
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
           },
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.brown.shade100,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+            colors: [Colors.brown.shade100, Colors.brown.shade200, Colors.brown.shade300],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -124,6 +124,18 @@ class _StoreDashboardState extends State<StoreDashboard> {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  margin: EdgeInsets.all(16),
                   child: Row(
                     children: [
                       GestureDetector(
@@ -133,11 +145,10 @@ class _StoreDashboardState extends State<StoreDashboard> {
                           backgroundColor: Colors.grey[300],
                           child: profileImageUrl != null
                               ? CircleAvatar(
-                                  radius: 40,
+                                  radius: 38,
                                   backgroundImage: NetworkImage(profileImageUrl!),
                                 )
-                              : Icon(Icons.camera_alt,
-                                  size: 40, color: Colors.white),
+                              : Icon(Icons.camera_alt, size: 40, color: Colors.white),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -146,39 +157,29 @@ class _StoreDashboardState extends State<StoreDashboard> {
                         children: [
                           Text(
                             'ชื่อผู้ใช้: $username',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.brown.shade800),
                           ),
-                          Text(
-                            'บทบาท: $role',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          Text(
-                            'อีเมลของคุณคือ: ${auth.currentUser?.email ?? ''}',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          Text(
-                            'โทรศัพท์: $phone',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                          Text('บทบาท: $role', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                          Text('อีเมล: ${auth.currentUser?.email ?? ''}', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                          Text('โทรศัพท์: $phone', style: TextStyle(fontSize: 16, color: Colors.black87)),
                         ],
                       ),
                     ],
                   ),
                 ),
-                Divider(color: Colors.white),
+                Divider(color: Colors.brown.shade300),
                 Expanded(
                   child: ListView(
-                    padding: EdgeInsets.zero,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     children: <Widget>[
                       _buildStyledMenuItem('เพิ่มรายการเมนูอาหาร', AddMenuPage()),
                       _buildStyledMenuItem('แก้ไขหรือลบเมนู', EditOrDeleteMenuPage()),
-                      _buildStyledMenuItem('ออเดอร์ของฉัน(ยังไม่เขียน)', MyoderStorepage()),
+                      _buildStyledMenuItem('Ku Chat', Chatforstorepage()),
                       _buildStyledMenuItem('ไรเดอร์ที่ลงทะเบียน', RaiderinfoPage()),
-                      _buildStyledMenuItem('คู่มือร้านอาหาร', ForStoreStoreguild()),
+                      _buildStyledMenuItem('แจ้งเตือนคำสั่งซื้อใหม่', StoreOrderNotificationsPage()),
+                      _buildStyledMenuItem('แจ้งเตือนคําตอบรับไรเดอร์', StoreNotificationsPage()),
+                      _buildStyledMenuItem('แก้ไขข้อมูลร้านค้า', EditstorePage()),
+                      _buildStyledMenuItem('ทดสอบ', StoreOrderManagementPage()),
                       _buildStyledLogoutButton(),
                     ],
                   ),
@@ -191,10 +192,9 @@ class _StoreDashboardState extends State<StoreDashboard> {
     );
   }
 
-  // Styled menu item widget
   Widget _buildStyledMenuItem(String title, Widget page) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => page));
@@ -207,8 +207,8 @@ class _StoreDashboardState extends State<StoreDashboard> {
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
-                blurRadius: 6,
-                offset: Offset(0, 2),
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
             ],
           ),
@@ -217,9 +217,9 @@ class _StoreDashboardState extends State<StoreDashboard> {
             children: [
               Text(
                 title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.brown.shade800),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.orange),
+              Icon(Icons.arrow_forward_ios, color: Colors.brown.shade800),
             ],
           ),
         ),
@@ -227,29 +227,25 @@ class _StoreDashboardState extends State<StoreDashboard> {
     );
   }
 
-  // Styled logout button widget
   Widget _buildStyledLogoutButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
         onTap: () {
           auth.signOut().then((_) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
           });
         },
         child: Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.redAccent,
+            color: Colors.brown.shade600,
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
-                blurRadius: 6,
-                offset: Offset(0, 2),
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
             ],
           ),
