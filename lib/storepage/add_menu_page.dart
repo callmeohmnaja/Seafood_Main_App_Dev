@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -56,11 +55,6 @@ class _AddMenuPageState extends State<AddMenuPage> {
     }
   }
 
-  String _generateMenuItemUid() {
-    final Random random = Random();
-    return (random.nextInt(1000000000) + 1000000000).toString();
-  }
-
   Future<void> _submitForm() async {
     if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
       print('กรุณากรอกข้อมูลให้ครบถ้วน');
@@ -99,19 +93,30 @@ class _AddMenuPageState extends State<AddMenuPage> {
         return;
       }
 
+      // ดึงข้อมูลเอกสารผู้ใช้จากคอลเล็กชัน 'users'
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      final customUid = userDoc.data()?['uid'] ?? '';
+      if (!userDoc.exists) {
+        print('User document not found.');
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // ดึง uid และชื่อร้านจากเอกสารในคอลเล็กชัน 'users'
+      final uidFromFirestore = userDoc.data()?['uid'] ?? '';
+      final restaurantName = userDoc.data()?['username'] ?? 'ไม่ทราบชื่อร้านอาหาร'; // ชื่อร้านค้า
 
       final menuRef = FirebaseFirestore.instance.collection('menu').doc();
-      final menuItemUid = _generateMenuItemUid();
 
+      // บันทึกข้อมูลเมนูไปยัง Firestore พร้อมกับ uid ที่ดึงมาจากคอลเล็กชัน 'users'
       await menuRef.set({
         'name': _nameController.text,
         'description': _descriptionController.text,
         'price': double.tryParse(_priceController.text) ?? 0.0,
         'image_url': downloadUrl,
-        'customUid': customUid,
-        'menuItemUid': menuItemUid,
+        'customUid': uidFromFirestore, // ใช้ uid ที่ดึงจาก Firestore
+        'username': restaurantName, // ใช้ชื่อร้านอาหาร
       });
 
       print('Menu item added successfully.');

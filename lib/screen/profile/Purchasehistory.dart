@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:seafood_app/screen/food_app.dart';
 
-class OrderHistoryPage extends StatelessWidget {
-  const OrderHistoryPage({Key? key}) : super(key: key);
+class OrderHistoryPage extends StatefulWidget {
+  @override
+  _OrderHistoryPageState createState() => _OrderHistoryPageState();
+}
 
+class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Future<List<Map<String, dynamic>>> fetchOrderHistory() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
+      // กรณีผู้ใช้ไม่ล็อกอิน
       print('No user is logged in.');
       return [];
     }
 
     try {
+      // ดึงข้อมูลจาก collection order_history ของผู้ใช้ปัจจุบัน
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -21,13 +25,16 @@ class OrderHistoryPage extends StatelessWidget {
           .orderBy('orderDate', descending: true)
           .get();
 
+      if (snapshot.docs.isEmpty) {
+        print('No order history found for user: ${user.uid}');
+        return [];
+      }
+
       print('Fetched ${snapshot.docs.length} orders for user: ${user.uid}');
 
-      return snapshot.docs.map((doc) {
-        print('Order data: ${doc.data()}');
-        return doc.data();
-      }).toList();
+      return snapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
+      // แสดงข้อผิดพลาดถ้ามี
       print('Error fetching order history: $e');
       return [];
     }
@@ -38,17 +45,7 @@ class OrderHistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('ประวัติการสั่งซื้อ'),
-        backgroundColor:Colors.teal,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FoodApp()),
-            );
-          },
-        ),
+        backgroundColor: Colors.teal,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchOrderHistory(),
@@ -67,9 +64,14 @@ class OrderHistoryPage extends StatelessWidget {
             padding: EdgeInsets.all(10),
             itemBuilder: (context, index) {
               final order = orderHistory[index];
-              final orderDate = (order['orderDate'] as Timestamp).toDate();
+
+              // ตรวจสอบว่า orderDate เป็น null หรือไม่
+              final orderDate = order['orderDate'] != null
+                  ? (order['orderDate'] as Timestamp).toDate()
+                  : DateTime.now(); // ใช้วันที่ปัจจุบันแทนถ้า orderDate เป็น null
+
               final items = order['items'] as List<dynamic>;
-              final totalAmount = order['totalAmount'];
+              final totalAmount = order['totalAmount'] ?? 0;
 
               return Card(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -96,7 +98,7 @@ class OrderHistoryPage extends StatelessWidget {
                               fit: BoxFit.cover,
                             )
                           : Icon(Icons.image_not_supported, size: 50),
-                      title: Text(item['name']),
+                      title: Text(item['name'] ?? 'ไม่ทราบชื่อ'),
                       subtitle: Text('THB ${item['price']}'),
                     );
                   }).toList(),

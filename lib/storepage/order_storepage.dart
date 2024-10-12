@@ -1,143 +1,107 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class StoreOrderNotificationsPage extends StatelessWidget {
-  const StoreOrderNotificationsPage({super.key});
+class OrderStorepage extends StatefulWidget {
+  @override
+  _OrderStorepageState createState() => _OrderStorepageState();
+}
 
-  Future<void> _updateOrderStatus(BuildContext context, String orderId, String userId, bool isAccepted) async {
-    try {
-      String statusMessage = isAccepted ? 'ร้านค้ายอมรับออเดอร์ของคุณแล้ว' : 'ร้านค้าปฏิเสธออเดอร์ของคุณ';
-      
-      // Update the order status in the order document
-      await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
-        'status': isAccepted ? 'Accepted' : 'Rejected',
+class _OrderStorepageState extends State<OrderStorepage> {
+  String? currentRestaurantUsername;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRestaurantUsername();
+  }
+
+  // ฟังก์ชันสำหรับดึงชื่อร้านอาหารของผู้ใช้ที่ล็อกอินอยู่
+  Future<void> fetchRestaurantUsername() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        currentRestaurantUsername = userDoc.data()?['username'];
       });
-
-      // Send a notification to the customer about the order status using food_store_notifications collection
-      await FirebaseFirestore.instance.collection('food_store_notifications').add({
-        'userId': userId,
-        'orderId': orderId,
-        'message': statusMessage,
-        'timestamp': Timestamp.now(),
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isAccepted ? 'ออเดอร์ได้รับการยอมรับ' : 'ออเดอร์ถูกปฏิเสธ'),
-          backgroundColor: isAccepted ? Colors.green : Colors.red,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('เกิดข้อผิดพลาดในการอัปเดตสถานะออเดอร์'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
+  }
+
+  // ดึงการแจ้งเตือนสำหรับร้านค้าใน collection 'food_store_notifications'
+  Stream<List<Map<String, dynamic>>> fetchOrderNotifications() {
+    if (currentRestaurantUsername == null) {
+      return Stream.value([]); // คืนค่าเป็นลิสต์ว่างถ้าไม่พบ username
+    }
+
+    return FirebaseFirestore.instance
+        .collection('food_store_notifications')
+        .where('username', isEqualTo: currentRestaurantUsername)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('การแจ้งเตือนคำสั่งซื้อใหม่'),
-        backgroundColor: Colors.brown.shade800,
+        title: Text('การแจ้งเตือนออเดอร์', style: GoogleFonts.prompt(color: Colors.brown)),
+        backgroundColor: Colors.brown.shade300,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.brown.shade200, Colors.brown.shade400, Colors.brown.shade600],
+            colors: [Colors.brown.shade50, Colors.brown.shade100],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('food_store_notifications')
-              .orderBy('timestamp', descending: true)
-              .snapshots(),
+        child: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: fetchOrderNotifications(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
+            } else if (snapshot.hasError) {
               return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('ไม่มีการแจ้งเตือนคำสั่งซื้อ', style: GoogleFonts.prompt()));
             }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(child: Text('ไม่มีการแจ้งเตือนคำสั่งซื้อ'));
-            }
-
-            final notifications = snapshot.data!.docs;
-
+            final notifications = snapshot.data!;
             return ListView.builder(
-              padding: EdgeInsets.all(8.0),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
-                final notificationData = notifications[index].data() as Map<String, dynamic>;
-                final message = notificationData['message'] ?? 'ไม่มีข้อความ';
-                final items = (notificationData['items'] as List<dynamic>?)
-                    ?.map((item) => '${item['name']} - ฿${item['price']}')
-                    .join(', ') ?? 'ไม่มีรายการ';
-                final timestamp = notificationData['timestamp']?.toDate() ?? DateTime.now();
-                final orderId = notificationData['orderId'] ?? '';
-                final userId = notificationData['userId'] ?? '';
+                final notification = notifications[index];
+                final items = notification['items'] as List<dynamic>;
+                final orderItems = items.map((item) => '${item['name']} (THB ${item['price'].toStringAsFixed(2)})').join(', ');
+                final totalAmount = items.fold(0.0, (sum, item) => sum + (item['price'] as num));
 
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
                   child: ListTile(
-                    leading: Icon(Icons.receipt_long, color: Colors.brown.shade800, size: 40),
-                    title: Text(
-                      message,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown.shade800,
-                      ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: notification['imageUrl'] != null && notification['imageUrl'].isNotEmpty
+                          ? Image.network(
+                              notification['imageUrl'],
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(Icons.image, size: 60, color: Colors.grey),
                     ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'รายการ: $items',
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'เวลาที่แจ้งเตือน: ${timestamp.toLocal()}',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    title: Text('คุณมีคำสั่งซื้อใหม่', style: GoogleFonts.prompt(color: Colors.brown)),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.red),
-                          onPressed: () {
-                            _updateOrderStatus(context, orderId, userId, false); // Reject order
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.check, color: Colors.green),
-                          onPressed: () {
-                            _updateOrderStatus(context, orderId, userId, true); // Accept order
-                          },
-                        ),
+                        Text('รายการ: $orderItems', style: TextStyle(color: Colors.brown.shade700)),
+                        Text('ยอดรวม: THB ${totalAmount.toStringAsFixed(2)}', style: TextStyle(color: Colors.brown.shade600)),
+                        Text('วันที่: ${(notification['timestamp'] as Timestamp).toDate().toString()}',
+                            style: TextStyle(color: Colors.brown.shade600)),
                       ],
                     ),
                   ),

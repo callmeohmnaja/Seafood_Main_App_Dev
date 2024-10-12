@@ -29,7 +29,7 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
 
       final querySnapshot = await FirebaseFirestore.instance
           .collection('menu')
-          .where('customUid', isEqualTo: customUID)
+          .where('customUid', isEqualTo: customUID) // กรองข้อมูลตาม customUid
           .get();
 
       setState(() {

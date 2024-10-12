@@ -110,7 +110,7 @@ class RestaurantMenuPage extends StatelessWidget {
                           name: name,
                           store: restaurantUid,
                           price: double.tryParse(price) ?? 0.0,
-                          imageUrl: imageUrl ?? '',
+                          imageUrl: imageUrl ?? '', description: null,
                         );
                         cartItems.add(food);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -122,7 +122,7 @@ class RestaurantMenuPage extends StatelessWidget {
                     ),
                   );
                 },
-              );
+              ); 
             },
           );
         },

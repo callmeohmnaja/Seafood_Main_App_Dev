@@ -10,9 +10,7 @@ import 'package:seafood_app/storepage/add_menu_page.dart';
 import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
 import 'package:seafood_app/storepage/editstore_page.dart';
 import 'package:seafood_app/storepage/order_storepage.dart';
-import 'package:seafood_app/storepage/notification_for_store.dart';
 import 'package:seafood_app/storepage/raiderinfo_page.dart';
-import 'package:seafood_app/storepage/test.dart';
 
 class StoreDashboard extends StatefulWidget {
   @override
@@ -172,14 +170,13 @@ class _StoreDashboardState extends State<StoreDashboard> {
                   child: ListView(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     children: <Widget>[
+                      _buildStyledMenuItem('แก้ไขข้อมูลร้านค้า', EditstorePage()),
                       _buildStyledMenuItem('เพิ่มรายการเมนูอาหาร', AddMenuPage()),
                       _buildStyledMenuItem('แก้ไขหรือลบเมนู', EditOrDeleteMenuPage()),
                       _buildStyledMenuItem('Ku Chat', Chatforstorepage()),
-                      _buildStyledMenuItem('ไรเดอร์ที่ลงทะเบียน', RaiderinfoPage()),
-                      _buildStyledMenuItem('แจ้งเตือนคำสั่งซื้อใหม่', StoreOrderNotificationsPage()),
-                      _buildStyledMenuItem('แจ้งเตือนคําตอบรับไรเดอร์', StoreNotificationsPage()),
-                      _buildStyledMenuItem('แก้ไขข้อมูลร้านค้า', EditstorePage()),
-                      _buildStyledMenuItem('ทดสอบ', StoreOrderManagementPage()),
+                      _buildStyledMenuItem('ค้นหาไรเดอร์', RaiderinfoPage()),
+                      _buildStyledMenuItem('แจ้งเตือนคำสั่งซื้อใหม่', OrderStorepage()),
+                      // _buildStyledMenuItem('แจ้งเตือนคําตอบรับไรเดอร์', StoreNotificationsPage()),
                       _buildStyledLogoutButton(),
                     ],
                   ),

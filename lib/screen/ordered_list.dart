@@ -116,7 +116,7 @@ class OrderedListPage extends StatelessWidget {
                         price: (menuData['price'] as num?)?.toDouble() ?? 0.0,
                         imageUrl: menuData['image_url'] ??
                             '', // ใช้ image_url แทน imagePath
-                        store: '', // เพิ่มฟิลด์อื่น ๆ ที่จำเป็น
+                        store: '', description: null, // เพิ่มฟิลด์อื่น ๆ ที่จำเป็น
                       );
 
                       return ListTile(

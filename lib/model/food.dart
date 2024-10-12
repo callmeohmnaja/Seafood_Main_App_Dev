@@ -10,7 +10,7 @@ class Food {
     required this.name,
     required this.store,
     required this.price,
-    required this.imageUrl,
+    required this.imageUrl, required description,
   });
 
   // Static method to create a Food instance from a Firestore document snapshot
@@ -21,7 +21,7 @@ class Food {
       store: data['store'] ?? 'Unknown',
       price: (data['price'] as num).toDouble(), // Convert to double if needed
       imageUrl: data['imageUrl'] ??
-          '', // Ensure this field matches your Firestore schema
+          '', description: null, // Ensure this field matches your Firestore schema
     );
   }
 }
