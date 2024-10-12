@@ -16,7 +16,7 @@ class FoodOrderPage extends StatefulWidget {
 
 class _FoodOrderPageState extends State<FoodOrderPage> {
   late List<Food> cartItems;
-  bool isOrdering = false; // ตัวแปรตรวจสอบสถานะการสั่งซื้อ
+  bool isOrdering = false;
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
 
@@ -28,7 +28,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
 
   void addToCart(Food food) {
     setState(() {
-      cartItems.add(food); // Food object already contains restaurantId
+      cartItems.add(food);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${food.name} ถูกเพิ่มเข้าตะกร้า'),
@@ -41,6 +41,21 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
 
   Future<void> _sendOrderNotificationToStore(List<Food> orderedItems, String userId) async {
     try {
+      // ดึงข้อมูลผู้ใช้จาก collection 'users' ที่มี userId นี้
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      
+      // ตรวจสอบว่ามีข้อมูลผู้ใช้หรือไม่
+      if (!userDoc.exists || userDoc.data() == null) {
+        print('ไม่พบข้อมูลผู้ใช้');
+        return;
+      }
+
+      // ดึงข้อมูล address และ phone จากเอกสารผู้ใช้
+      final userData = userDoc.data();
+      final address = userData?['address'] ?? 'ไม่พบที่อยู่'; // ค่าเริ่มต้นหากไม่มีข้อมูล address
+      final phone = userData?['phone'] ?? 'ไม่พบเบอร์โทรศัพท์'; // ค่าเริ่มต้นหากไม่มีข้อมูล phone
+
+      // สร้างการแจ้งเตือนสำหรับร้านค้า
       for (var food in orderedItems) {
         await FirebaseFirestore.instance.collection('food_store_notifications').add({
           'items': orderedItems.map((item) => {
@@ -51,9 +66,12 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           'message': 'คุณมีคำสั่งซื้อใหม่จากลูกค้า',
           'username': food.store,
           'userId': userId,
+          'address': address, // เพิ่มข้อมูล address เข้าไป
+          'phone': phone,     // เพิ่มข้อมูล phone เข้าไป
           'timestamp': Timestamp.now(),
         });
       }
+
       print('Notification sent to store successfully.');
     } catch (e) {
       print('Error sending notification to store: $e');

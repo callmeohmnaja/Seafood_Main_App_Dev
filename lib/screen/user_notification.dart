@@ -1,98 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
-class CustomerOrderNotificationsPage extends StatelessWidget {
-  const CustomerOrderNotificationsPage({super.key});
+class CustomerNotificationsPage extends StatefulWidget {
+  @override
+  _CustomerNotificationsPageState createState() => _CustomerNotificationsPageState();
+}
+
+class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
+  String? currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCurrentUserId();
+  }
+
+  // ดึง userId ของลูกค้าที่ล็อกอินอยู่
+  Future<void> fetchCurrentUserId() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        currentUserId = user.uid;
+      });
+    }
+  }
+
+  // ดึงการแจ้งเตือนจาก customer_notifications collection สำหรับลูกค้าที่ล็อกอินอยู่
+  Stream<List<Map<String, dynamic>>> fetchCustomerNotifications() {
+    if (currentUserId == null) {
+      return Stream.value([]);
+    }
+
+    return FirebaseFirestore.instance
+        .collection('customer_notifications')
+        .where('userId', isEqualTo: currentUserId)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('การแจ้งเตือนสถานะออเดอร์'),
-        backgroundColor: Colors.brown.shade800,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
-          },
-          icon: Icon(Icons.arrow_back_ios),
-        ),
+        title: Text('การแจ้งเตือนของคุณ', style: GoogleFonts.prompt(color: Colors.white)),
+        backgroundColor: Colors.teal,
+        leading: IconButton(onPressed: () {
+          Navigator.pop(context);
+          Navigator.push(context,MaterialPageRoute(builder: (context) => ProfilePage()));
+        }, icon: Icon(Icons.arrow_back_ios)),
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.brown.shade200, Colors.brown.shade600],
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('stateorder')
-              .orderBy('timestamp', descending: true)
-              .snapshots(),
+        child: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: fetchCustomerNotifications(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
+            } else if (snapshot.hasError) {
               return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('ไม่มีการแจ้งเตือน', style: GoogleFonts.prompt()));
             }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(child: Text('ไม่มีการแจ้งเตือน'));
-            }
-
-            final notifications = snapshot.data!.docs;
-
+            final notifications = snapshot.data!;
             return ListView.builder(
-              padding: EdgeInsets.all(8.0),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
-                final notificationData = notifications[index].data() as Map<String, dynamic>;
-                final status = notificationData['status'] ?? 'ไม่มีข้อมูลสถานะ';
-                final restaurantName = notificationData['restaurantName'] ?? 'ร้านอาหารไม่ทราบชื่อ';
-                final restaurantProfileImageUrl = notificationData['restaurantProfileImageUrl'] ?? '';
-                final items = notificationData['items'] as List<dynamic>? ?? [];
-                final timestamp = notificationData['timestamp']?.toDate() ?? DateTime.now();
+                final notification = notifications[index];
+                final message = notification['message'];
+                final timestamp = (notification['timestamp'] as Timestamp).toDate();
 
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 4,
                   child: ListTile(
-                    leading: restaurantProfileImageUrl.isNotEmpty
-                        ? CircleAvatar(
-                            backgroundImage: NetworkImage(restaurantProfileImageUrl),
-                            radius: 25,
-                          )
-                        : CircleAvatar(
-                            backgroundColor: Colors.brown.shade100,
-                            child: Icon(Icons.store, color: Colors.brown),
-                          ),
-                    title: Text(
-                      'สถานะออเดอร์: $status',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown.shade900,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('ร้าน: $restaurantName'),
-                        Text('รายการอาหาร:'),
-                        ...items.map((item) => Text('- ${item['name']}')).toList(),
-                        Text(
-                          'เวลาที่แจ้งเตือน: ${timestamp.toLocal()}',
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ],
-                    ),
+                    leading: Icon(Icons.notifications, size: 40, color: Colors.teal),
+                    title: Text(message, style: GoogleFonts.prompt(color: Colors.teal.shade800)),
+                    subtitle: Text('วันที่: ${timestamp.toLocal()}',
+                        style: TextStyle(color: Colors.grey.shade600)),
                   ),
                 );
               },

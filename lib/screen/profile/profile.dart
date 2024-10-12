@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }),
                 _buildProfileOption('ออเดอร์ของฉัน', Icons.rotate_90_degrees_cw_outlined,() {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerOrderNotificationsPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNotificationsPage()));
                 }),
                 _buildProfileOption('ประวัติการสั่งซื้อ', Icons.history, () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => OrderHistoryPage()));
