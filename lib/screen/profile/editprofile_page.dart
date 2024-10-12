@@ -17,7 +17,6 @@ class _EditprofilePageState extends State<EditprofilePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? _name;
-  String? _email;
   String? _phone;
   String? _address;
 
@@ -29,7 +28,6 @@ class _EditprofilePageState extends State<EditprofilePage> {
         // อัปเดตข้อมูลใน Firestore
         await _firestore.collection('users').doc(user.uid).update({
           'username': _name,
-          'email': _email,
           'phone': _phone,
           'address': _address,
         });
@@ -87,20 +85,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
                     _name = value;
                   },
                 ),
-                SizedBox(height: 20),
-                Text("อีเมล", style: TextStyle(color: Colors.white, fontSize: 18)),
-                SizedBox(height: 10),
-                _buildTextFormField(
-                  hintText: 'กรอกอีเมลของคุณ',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: MultiValidator([
-                    RequiredValidator(errorText: 'กรุณากรอกอีเมล'),
-                    EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
-                  ]),
-                  onSaved: (value) {
-                    _email = value;
-                  },
-                ),
+          
                 SizedBox(height: 20),
                 Text('ที่อยู่',style:TextStyle(color: Colors.white,fontSize: 18)),
                 SizedBox(height: 10),
@@ -132,7 +117,7 @@ class _EditprofilePageState extends State<EditprofilePage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green.shade50,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
