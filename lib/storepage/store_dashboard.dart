@@ -170,12 +170,12 @@ class _StoreDashboardState extends State<StoreDashboard> {
                   child: ListView(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     children: <Widget>[
+                      _buildStyledMenuItem('แจ้งเตือนคำสั่งซื้อใหม่', OrderStorepage()),
                       _buildStyledMenuItem('แก้ไขข้อมูลร้านค้า', EditstorePage()),
                       _buildStyledMenuItem('เพิ่มรายการเมนูอาหาร', AddMenuPage()),
                       _buildStyledMenuItem('แก้ไขหรือลบเมนู', EditOrDeleteMenuPage()),
                       _buildStyledMenuItem('Ku Chat', Chatforstorepage()),
                       _buildStyledMenuItem('ค้นหาไรเดอร์', RaiderinfoPage()),
-                      _buildStyledMenuItem('แจ้งเตือนคำสั่งซื้อใหม่', OrderStorepage()),
                       // _buildStyledMenuItem('แจ้งเตือนคําตอบรับไรเดอร์', StoreNotificationsPage()),
                       _buildStyledLogoutButton(),
                     ],

@@ -17,7 +17,6 @@ class _OrderStorepageState extends State<OrderStorepage> {
     fetchRestaurantUsername();
   }
 
-  // ฟังก์ชันสำหรับดึงชื่อร้านอาหารของผู้ใช้ที่ล็อกอินอยู่
   Future<void> fetchRestaurantUsername() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -28,10 +27,9 @@ class _OrderStorepageState extends State<OrderStorepage> {
     }
   }
 
-  // ดึงการแจ้งเตือนสำหรับร้านค้าใน collection 'food_store_notifications'
   Stream<List<Map<String, dynamic>>> fetchOrderNotifications() {
     if (currentRestaurantUsername == null) {
-      return Stream.value([]); // คืนค่าเป็นลิสต์ว่างถ้าไม่พบ username
+      return Stream.value([]);
     }
 
     return FirebaseFirestore.instance
@@ -40,6 +38,14 @@ class _OrderStorepageState extends State<OrderStorepage> {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
+
+  Future<void> sendResponseToCustomer(String userId, String message) async {
+    await FirebaseFirestore.instance.collection('customer_notifications').add({
+      'message': message,
+      'userId': userId,
+      'timestamp': Timestamp.now(),
     });
   }
 
@@ -77,8 +83,9 @@ class _OrderStorepageState extends State<OrderStorepage> {
                 final items = notification['items'] as List<dynamic>;
                 final orderItems = items.map((item) => '${item['name']} (THB ${item['price'].toStringAsFixed(2)})').join(', ');
                 final totalAmount = items.fold(0.0, (sum, item) => sum + (item['price'] as num));
-                final phone = notification['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';  // เพิ่มการดึง phone
-                final address = notification['address'] ?? 'ไม่พบที่อยู่';      // เพิ่มการดึง address
+                final phone = notification['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';
+                final address = notification['address'] ?? 'ไม่พบที่อยู่';
+                final userId = notification['userId'];  // ดึง userId ของลูกค้า
 
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -103,9 +110,28 @@ class _OrderStorepageState extends State<OrderStorepage> {
                         Text('รายการ: $orderItems', style: TextStyle(color: Colors.brown.shade700)),
                         Text('ยอดรวม: THB ${totalAmount.toStringAsFixed(2)}', style: TextStyle(color: Colors.brown.shade600)),
                         Text('วันที่: ${(notification['timestamp'] as Timestamp).toDate().toString()}', style: TextStyle(color: Colors.brown.shade600)),
-                        SizedBox(height: 8),  // เพิ่มระยะห่าง
-                        Text('โปรดติดต่อลูกค้าที่เบอร์: $phone', style: TextStyle(color: Colors.red.shade600)),  // แสดงเบอร์โทรศัพท์
-                        Text('ที่อยู่ในการจัดส่ง: $address', style: TextStyle(color: Colors.red.shade600)),  // แสดงที่อยู่
+                        SizedBox(height: 8),
+                        Text('โปรดติดต่อลูกค้าที่เบอร์: $phone', style: TextStyle(color: Colors.red.shade600)),
+                        Text('ที่อยู่ในการจัดส่ง: $address', style: TextStyle(color: Colors.red.shade600)),
+                      ],
+                    ),
+                    trailing: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            sendResponseToCustomer(userId, 'ร้านค้าได้ยอมรับคำสั่งซื้อของคุณ');
+                          },
+                          child: Text('ยอมรับ', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        ),
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () {
+                            sendResponseToCustomer(userId, 'ร้านค้าได้ปฏิเสธคำสั่งซื้อของคุณ');
+                          },
+                          child: Text('ปฏิเสธ', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        ),
                       ],
                     ),
                   ),

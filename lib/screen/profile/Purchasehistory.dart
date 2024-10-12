@@ -11,8 +11,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Future<List<Map<String, dynamic>>> fetchOrderHistory() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // กรณีผู้ใช้ไม่ล็อกอิน
-      print('No user is logged in.');
+      // กรณีที่ผู้ใช้ไม่ล็อกอิน
       return [];
     }
 
@@ -22,15 +21,12 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           .collection('users')
           .doc(user.uid)
           .collection('order_history')
-          .orderBy('orderDate', descending: true)
+          .orderBy('createdAt', descending: true)
           .get();
 
       if (snapshot.docs.isEmpty) {
-        print('No order history found for user: ${user.uid}');
         return [];
       }
-
-      print('Fetched ${snapshot.docs.length} orders for user: ${user.uid}');
 
       return snapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
@@ -65,11 +61,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             itemBuilder: (context, index) {
               final order = orderHistory[index];
 
-              // ตรวจสอบว่า orderDate เป็น null หรือไม่
-              final orderDate = order['orderDate'] != null
-                  ? (order['orderDate'] as Timestamp).toDate()
-                  : DateTime.now(); // ใช้วันที่ปัจจุบันแทนถ้า orderDate เป็น null
-
+              // ดึงวันที่สั่งซื้อและรายการสินค้า
+              final orderDate = (order['createdAt'] as Timestamp).toDate();
               final items = order['items'] as List<dynamic>;
               final totalAmount = order['totalAmount'] ?? 0;
 

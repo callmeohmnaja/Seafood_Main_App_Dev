@@ -13,23 +13,31 @@ class RaiderDetailPage extends StatelessWidget {
     try {
       String? restaurantName = 'ชื่อร้านอาหารที่ไม่ทราบ';
       String? restaurantProfileImageUrl;
+      String? storeId; // Store ID (uid ของร้าน)
+      String? riderUsername = raiderData['username']; // Username ของไรเดอร์
 
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        // ดึงข้อมูลของร้านค้าจาก Firestore
         final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
         restaurantName = userDoc.data()?['username'] ?? 'ชื่อร้านอาหารที่ไม่ทราบ';
         restaurantProfileImageUrl = userDoc.data()?['profileImageUrl'] ?? '';
+        storeId = user.uid; // ใช้ uid ของผู้ใช้ปัจจุบันเป็น storeId
       }
 
+      // บันทึกข้อมูลแจ้งเตือนไปยัง Firestore
       await FirebaseFirestore.instance.collection('notifications').add({
         'message': 'คุณได้รับการกดรับการพิจารณาจากร้านอาหาร โปรดรอการติดต่อเร็วๆนี้!',
-        'userId': raiderData['uid'],
+        'userId': raiderData['uid'], // uid ของไรเดอร์
+        'username': riderUsername, // ส่ง username ของไรเดอร์ไปด้วย
         'restaurantName': restaurantName,
         'restaurantProfileImageUrl': restaurantProfileImageUrl,
+        'storeId': storeId, // เพิ่ม storeId
         'timestamp': Timestamp.now(),
       });
 
+      // แสดงข้อความยืนยันว่าการแจ้งเตือนถูกส่งสำเร็จ
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('การแจ้งเตือนถูกส่งไปยังไรเดอร์แล้ว!'),
@@ -37,6 +45,7 @@ class RaiderDetailPage extends StatelessWidget {
         ),
       );
     } catch (e) {
+      // แสดงข้อความหากเกิดข้อผิดพลาด
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('เกิดข้อผิดพลาดในการส่งการแจ้งเตือน: $e'),
@@ -145,7 +154,7 @@ class RaiderDetailPage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.brown.shade700,
+                backgroundColor: const Color.fromARGB(255, 184, 81, 49),
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -169,7 +178,7 @@ class RaiderDetailPage extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'สนใจ',
+                'ส่งแจ้งเตือนไปยังไรเดอร์',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),

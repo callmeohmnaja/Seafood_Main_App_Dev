@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 
 class ChatBoardPageforraider extends StatefulWidget {
@@ -69,11 +70,13 @@ class _ChatBoardPageState extends State<ChatBoardPageforraider> {
           icon: Icon(Icons.arrow_back_ios),
         ),
       ),
-      body: Container(
+       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal, Colors.tealAccent.shade100],
-            begin: Alignment.topCenter,
+            colors: [Colors.teal, Colors.brown.shade100],
+              begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
@@ -90,10 +93,11 @@ class _ChatBoardPageState extends State<ChatBoardPageforraider> {
                     return Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text('ยังไม่พบข้อความ'));
+                    return Center(child: Text('ยังไม่พบข้อความ', style: GoogleFonts.prompt(fontSize: 16)));
                   }
 
                   final messages = snapshot.data!.docs;
+                  final currentUser = _auth.currentUser;
 
                   return ListView.builder(
                     reverse: true,
@@ -104,42 +108,84 @@ class _ChatBoardPageState extends State<ChatBoardPageforraider> {
                       final messageSender = messageData['username'] ?? 'Unknown';
                       final messageTime = messageData['createdAt']?.toDate() ?? DateTime.now();
                       final profileImageUrl = messageData['profileImageUrl'] ?? '';
+                      final isCurrentUser = messageData['userId'] == currentUser?.uid;
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(0, 2),
+                      return Align(
+                        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                          child: Row(
+                            mainAxisAlignment: isCurrentUser
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!isCurrentUser)
+                                CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: Colors.teal.shade300,
+                                  backgroundImage: profileImageUrl.isNotEmpty
+                                      ? NetworkImage(profileImageUrl)
+                                      : null,
+                                  child: profileImageUrl.isEmpty
+                                      ? Icon(Icons.person, color: Colors.white)
+                                      : null,
+                                ),
+                              if (!isCurrentUser) SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: isCurrentUser
+                                      ? CrossAxisAlignment.end
+                                      : CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      messageSender,
+                                      style: GoogleFonts.prompt(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.teal.shade900,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Material(
+                                      elevation: 3,
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: isCurrentUser ? Colors.teal.shade100 : Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Text(
+                                          messageText,
+                                          style: GoogleFonts.prompt(
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                            height: 1.5,
+                                          ),
+                                          textAlign: isCurrentUser ? TextAlign.right : TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      '${messageTime.hour}:${messageTime.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(fontSize: 12, color: Colors.black),
+                                      textAlign: isCurrentUser ? TextAlign.right : TextAlign.left,
+                                    ),
+                                  ],
+                                ),
                               ),
+                              if (isCurrentUser) SizedBox(width: 8),
+                              if (isCurrentUser)
+                                CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: Colors.teal.shade300,
+                                  backgroundImage: profileImageUrl.isNotEmpty
+                                      ? NetworkImage(profileImageUrl)
+                                      : null,
+                                  child: profileImageUrl.isEmpty
+                                      ? Icon(Icons.person, color: Colors.white)
+                                      : null,
+                                ),
                             ],
-                          ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.grey[300],
-                              backgroundImage: profileImageUrl.isNotEmpty
-                                  ? NetworkImage(profileImageUrl)
-                                  : null,
-                              child: profileImageUrl.isEmpty
-                                  ? Icon(Icons.person, color: Colors.grey)
-                                  : null,
-                            ),
-                            title: Text(
-                              messageSender,
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.teal[800]),
-                            ),
-                            subtitle: Text(messageText),
-                            trailing: Text(
-                              '${messageTime.hour}:${messageTime.minute.toString().padLeft(2, '0')}',
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
                           ),
                         ),
                       );
@@ -156,48 +202,32 @@ class _ChatBoardPageState extends State<ChatBoardPageforraider> {
   }
 
   Widget _buildMessageInputField() {
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: Colors.tealAccent.shade100,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: Offset(0, -2),
-          ),
-        ],
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Row(
         children: <Widget>[
           Expanded(
             child: TextField(
               controller: _messageController,
+              style: GoogleFonts.prompt(),
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                hintText: 'พิมพ์ข้อความ...',
+                labelText: 'พิมพ์ข้อความ...',
+                labelStyle: GoogleFonts.prompt(color: Colors.teal.shade700),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.teal.shade700, width: 2),
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
             ),
           ),
-          SizedBox(width: 8),
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.blueAccent,
-            child: IconButton(
-              icon: Icon(Icons.send, color: Colors.white),
-              onPressed: _postMessage,
-            ),
+          IconButton(
+            icon: Icon(Icons.send, color: Colors.teal.shade700),
+            onPressed: _postMessage,
           ),
         ],
       ),
