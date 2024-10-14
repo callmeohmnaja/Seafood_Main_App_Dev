@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts package
+import 'package:google_fonts/google_fonts.dart'; 
+import 'package:seafood_app/screen/forgotPasswordPage.dart';
 import 'package:seafood_app/screen/login.dart';
 import 'package:seafood_app/screen/register.dart';
 import 'package:seafood_app/screen/rule.dart';
@@ -11,7 +12,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           '',
-          style: GoogleFonts.prompt(fontSize: 26, fontWeight: FontWeight.bold), 
+          style: GoogleFonts.prompt(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,
@@ -89,6 +90,23 @@ class HomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                             ),
                             elevation: 5,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                          );
+                        },
+                        child: Text(
+                          'ลืมรหัสผ่าน?',
+                          style: GoogleFonts.prompt(
+                            fontSize: 16,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),

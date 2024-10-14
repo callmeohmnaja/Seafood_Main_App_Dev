@@ -85,54 +85,62 @@ class _OrderStorepageState extends State<OrderStorepage> {
                 final totalAmount = items.fold(0.0, (sum, item) => sum + (item['price'] as num));
                 final phone = notification['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';
                 final address = notification['address'] ?? 'ไม่พบที่อยู่';
-                final userId = notification['userId'];  // ดึง userId ของลูกค้า
+                final userId = notification['userId'];
 
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 4,
-                  child: ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: notification['imageUrl'] != null && notification['imageUrl'].isNotEmpty
-                          ? Image.network(
-                              notification['imageUrl'],
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(Icons.image, size: 60, color: Colors.grey),
-                    ),
-                    title: Text('คุณมีคำสั่งซื้อใหม่', style: GoogleFonts.prompt(color: Colors.brown)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('รายการ: $orderItems', style: TextStyle(color: Colors.brown.shade700)),
-                        Text('ยอดรวม: THB ${totalAmount.toStringAsFixed(2)}', style: TextStyle(color: Colors.brown.shade600)),
-                        Text('วันที่: ${(notification['timestamp'] as Timestamp).toDate().toString()}', style: TextStyle(color: Colors.brown.shade600)),
-                        SizedBox(height: 8),
-                        Text('โปรดติดต่อลูกค้าที่เบอร์: $phone', style: TextStyle(color: Colors.red.shade600)),
-                        Text('ที่อยู่ในการจัดส่ง: $address', style: TextStyle(color: Colors.red.shade600)),
-                      ],
-                    ),
-                    trailing: Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            sendResponseToCustomer(userId, 'ร้านค้าได้ยอมรับคำสั่งซื้อของคุณ');
-                          },
-                          child: Text('ยอมรับ', style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: notification['imageUrl'] != null && notification['imageUrl'].isNotEmpty
+                            ? Image.network(
+                                notification['imageUrl'],
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              )
+                            : Icon(Icons.image, size: 60, color: Colors.grey),
+                      ),
+                      title: Text('คุณมีคำสั่งซื้อใหม่', style: GoogleFonts.prompt(color: Colors.brown, fontWeight: FontWeight.bold)),
+                      subtitle: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 4),
+                            Text('รายการ: $orderItems', style: TextStyle(color: Colors.brown.shade700)),
+                            Text('ยอดรวม: THB ${totalAmount.toStringAsFixed(2)}', style: TextStyle(color: Colors.brown.shade600)),
+                            Text('วันที่: ${(notification['timestamp'] as Timestamp).toDate().toString()}', style: TextStyle(color: Colors.brown.shade600)),
+                            SizedBox(height: 8),
+                            Text('โปรดติดต่อลูกค้าที่เบอร์: $phone', style: TextStyle(color: Colors.red.shade600)),
+                            Text('ที่อยู่ในการจัดส่ง: $address', style: TextStyle(color: Colors.red.shade600)),
+                          ],
                         ),
-                        SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            sendResponseToCustomer(userId, 'ร้านค้าได้ปฏิเสธคำสั่งซื้อของคุณ');
-                          },
-                          child: Text('ปฏิเสธ', style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                        ),
-                      ],
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.check_circle, color: Colors.green, size: 30),
+                            onPressed: () {
+                              sendResponseToCustomer(userId, 'ร้านค้าได้ยอมรับคำสั่งซื้อของคุณ');
+                            },
+                            tooltip: 'ยอมรับ',
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.cancel, color: Colors.red, size: 30),
+                            onPressed: () {
+                              sendResponseToCustomer(userId, 'ร้านค้าได้ปฏิเสธคำสั่งซื้อของคุณ');
+                            },
+                            tooltip: 'ปฏิเสธ',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

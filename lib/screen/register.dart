@@ -269,6 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'fullName': profile.fullname,
         'uid': customUid,
         'role': _currentRole,
+        'balance': 0, 
       });
 
       Fluttertoast.showToast(

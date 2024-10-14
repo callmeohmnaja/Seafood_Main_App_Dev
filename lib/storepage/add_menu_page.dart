@@ -150,6 +150,8 @@ class _AddMenuPageState extends State<AddMenuPage> {
         backgroundColor: Colors.brown.shade50,
       ),
       body: Container(
+        width: double.infinity, // Make the container full width
+        height: double.infinity, // Make the container full height
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.brown.shade50, Colors.brown.shade100],

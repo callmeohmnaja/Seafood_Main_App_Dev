@@ -42,15 +42,15 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
   Future<void> _sendOrderNotificationToStore(List<Food> orderedItems, String userId) async {
     try {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      
+
       if (!userDoc.exists || userDoc.data() == null) {
         print('ไม่พบข้อมูลผู้ใช้');
         return;
       }
 
       final userData = userDoc.data();
-      final address = userData?['address'] ?? 'ไม่พบที่อยู่'; 
-      final phone = userData?['phone'] ?? 'ไม่พบเบอร์โทรศัพท์'; 
+      final address = userData?['address'] ?? 'ไม่พบที่อยู่';
+      final phone = userData?['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';
 
       // ignore: unused_local_variable
       for (var food in orderedItems) {
@@ -62,8 +62,8 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
               }).toList(),
           'message': 'คุณมีคำสั่งซื้อใหม่จากลูกค้า',
           'userId': userId,
-          'address': address, 
-          'phone': phone,     
+          'address': address,
+          'phone': phone,
           'timestamp': Timestamp.now(),
         });
       }
@@ -75,161 +75,156 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
   }
 
   Future<void> confirmOrder() async {
-  if (isOrdering) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('คุณมีคำสั่งซื้อที่กำลังดำเนินการอยู่'),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    return;
-  }
+    if (isOrdering) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('คุณมีคำสั่งซื้อที่กำลังดำเนินการอยู่'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
 
-  setState(() {
-    isOrdering = true;
-  });
-
-  final user = FirebaseAuth.instance.currentUser;
-
-  if (user == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('กรุณาเข้าสู่ระบบ'),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
     setState(() {
-      isOrdering = false;
+      isOrdering = true;
     });
-    return;
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('กรุณาเข้าสู่ระบบ'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      setState(() {
+        isOrdering = false;
+      });
+      return;
+    }
+
+    final totalOrderAmount = cartItems.fold(0.0, (sum, food) => sum + food.price);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('ยืนยันการสั่งอาหาร'),
+        content: Text('คุณต้องการยืนยันการสั่งอาหารหรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              try {
+                final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+                final userData = userDoc.data();
+
+                if (!userDoc.exists || userData == null || !userData.containsKey('balance')) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('ไม่พบข้อมูลยอดเงินของผู้ใช้'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  setState(() {
+                    isOrdering = false;
+                  });
+                  return;
+                }
+
+                double currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+                final userName = userData['username'] ?? 'Unknown'; 
+
+                if (currentBalance < totalOrderAmount) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('ยอดเงินไม่เพียงพอในการสั่งอาหาร'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  setState(() {
+                    isOrdering = false;
+                  });
+                  return;
+                }
+
+                final newBalance = currentBalance - totalOrderAmount;
+                await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+                  'balance': newBalance,
+                });
+
+                final orderRef = FirebaseFirestore.instance.collection('orders').doc();
+                final orderData = {
+                  'items': cartItems.map((food) => {
+                        'name': food.name,
+                        'price': food.price,
+                        'imageUrl': food.imageUrl,
+                      }).toList(),
+                  'createdAt': Timestamp.now(),
+                  'userId': user.uid,
+                  'username': userName,
+                  'totalAmount': totalOrderAmount,
+                };
+
+                await orderRef.set(orderData);
+
+                final userOrderHistoryRef = FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .collection('order_history')
+                    .doc();
+
+                await userOrderHistoryRef.set(orderData);
+
+                await _sendOrderNotificationToStore(cartItems, user.uid);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('การสั่งอาหารได้รับการยืนยัน'),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+
+                setState(() {
+                  cartItems.clear();
+                  isOrdering = false;
+                });
+
+                Navigator.of(context).pop(newBalance);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('เกิดข้อผิดพลาดในการบันทึกการสั่งซื้อ: $e'),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+                setState(() {
+                  isOrdering = false;
+                });
+              }
+            },
+            child: Text('ยืนยัน', style: TextStyle(color: Colors.green)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              setState(() {
+                isOrdering = false;
+              });
+            },
+            child: Text('ยกเลิก', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
-
-  final totalOrderAmount = cartItems.fold(0.0, (sum, food) => sum + food.price);
-
-  showDialog(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text('ยืนยันการสั่งอาหาร'),
-      content: Text('คุณต้องการยืนยันการสั่งอาหารหรือไม่?'),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            Navigator.of(dialogContext).pop();
-
-            try {
-              // ดึงข้อมูลชื่อผู้ใช้จาก Firestore
-              final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-              final userData = userDoc.data();
-
-              if (!userDoc.exists || userData == null || !userData.containsKey('balance')) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('ไม่พบข้อมูลยอดเงินของผู้ใช้'),
-                    backgroundColor: Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-                setState(() {
-                  isOrdering = false;
-                });
-                return;
-              }
-
-              double currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
-              final userName = userData['username'] ?? 'Unknown'; // เก็บชื่อผู้ใช้
-
-              if (currentBalance < totalOrderAmount) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('ยอดเงินไม่เพียงพอในการสั่งอาหาร'),
-                    backgroundColor: Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-                setState(() {
-                  isOrdering = false;
-                });
-                return;
-              }
-
-              final newBalance = currentBalance - totalOrderAmount;
-              await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-                'balance': newBalance,
-              });
-
-              // บันทึกการสั่งซื้อใน collection 'orders'
-              final orderRef = FirebaseFirestore.instance.collection('orders').doc();
-              final orderData = {
-                'items': cartItems.map((food) => {
-                      'name': food.name,
-                      'price': food.price,
-                      'imageUrl': food.imageUrl,
-                    }).toList(),
-                'createdAt': Timestamp.now(),
-                'userId': user.uid,
-                'username': userName, // เก็บชื่อผู้ใช้ด้วย
-                'totalAmount': totalOrderAmount,
-              };
-
-              await orderRef.set(orderData);
-
-              // บันทึกลงใน order_history ของผู้ใช้
-              final userOrderHistoryRef = FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(user.uid)
-                  .collection('order_history')
-                  .doc();
-
-              await userOrderHistoryRef.set(orderData);
-
-              // ส่งการแจ้งเตือนไปยังร้านค้า
-              await _sendOrderNotificationToStore(cartItems, user.uid);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('การสั่งอาหารได้รับการยืนยัน'),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-
-              setState(() {
-                cartItems.clear();
-                isOrdering = false;
-              });
-
-              Navigator.of(context).pop(newBalance);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('เกิดข้อผิดพลาดในการบันทึกการสั่งซื้อ: $e'),
-                  backgroundColor: Colors.red,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-              setState(() {
-                isOrdering = false;
-              });
-            }
-          },
-          child: Text('ยืนยัน', style: TextStyle(color: Colors.green)),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(dialogContext).pop();
-            setState(() {
-              isOrdering = false;
-            });
-          },
-          child: Text('ยกเลิก', style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    ),
-  );
-}
-
 
   Future<List<Map<String, dynamic>>> fetchMenuItemsWithUsername(String query) async {
     QuerySnapshot snapshot;
@@ -326,7 +321,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                             ? Image.network(food.imageUrl, width: 60, height: 60, fit: BoxFit.cover)
                             : Icon(Icons.image_not_supported, size: 60),
                         title: Text(food.name),
-                        subtitle: Text('THB ${food.price.toStringAsFixed(2)}'),
+                        subtitle: Text('ร้าน: ${food.store} \nTHB ${food.price.toStringAsFixed(2)}'),
                         trailing: ElevatedButton(
                           onPressed: () => addToCart(food),
                           child: Text('เพิ่มเข้าตะกร้า', style: GoogleFonts.prompt()),

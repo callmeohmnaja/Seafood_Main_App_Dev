@@ -4,11 +4,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // นำเข้า Google Fonts
 import 'dart:math';
-import 'package:seafood_app/main.dart';
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
+import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 import 'package:seafood_app/screen/showstorepage.dart';
 import 'package:seafood_app/screen/support_page.dart';
@@ -290,7 +290,7 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(context, MaterialPageRoute(builder: (context) => SupportPage()));
           }),
           _buildDrawerItem(Icons.logout, 'ออกจากระบบ', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
           }),
         ],
       ),
