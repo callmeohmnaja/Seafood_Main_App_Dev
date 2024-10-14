@@ -79,7 +79,8 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final notification = notifications[index];
-                final message = notification['message'];
+               
+                final message = notification['message,'];
                 final timestamp = (notification['timestamp'] as Timestamp).toDate();
 
                 return Card(

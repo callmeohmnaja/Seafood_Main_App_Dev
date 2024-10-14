@@ -7,28 +7,44 @@ import 'dart:math';
 // Function to generate a numeric Order ID with 6 or 7 digits
 String generateNumericOrderId() {
   final random = Random();
-  // Generate a numeric order ID with 6 digits (e.g., 100000 - 999999) or 7 digits (e.g., 1000000 - 9999999)
-  // ignore: prefer_const_declarations
   final min = 100000; // Minimum value for 6-digit ID
-  // ignore: prefer_const_declarations
   final max = 999999; // Maximum value for 6-digit ID
   final orderId = (random.nextInt(max - min + 1) + min).toString();
   return orderId;
 }
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   final List<Food> items;
-  final String userUid; // เพิ่ม userUid เพื่อใช้ในการเก็บข้อมูลการสั่งซื้อ
+  final String userUid;
   final VoidCallback onConfirmOrder;
 
-    CartPage({
+  CartPage({
     required this.items,
     required this.userUid,
     required this.onConfirmOrder,
   });
 
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  late List<Food> cartItems;
+
+  @override
+  void initState() {
+    super.initState();
+    cartItems = List.from(widget.items); // คัดลอกรายการสินค้าเริ่มต้น
+  }
+
   double get totalPrice {
-    return items.fold(0, (total, food) => total + food.price);
+    return cartItems.fold(0, (total, food) => total + food.price);
+  }
+
+  void removeFromCart(int index) {
+    setState(() {
+      cartItems.removeAt(index); // ลบรายการที่เลือกออกจากตะกร้า
+    });
   }
 
   Future<void> _confirmOrder(BuildContext context) async {
@@ -39,13 +55,12 @@ class CartPage extends StatelessWidget {
       // บันทึกข้อมูลการสั่งซื้อไปยัง Firestore
       final orderData = {
         'orderId': orderId,
-        'userUid': userUid,
+        'userUid': widget.userUid,
         'status': 'Pending',
         'createdAt': Timestamp.now(),
-        'items': items.map((food) {
+        'items': cartItems.map((food) {
           return {
-            'menuItemUid':
-                food.name, // ใช้ชื่ออาหารแทน UID (หรือให้ปรับเป็นจริง)
+            'menuItemUid': food.name,
             'quantity': 1, // สมมุติว่าแต่ละรายการสั่ง 1 ชิ้น
           };
         }).toList(),
@@ -54,20 +69,19 @@ class CartPage extends StatelessWidget {
       await FirebaseFirestore.instance.collection('orders').add(orderData);
 
       // เรียก callback การยืนยันการสั่งซื้อ
-      onConfirmOrder();
+      widget.onConfirmOrder();
 
       // นำทางไปยัง OrderedListPage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => OrderedListPage(
-            orderedItems: items,
-            userUid: userUid,
+            orderedItems: cartItems,
+            userUid: widget.userUid,
           ),
         ),
       );
     } catch (e) {
-      // แสดงข้อความข้อผิดพลาด
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('เกิดข้อผิดพลาด: $e'),
@@ -80,48 +94,94 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ตะกร้าของคุณ'),
+        title: Text('ตะกร้าของคุณ', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.teal,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final food = items[index];
-                return Card(
-                  child: ListTile(
-                    leading: food.imageUrl.isNotEmpty
-                        ? Image.network(
-                            food.imageUrl,
-                            width: 50,
-                            height: 50,
-                          )
-                        : Icon(Icons.image_not_supported, size: 50),
-                    title: Text(food.name),
-                    subtitle: Text('THB${food.price}'),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.teal,
+              Colors.teal.shade600,
+              Colors.teal.shade900,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: cartItems.isEmpty
+                  ? Center(
+                      child: Text(
+                        'ไม่มีรายการในตะกร้า',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: cartItems.length,
+                      itemBuilder: (context, index) {
+                        final food = cartItems[index];
+                        return Card(
+                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            leading: food.imageUrl.isNotEmpty
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      food.imageUrl,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Icon(Icons.image_not_supported, size: 50),
+                            title: Text(food.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text('THB${food.price}'),
+                            trailing: IconButton(
+                              icon: Icon(Icons.remove_circle, color: Colors.red),
+                              onPressed: () {
+                                removeFromCart(index); // ลบเมนูอาหารที่ไม่ต้องการออก
+                              },
+                              tooltip: 'ลบรายการนี้',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'รวมทั้งหมด: THB${totalPrice}',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: cartItems.isEmpty
+                    ? null // ปิดการทำงานปุ่มถ้าไม่มีสินค้าในตะกร้า
+                    : () {
+                        _confirmOrder(context); // เรียกใช้งานการยืนยันการสั่งซื้อ
+                      },
+                icon: Icon(Icons.check_circle),
+                label: Text('ยืนยันการสั่งอาหาร'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-              },
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'รวมทั้งหมด: THB${totalPrice}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                _confirmOrder(context); // เรียกใช้งานการยืนยันการสั่งซื้อ
-              },
-              child: Text('ยืนยันการสั่งอาหาร'),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

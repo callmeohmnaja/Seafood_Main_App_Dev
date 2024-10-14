@@ -51,6 +51,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
       final userData = userDoc.data();
       final address = userData?['address'] ?? 'ไม่พบที่อยู่';
       final phone = userData?['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';
+      final String restaurantUsername = orderedItems.isNotEmpty ? orderedItems.first.store : 'Unknown'; // เก็บชื่อร้านค้าของเมนูแรก
 
       // ignore: unused_local_variable
       for (var food in orderedItems) {
@@ -65,6 +66,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
           'address': address,
           'phone': phone,
           'timestamp': Timestamp.now(),
+          'username': restaurantUsername,
         });
       }
 
@@ -164,6 +166,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                         'name': food.name,
                         'price': food.price,
                         'imageUrl': food.imageUrl,
+                        'store': food.store, // เก็บค่าชื่อร้านอาหารด้วย
                       }).toList(),
                   'createdAt': Timestamp.now(),
                   'userId': user.uid,
@@ -263,77 +266,87 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
         title: Text('รายการอาหาร', style: GoogleFonts.prompt()),
         backgroundColor: Colors.teal,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'ค้นหาเมนูอาหาร...',
-                hintStyle: GoogleFonts.prompt(),
-                prefixIcon: Icon(Icons.search, color: Colors.teal),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.clear, color: Colors.red),
-                  onPressed: () {
-                    setState(() {
-                      searchController.clear();
-                      searchQuery = '';
-                    });
-                  },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.teal.shade500],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'ค้นหาเมนูอาหาร...',
+                  hintStyle: GoogleFonts.prompt(),
+                  prefixIcon: Icon(Icons.search, color: Colors.teal),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear, color: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        searchController.clear();
+                        searchQuery = '';
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                filled: true,
-                fillColor: Colors.white,
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                  });
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
             ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchMenuItemsWithUsername(searchQuery),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Text('ไม่พบเมนูอาหาร', style: GoogleFonts.prompt()),
-                  );
-                }
-
-                final menuItemsWithUsername = snapshot.data!;
-                return ListView.builder(
-                  itemCount: menuItemsWithUsername.length,
-                  itemBuilder: (context, index) {
-                    final food = menuItemsWithUsername[index]['food'] as Food;
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                      child: ListTile(
-                        leading: food.imageUrl.isNotEmpty
-                            ? Image.network(food.imageUrl, width: 60, height: 60, fit: BoxFit.cover)
-                            : Icon(Icons.image_not_supported, size: 60),
-                        title: Text(food.name),
-                        subtitle: Text('ร้าน: ${food.store} \nTHB ${food.price.toStringAsFixed(2)}'),
-                        trailing: ElevatedButton(
-                          onPressed: () => addToCart(food),
-                          child: Text('เพิ่มเข้าตะกร้า', style: GoogleFonts.prompt()),
-                        ),
-                      ),
+            Expanded(
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchMenuItemsWithUsername(searchQuery),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text('ไม่พบเมนูอาหาร', style: GoogleFonts.prompt()),
                     );
-                  },
-                );
-              },
+                  }
+
+                  final menuItemsWithUsername = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: menuItemsWithUsername.length,
+                    itemBuilder: (context, index) {
+                      final food = menuItemsWithUsername[index]['food'] as Food;
+
+                      return Card(
+                        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                        child: ListTile(
+                          leading: food.imageUrl.isNotEmpty
+                              ? Image.network(food.imageUrl, width: 60, height: 60, fit: BoxFit.cover)
+                              : Icon(Icons.image_not_supported, size: 60),
+                          title: Text(food.name),
+                          subtitle: Text('ร้าน: ${food.store} \nTHB ${food.price.toStringAsFixed(2)}'),
+                          trailing: ElevatedButton(
+                            onPressed: () => addToCart(food),
+                            child: Text('เพิ่มเข้าตะกร้า', style: GoogleFonts.prompt()),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
