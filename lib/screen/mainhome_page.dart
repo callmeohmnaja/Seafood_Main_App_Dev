@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // นำเข้า Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/chatborad.dart';
-import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
 import 'package:seafood_app/screen/home.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
+import 'package:seafood_app/screen/DetailFood.dart';
 import 'package:seafood_app/screen/showstorepage.dart';
 import 'package:seafood_app/screen/support_page.dart';
 
@@ -66,7 +66,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ku Food Delivery', style: GoogleFonts.prompt(fontSize: 26)),
+        title:
+            Text('Ku Food Delivery', style: GoogleFonts.prompt(fontSize: 26)),
         backgroundColor: Colors.teal,
         elevation: 0,
       ),
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _buildQuickActions(context),
                 const SizedBox(height: 20),
-                _buildCarouselMenu(),
+                _buildCarouselMenu(), // แสดง Carousel Menu
                 const SizedBox(height: 20),
                 _buildRandomMessageCard(),
                 const SizedBox(height: 20),
@@ -117,11 +118,17 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               'ยอดเงินในระบบ:',
-              style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+              style: GoogleFonts.prompt(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal),
             ),
             Text(
               '${userBalance.toStringAsFixed(2)} บาท',
-              style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal),
+              style: GoogleFonts.prompt(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal),
             ),
           ],
         ),
@@ -167,14 +174,18 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.orangeAccent, () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Showstorepage()));
+        _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.orangeAccent,
+            () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Showstorepage()));
         }),
         _buildActionButton('โปรไฟล์', Icons.person, Colors.lightBlue, () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ProfilePage()));
         }),
         _buildActionButton('เติมเงิน', Icons.attach_money, Colors.green, () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddMoneyPage()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddMoneyPage()));
         }),
       ],
     );
@@ -191,13 +202,24 @@ class _HomePageState extends State<HomePage> {
               .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}', style: GoogleFonts.prompt()));
+          return Center(
+              child: Text('Error: ${snapshot.error}',
+                  style: GoogleFonts.prompt()));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
 
         final menuItems = snapshot.data?.docs ?? [];
+
+        if (menuItems.isEmpty) {
+          return Center(
+            child: Text(
+              'No menu items found',
+              style: GoogleFonts.prompt(fontSize: 18),
+            ),
+          );
+        }
 
         return CarouselSlider.builder(
           itemCount: menuItems.length,
@@ -210,10 +232,16 @@ class _HomePageState extends State<HomePage> {
             final item = menuItems[index];
             final name = item['name'];
             final imageUrl = item['image_url'];
+            final foodId = item.id; // เก็บ foodId
 
             return GestureDetector(
               onTap: () {
-                //todo เพิ่มหน้ารายละเอียด
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FoodDetailPage(foodId: foodId),
+                  ),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -225,7 +253,8 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
                         child: Image.network(
                           imageUrl,
                           fit: BoxFit.cover,
@@ -237,7 +266,8 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           name,
-                          style: GoogleFonts.prompt(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.prompt(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -273,25 +303,34 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.teal),
-            child: Text('Menu', style: GoogleFonts.prompt(color: Colors.white, fontSize: 24)),
+            child: Text('Menu',
+                style: GoogleFonts.prompt(color: Colors.white, fontSize: 24)),
           ),
           _buildDrawerItem(Icons.home, 'หน้าแรก', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FoodApp()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomePage()));
           }),
           _buildDrawerItem(Icons.restaurant_menu, 'รายการอาหาร', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FoodOrderPage(initialCartItems: [])));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FoodOrderPage(initialCartItems: [])));
           }),
           _buildDrawerItem(Icons.chat, 'Ku Chat', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatBoardPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ChatBoardPage()));
           }),
           _buildDrawerItem(Icons.person, 'โปรไฟล์', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage()));
           }),
           _buildDrawerItem(Icons.support, 'แจ้งปัญหา', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SupportPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SupportPage()));
           }),
           _buildDrawerItem(Icons.logout, 'ออกจากระบบ', () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
           }),
         ],
       ),
@@ -309,7 +348,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onPressed) {
+  Widget _buildActionButton(
+      String label, IconData icon, Color color, VoidCallback onPressed) {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: Colors.white),

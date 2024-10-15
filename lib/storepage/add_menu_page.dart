@@ -142,7 +142,7 @@ class _AddMenuPageState extends State<AddMenuPage> {
       appBar: AppBar(
         title: Text('เพิ่มเมนูอาหาร'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDashboard()));
           },

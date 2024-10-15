@@ -17,7 +17,6 @@ class _EditstorePageState extends State<EditstorePage> {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   String? _namestore;
-  String? _emailstore;
   String? _phonestore;
   String? _menutype;
 
@@ -28,7 +27,6 @@ class _EditstorePageState extends State<EditstorePage> {
       if (user != null) {
         await _fireStore.collection("users").doc(user.uid).update({
           'username': _namestore,
-          'email': _emailstore,
           'phone': _phonestore,
           'menu': _menutype,
         });
@@ -85,18 +83,7 @@ class _EditstorePageState extends State<EditstorePage> {
                     _namestore = value;
                   },
                 ),
-                _buildFormFieldLabel("อีเมล"),
-                _buildTextFormField(
-                  hintText: 'กรอกอีเมลของคุณ',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: MultiValidator([
-                    RequiredValidator(errorText: 'กรุณากรอกอีเมล'),
-                    EmailValidator(errorText: 'รูปแบบอีเมลไม่ถูกต้อง'),
-                  ]),
-                  onSaved: (value) {
-                    _emailstore = value;
-                  },
-                ),
+         
                 _buildFormFieldLabel("หมายเลขโทรศัพท์"),
                 _buildTextFormField(
                   hintText: 'กรอกหมายเลขโทรศัพท์ของคุณ',

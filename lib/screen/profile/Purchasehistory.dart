@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:seafood_app/screen/profile/profile.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   @override
@@ -42,6 +43,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       appBar: AppBar(
         title: Text('ประวัติการสั่งซื้อ'),
         backgroundColor: Colors.teal,
+        leading: IconButton(onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+        }, icon: Icon(Icons.arrow_back_ios)),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchOrderHistory(),
@@ -101,6 +105,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           );
         },
       ),
+      
     );
   }
 }

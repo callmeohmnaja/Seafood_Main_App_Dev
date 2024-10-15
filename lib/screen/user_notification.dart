@@ -79,9 +79,8 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final notification = notifications[index];
-               
-                final message = notification['message,'];
-                final timestamp = (notification['timestamp'] as Timestamp).toDate();
+                final message = notification['message'] ?? 'ไม่มีข้อความแจ้งเตือน';  // ตรวจสอบว่ามี message หรือไม่
+                final timestamp = (notification['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now();  // ตรวจสอบ timestamp
 
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),

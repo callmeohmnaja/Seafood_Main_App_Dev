@@ -83,7 +83,7 @@ class _EditOrDeleteMenuPageState extends State<EditOrDeleteMenuPage> {
       appBar: AppBar(
         title: Text('แก้ไขหรือลบเมนูอาหาร'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDashboard()));
           },

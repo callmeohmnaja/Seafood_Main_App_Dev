@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// ignore: use_key_in_widget_constructors
 class ChatBoardPage extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _ChatBoardPageState createState() => _ChatBoardPageState();
 }
 

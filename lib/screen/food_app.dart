@@ -21,8 +21,10 @@ class FoodApp extends StatelessWidget {
   }
 }
 
+// ignore: use_key_in_widget_constructors
 class MainScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 
