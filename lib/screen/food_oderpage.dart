@@ -160,13 +160,37 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                   'balance': newBalance,
                 });
 
+                final restaurantIds = cartItems.map((food) => food.store).toSet();
+
+                // เพิ่มเงินให้กับร้านค้าของเมนูแต่ละรายการ
+                for (String store in restaurantIds) {
+                  final storeDoc = await FirebaseFirestore.instance
+                      .collection('users')
+                      .where('username', isEqualTo: store)
+                      .get();
+                  if (storeDoc.docs.isNotEmpty) {
+                    final storeData = storeDoc.docs.first.data();
+                    double currentStoreBalance = (storeData['balance'] as num?)?.toDouble() ?? 0.0;
+                    final newStoreBalance = currentStoreBalance + cartItems
+                        .where((food) => food.store == store)
+                        .fold(0.0, (sum, food) => sum + food.price);
+
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(storeDoc.docs.first.id)
+                        .update({
+                      'balance': newStoreBalance,
+                    });
+                  }
+                }
+
                 final orderRef = FirebaseFirestore.instance.collection('orders').doc();
                 final orderData = {
                   'items': cartItems.map((food) => {
                         'name': food.name,
                         'price': food.price,
                         'imageUrl': food.imageUrl,
-                        'store': food.store, // เก็บค่าชื่อร้านอาหารด้วย
+                        'store': food.store, 
                       }).toList(),
                   'createdAt': Timestamp.now(),
                   'userId': user.uid,
@@ -269,7 +293,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.teal, Colors.teal.shade500],
+            colors: [Colors.teal, Colors.blueAccent],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -308,6 +332,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
             ),
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
+
                 future: fetchMenuItemsWithUsername(searchQuery),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

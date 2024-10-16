@@ -115,7 +115,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
 
             var userData = snapshot.data!.data() as Map<String, dynamic>;
             String username = userData['username'] ?? 'ไม่ระบุ';
-            String role = userData['role'] ?? 'ไม่ระบุ';
+            String balance = userData['balance'] ?.toString() ?? 'ไม่ระบุ';
             String phone = userData['phone'] ?? 'ไม่ระบุ';
 
             return Column(
@@ -157,7 +157,7 @@ class _StoreDashboardState extends State<StoreDashboard> {
                             'ชื่อผู้ใช้: $username',
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.brown.shade800),
                           ),
-                          Text('บทบาท: $role', style: TextStyle(fontSize: 16, color: Colors.black87)),
+                          Text('จํานวนเงิน: $balance', style: TextStyle(fontSize: 16, color: Colors.black87)),
                           Text('อีเมล: ${auth.currentUser?.email ?? ''}', style: TextStyle(fontSize: 16, color: Colors.black87)),
                           Text('โทรศัพท์: $phone', style: TextStyle(fontSize: 16, color: Colors.black87)),
                         ],

@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
         if (menuItems.isEmpty) {
           return Center(
             child: Text(
-              'No menu items found',
+              'ไม่พบเมนูอาหาร',
               style: GoogleFonts.prompt(fontSize: 18),
             ),
           );

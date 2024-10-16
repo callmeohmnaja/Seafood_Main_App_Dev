@@ -47,10 +47,32 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
+  // ฟังก์ชันรวมอาหารที่ซ้ำกัน
+  List<Map<String, dynamic>> mergeCartItems() {
+    final Map<String, Map<String, dynamic>> mergedItems = {};
+
+    for (var food in cartItems) {
+      if (mergedItems.containsKey(food.name)) {
+        mergedItems[food.name]!['quantity'] += 1; // เพิ่มจำนวนถ้าชื่ออาหารซ้ำกัน
+      } else {
+        mergedItems[food.name] = {
+          'menuItemUid': food.name,
+          'quantity': 1, // จำนวนเริ่มต้นเป็น 1
+          'price': food.price,
+        };
+      }
+    }
+
+    return mergedItems.values.toList();
+  }
+
   Future<void> _confirmOrder(BuildContext context) async {
     try {
       // สร้าง orderId ใหม่
       final orderId = generateNumericOrderId(); // ใช้เลข 6 หลักสร้าง orderId
+
+      // รวบรวมรายการอาหารที่ซ้ำกัน
+      final mergedItems = mergeCartItems();
 
       // บันทึกข้อมูลการสั่งซื้อไปยัง Firestore
       final orderData = {
@@ -58,12 +80,7 @@ class _CartPageState extends State<CartPage> {
         'userUid': widget.userUid,
         'status': 'Pending',
         'createdAt': Timestamp.now(),
-        'items': cartItems.map((food) {
-          return {
-            'menuItemUid': food.name,
-            'quantity': 1, // สมมุติว่าแต่ละรายการสั่ง 1 ชิ้น
-          };
-        }).toList(),
+        'items': mergedItems,
       };
 
       await FirebaseFirestore.instance.collection('orders').add(orderData);
