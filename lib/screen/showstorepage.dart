@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:seafood_app/screen/food_app.dart';
 
 class Showstorepage extends StatelessWidget {
-  const Showstorepage({super.key});
+  const Showstorepage({super.key, required String storeId});
 
   @override
   Widget build(BuildContext context) {

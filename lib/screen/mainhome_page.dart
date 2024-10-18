@@ -1,9 +1,9 @@
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math';
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
@@ -27,7 +27,9 @@ class _HomePageState extends State<HomePage> {
   final List<String> randomMessages = [
     "รู้หรือไม่? กลุ่ม Seafood ของเราเริ่มต้นจากการเล่นเกมแล้วสร้างบ้านริมทะเลแล้วพัฒนาเป็นชื่อทีม!",
     "ยินดีต้อนรับสู่แอปพลิเคชันของเรา! อิ่มอร่อยไปกับอาหารจากเรา",
-    "สวัสดีครับผมนาย อิราธิวัฒน์ บันโสภา เป็นAdmin ของแอปพลิเคชัน (หิวไหมเคยู)Ku Food Delivery"
+    "สวัสดีครับผมนาย อิราธิวัฒน์ บันโสภา เป็นAdmin ของแอปพลิเคชัน (หิวไหมเคยู)Ku Food Delivery",
+    "สวัสดีครับผมนาย ภานุภัทร สีสวัสดิ์ เป็นAdmin ของแอปพลิเคชัน (หิวไหมเคยู)Ku Food Delivery",
+    "สวัสดีครับผมนาย  พุทธิชัย เกตุเอี่ยม เป็นAdmin ของแอปพลิเคชัน (หิวไหมเคยู)Ku Food Delivery",
   ];
 
   late String _randomMessage;
@@ -95,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 _buildQuickActions(context),
                 const SizedBox(height: 20),
-                _buildCarouselMenu(), // แสดง Carousel Menu
+                _buildCarouselMenu(), 
                 const SizedBox(height: 20),
                 _buildRandomMessageCard(),
                 const SizedBox(height: 20),
@@ -177,7 +179,7 @@ class _HomePageState extends State<HomePage> {
         _buildActionButton('ร้านอาหาร', Icons.restaurant, Colors.orangeAccent,
             () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => Showstorepage()));
+              MaterialPageRoute(builder: (context) => Showstorepage(storeId: '',)));
         }),
         _buildActionButton('โปรไฟล์', Icons.person, Colors.lightBlue, () {
           Navigator.push(
@@ -201,79 +203,170 @@ class _HomePageState extends State<HomePage> {
               .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
               .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-              child: Text('Error: ${snapshot.error}',
-                  style: GoogleFonts.prompt()));
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+        return StreamBuilder<QuerySnapshot>(
+          stream: (searchQuery.isEmpty)
+              ? FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'ร้านอาหาร').snapshots()
+              : FirebaseFirestore.instance
+                  .collection('users')
+                  .where('role', isEqualTo: 'ร้านอาหาร')
+                  .where('username', isGreaterThanOrEqualTo: searchQuery)
+                  .where('username', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+                  .snapshots(),
+          builder: (context, restaurantSnapshot) {
+            if (snapshot.hasError || restaurantSnapshot.hasError) {
+              return Center(
+                  child: Text('Error: ${snapshot.error}',
+                      style: GoogleFonts.prompt()));
+            }
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                restaurantSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
 
-        final menuItems = snapshot.data?.docs ?? [];
+            final menuItems = snapshot.data?.docs ?? [];
+            final restaurantItems = restaurantSnapshot.data?.docs ?? [];
 
-        if (menuItems.isEmpty) {
-          return Center(
-            child: Text(
-              'ไม่พบเมนูอาหาร',
-              style: GoogleFonts.prompt(fontSize: 18),
-            ),
-          );
-        }
-
-        return CarouselSlider.builder(
-          itemCount: menuItems.length,
-          options: CarouselOptions(
-            height: 250,
-            enlargeCenterPage: true,
-            autoPlay: true,
-          ),
-          itemBuilder: (context, index, realIndex) {
-            final item = menuItems[index];
-            final name = item['name'];
-            final imageUrl = item['image_url'];
-            final foodId = item.id; // เก็บ foodId
-
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FoodDetailPage(foodId: foodId),
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  elevation: 8,
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          height: 160,
-                          width: double.infinity,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          name,
-                          style: GoogleFonts.prompt(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+            if (menuItems.isEmpty && restaurantItems.isEmpty) {
+              return Center(
+                child: Text(
+                  'ไม่พบผลลัพธ์',
+                  style: GoogleFonts.prompt(fontSize: 18),
                 ),
-              ),
+              );
+            }
+
+            return Column(
+              children: [
+                if (restaurantItems.isNotEmpty)
+                  Text(
+                    'ร้านอาหารที่พบ:',
+                    style: GoogleFonts.prompt(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                if (restaurantItems.isNotEmpty)
+                  CarouselSlider.builder(
+                    itemCount: restaurantItems.length,
+                    options: CarouselOptions(
+                      height: 150,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                    ),
+                    itemBuilder: (context, index, realIndex) {
+                      final restaurant = restaurantItems[index];
+                      final restaurantName = restaurant['username'];
+                      final restaurantProfileImage = restaurant['profileImageUrl'];
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Showstorepage(
+                                storeId: restaurant.id,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 8,
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                  child: Image.network(
+                                    restaurantProfileImage,
+                                    fit: BoxFit.cover,
+                                    height: 100,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    restaurantName,
+                                    style: GoogleFonts.prompt(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                const SizedBox(height: 20),
+
+                if (menuItems.isNotEmpty)
+                  Text(
+                    'เมนูอาหารที่พบ:',
+                    style: GoogleFonts.prompt(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                if (menuItems.isNotEmpty)
+                  CarouselSlider.builder(
+                    itemCount: menuItems.length,
+                    options: CarouselOptions(
+                      height: 250,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                    ),
+                    itemBuilder: (context, index, realIndex) {
+                      final item = menuItems[index];
+                      final name = item['name'];
+                      final imageUrl = item['image_url'];
+                      final foodId = item.id;
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FoodDetailPage(foodId: foodId),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 8,
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                  child: Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    height: 160,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    name,
+                                    style: GoogleFonts.prompt(
+                                        fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+              ],
             );
           },
         );
