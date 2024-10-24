@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/food_app.dart';
 import 'package:seafood_app/screen/home.dart';
@@ -87,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('โปรไฟล์ของฉัน', style: GoogleFonts.prompt(fontSize: 20)),
+        title: Text('โปรไฟล์ของฉัน', style: TextStyle(fontSize: 20)),
         backgroundColor: Colors.teal,
         elevation: 0,
         leading: IconButton(
@@ -114,10 +113,10 @@ class _ProfilePageState extends State<ProfilePage> {
               return Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}', style: GoogleFonts.prompt()));
+              return Center(child: Text('Error: ${snapshot.error}', style: TextStyle()));
             }
             if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('ไม่พบข้อมูลโปรไฟล์', style: GoogleFonts.prompt()));
+              return Center(child: Text('ไม่พบข้อมูลโปรไฟล์', style: TextStyle()));
             }
 
             var userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -188,17 +187,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       'ชื่อผู้ใช้: $username',
-                      style: GoogleFonts.prompt(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'ยอดเงินคงเหลือ: ${balance != null ? '${balance.toStringAsFixed(2)} บาท' : 'ไม่ระบุ'}',
-                      style: GoogleFonts.prompt(fontSize: 16, color: Colors.black87),
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
                     ),
                     SizedBox(height: 8),
                     Text(
                       'อีเมล: ${auth.currentUser?.email ?? ''}',
-                      style: GoogleFonts.prompt(fontSize: 16, color: Colors.black54),
+                      style: TextStyle(fontSize: 16, color: Colors.black54),
                     ),
                   ],
                 ),
@@ -222,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Icon(icon, color: Colors.blueAccent),
         title: Text(
           title,
-          style: GoogleFonts.prompt(fontSize: 18, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         trailing: Icon(Icons.arrow_forward_ios, color: Colors.blueAccent),
         onTap: onTap,

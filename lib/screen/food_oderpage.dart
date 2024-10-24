@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/model/food.dart';
 import 'package:seafood_app/model/cart_page.dart';
 
@@ -287,7 +286,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายการอาหาร', style: GoogleFonts.prompt()),
+        title: Text('รายการอาหาร', style: TextStyle()),
         backgroundColor: Colors.teal,
       ),
       body: Container(
@@ -306,7 +305,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'ค้นหาเมนูอาหาร...',
-                  hintStyle: GoogleFonts.prompt(),
+                  hintStyle: TextStyle(),
                   prefixIcon: Icon(Icons.search, color: Colors.teal),
                   suffixIcon: IconButton(
                     icon: Icon(Icons.clear, color: Colors.red),
@@ -341,7 +340,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return Center(
-                      child: Text('ไม่พบเมนูอาหาร', style: GoogleFonts.prompt()),
+                      child: Text('ไม่พบเมนูอาหาร', style: TextStyle()),
                     );
                   }
 
@@ -361,7 +360,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
                           subtitle: Text('ร้าน: ${food.store} \nTHB ${food.price.toStringAsFixed(2)}'),
                           trailing: ElevatedButton(
                             onPressed: () => addToCart(food),
-                            child: Text('เพิ่มเข้าตะกร้า', style: GoogleFonts.prompt()),
+                            child: Text('เพิ่มเข้าตะกร้า', style: TextStyle()),
                           ),
                         ),
                       );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/home.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -46,7 +45,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         title: Text(
           '',
-          style: GoogleFonts.prompt(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.teal,
         leading: IconButton(onPressed: () {
@@ -71,17 +70,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             children: [
               Text(
                 'รีเซ็ตรหัสผ่านของคุณ\nกรุณากรอกอีเมลที่ใช้ในการสมัครสมาชิก ระบบจะส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณ',
-                style: GoogleFonts.prompt(fontSize: 16, color: Colors.white),
+                style: TextStyle(fontSize: 16, color: Colors.white),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20),
               TextField(
                 controller: _emailController,
-                style: GoogleFonts.prompt(),
+                style: TextStyle(),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'อีเมล',
-                  labelStyle: GoogleFonts.prompt(color: Colors.teal.shade700),
+                  labelStyle: TextStyle(color: Colors.teal.shade700),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -102,7 +101,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         onPressed: _resetPassword,
                         child: Text(
                           'รีเซ็ตรหัสผ่าน',
-                          style: GoogleFonts.prompt(fontSize: 18, color: Colors.white),
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 15),
@@ -121,7 +120,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 },
                 child: Text(
                   'กลับไปที่หน้าเข้าสู่ระบบ',
-                  style: GoogleFonts.prompt(
+                  style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                     decoration: TextDecoration.underline,

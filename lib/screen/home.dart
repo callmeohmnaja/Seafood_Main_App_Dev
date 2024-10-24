@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; 
 import 'package:seafood_app/screen/forgotPasswordPage.dart';
 import 'package:seafood_app/screen/login.dart';
 import 'package:seafood_app/screen/register.dart';
@@ -13,7 +12,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           '',
-          style: GoogleFonts.prompt(fontSize: 26, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,
@@ -57,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                           icon: Icon(Icons.login, color: Colors.white),
                           label: Text(
                             'เข้าสู่ระบบ',
-                            style: GoogleFonts.prompt(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -82,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                           icon: Icon(Icons.person_add, color: Colors.white),
                           label: Text(
                             'สร้างบัญชีใหม่',
-                            style: GoogleFonts.prompt(fontSize: 20, color: Colors.white),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -104,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                         },
                         child: Text(
                           'ลืมรหัสผ่าน?',
-                          style: GoogleFonts.prompt(
+                          style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                             decoration: TextDecoration.underline,
@@ -122,7 +121,7 @@ class HomeScreen extends StatelessWidget {
                 },
                 child: Text(
                   'ข้อตกลงและกฎบังคับ',
-                  style: GoogleFonts.prompt(
+                  style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                     decoration: TextDecoration.underline,

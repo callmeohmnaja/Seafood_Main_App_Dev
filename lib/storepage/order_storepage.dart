@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class OrderStorepage extends StatefulWidget {
@@ -11,6 +10,7 @@ class OrderStorepage extends StatefulWidget {
 
 class _OrderStorepageState extends State<OrderStorepage> {
   String? currentRestaurantUsername;
+  String currentStatus = 'กำลังทำเมนู'; // กำหนดค่าเริ่มต้นของสถานะให้ตรงกับ DropdownMenuItem
 
   @override
   void initState() {
@@ -41,6 +41,13 @@ class _OrderStorepageState extends State<OrderStorepage> {
       return snapshot.docs.map((doc) {
         final data = doc.data();
         final items = List<Map<String, dynamic>>.from(data['items']);
+        String status = data['status'] ?? 'กำลังทำเมนู'; // กำหนดค่าเริ่มต้นสำหรับสถานะ
+
+        // ตรวจสอบให้แน่ใจว่าสถานะตรงกับค่าที่มีใน DropdownMenuItem
+        if (!['กำลังทำเมนู', 'กำลังจัดส่ง', 'จัดส่งสำเร็จ', 'ปฏิเสธคำสั่งซื้อ'].contains(status)) {
+          status = 'กำลังทำเมนู';
+        }
+
         return {
           'address': data['address'],
           'phone': data['phone'],
@@ -48,27 +55,58 @@ class _OrderStorepageState extends State<OrderStorepage> {
           'userId': data['userId'],
           'docId': doc.id,
           'items': items,
+          'status': status, // สถานะที่ถูกต้อง
         };
       }).toList();
     });
   }
 
-  Future<void> sendResponseToCustomer(String userId, String message, String orderId) async {
-    await FirebaseFirestore.instance.collection('customer_notifications').add({
-      'message': message,
-      'userId': userId,
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    // อัปเดตสถานะใน food_store_notifications
+    await FirebaseFirestore.instance.collection('food_store_notifications').doc(orderId).update({
+      'status': newStatus,
       'timestamp': Timestamp.now(),
-      'username': currentRestaurantUsername,
     });
 
-    await FirebaseFirestore.instance.collection('food_store_notifications').doc(orderId).delete();
+    // ตรวจสอบว่ามี customer_notifications สำหรับ order นี้แล้วหรือยัง
+    final existingNotification = await FirebaseFirestore.instance
+        .collection('customer_notifications')
+        .where('orderId', isEqualTo: orderId)
+        .get();
+
+    // ถ้าไม่มี ให้สร้างใหม่
+    if (existingNotification.docs.isEmpty) {
+      final foodStoreDoc = await FirebaseFirestore.instance.collection('food_store_notifications').doc(orderId).get();
+      final foodStoreData = foodStoreDoc.data();
+
+      if (foodStoreData != null) {
+        await FirebaseFirestore.instance.collection('customer_notifications').add({
+          'orderId': orderId,
+          'userId': foodStoreData['userId'], // userId ของลูกค้า
+          'status': newStatus,
+          'items': foodStoreData['items'],
+          'username': currentRestaurantUsername,
+          'message': 'สถานะออเดอร์ของคุณถูกเปลี่ยนเป็น $newStatus',
+          'timestamp': Timestamp.now(),
+        });
+      }
+    } else {
+      // ถ้ามีแล้ว ให้แค่อัปเดตสถานะ
+      for (var doc in existingNotification.docs) {
+        await doc.reference.update({
+          'status': newStatus,
+          'timestamp': Timestamp.now(),
+          'message': 'สถานะออเดอร์ของคุณถูกเปลี่ยนเป็น $newStatus',
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('การแจ้งเตือนออเดอร์', style: GoogleFonts.prompt(color: Colors.black)),
+        title: Text('การแจ้งเตือนออเดอร์', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.brown.shade100,
         leading: IconButton(onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDashboard()));
@@ -90,7 +128,7 @@ class _OrderStorepageState extends State<OrderStorepage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('ไม่มีการแจ้งเตือนคำสั่งซื้อ', style: GoogleFonts.prompt()));
+              return Center(child: Text('ไม่มีการแจ้งเตือนคำสั่งซื้อ', style: TextStyle()));
             }
 
             final notifications = snapshot.data!;
@@ -108,8 +146,8 @@ class _OrderStorepageState extends State<OrderStorepage> {
                   final totalAmount = items.fold(0.0, (sum, item) => sum + (item['price'] as num));
                   final phone = notification['phone'] ?? 'ไม่พบเบอร์โทรศัพท์';
                   final address = notification['address'] ?? 'ไม่พบที่อยู่';
-                  final userId = notification['userId'];
                   final orderId = notification['docId'];
+                  currentStatus = notification['status']; // อัปเดตค่า currentStatus จากข้อมูล Firestore
 
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -129,7 +167,7 @@ class _OrderStorepageState extends State<OrderStorepage> {
                               SizedBox(width: 10),
                               Text(
                                 'คุณมีคำสั่งซื้อใหม่',
-                                style: GoogleFonts.prompt(
+                                style: TextStyle(
                                   color: Colors.brown.shade700,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -185,32 +223,32 @@ class _OrderStorepageState extends State<OrderStorepage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  sendResponseToCustomer(userId, 'ร้าน $currentRestaurantUsername ได้ยอมรับคำสั่งซื้อของคุณสำหรับ: $orderItems', orderId);
-                                },
-                                icon: Icon(Icons.check_circle, color: Colors.white),
-                                label: Text('ยอมรับ'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
+                              DropdownButton<String>(
+                                value: currentStatus, // ใช้สถานะที่ถูกต้อง
+                                items: [
+                                  DropdownMenuItem(
+                                    child: Text('กำลังทำเมนู'),
+                                    value: 'กำลังทำเมนู',
                                   ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  sendResponseToCustomer(userId, 'ร้าน $currentRestaurantUsername ได้ปฏิเสธคำสั่งซื้อของคุณ', orderId);
-                                },
-                                icon: Icon(Icons.cancel, color: Colors.white),
-                                label: Text('ปฏิเสธ'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
+                                  DropdownMenuItem(
+                                    child: Text('กำลังจัดส่ง'),
+                                    value: 'กำลังจัดส่ง',
                                   ),
-                                ),
+                                  DropdownMenuItem(
+                                    child: Text('จัดส่งสำเร็จ'),
+                                    value: 'จัดส่งสำเร็จ',
+                                  ),
+                                  DropdownMenuItem(
+                                    child: Text('ปฏิเสธคำสั่งซื้อ'),
+                                    value: 'ปฏิเสธคำสั่งซื้อ',
+                                  ),
+                                ],
+                                onChanged: (newStatus) {
+                                  setState(() {
+                                    currentStatus = newStatus!;
+                                  });
+                                  updateOrderStatus(orderId, newStatus!);
+                                },
                               ),
                             ],
                           ),

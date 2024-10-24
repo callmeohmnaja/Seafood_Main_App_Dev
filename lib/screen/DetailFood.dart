@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/food_app.dart';
 
 class FoodDetailPage extends StatelessWidget {
@@ -12,7 +11,7 @@ class FoodDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดอาหาร', style: GoogleFonts.prompt(fontSize: 24)),
+        title: Text('รายละเอียดอาหาร', style: TextStyle(fontSize: 24)),
         backgroundColor: Colors.teal,
       ),
       body: SizedBox.expand(
@@ -54,7 +53,7 @@ class FoodDetailPage extends StatelessWidget {
                       // ชื่ออาหาร
                       Text(
                         foodData['name'] ?? 'ชื่ออาหารไม่พบ',
-                        style: GoogleFonts.prompt(
+                        style: TextStyle(
                             fontSize: 28, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 10),
@@ -65,7 +64,7 @@ class FoodDetailPage extends StatelessWidget {
                           Icon(Icons.attach_money, color: Colors.green, size: 28),
                           Text(
                             '${foodData['price'] ?? 'ไม่ระบุ'} บาท',
-                            style: GoogleFonts.prompt(
+                            style: TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -86,7 +85,7 @@ class FoodDetailPage extends StatelessWidget {
                             children: [
                               Text(
                                 'รายละเอียด:',
-                                style: GoogleFonts.prompt(
+                                style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.teal.shade900,
@@ -95,7 +94,7 @@ class FoodDetailPage extends StatelessWidget {
                               SizedBox(height: 10),
                               Text(
                                 foodData['description'] ?? 'ไม่มีรายละเอียด',
-                                style: GoogleFonts.prompt(
+                                style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey.shade800,
                                 ),
@@ -118,7 +117,7 @@ class FoodDetailPage extends StatelessWidget {
                           icon: Icon(Icons.arrow_back_ios_outlined),
                           label: Text(
                             'ย้อนกลับ',
-                            style: GoogleFonts.prompt(fontSize: 20),
+                            style: TextStyle(fontSize: 20),
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 15),

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/addmoney_page.dart';
 import 'package:seafood_app/screen/chatborad.dart';
 import 'package:seafood_app/screen/food_oderpage.dart';
@@ -69,7 +68,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text('Ku Food Delivery', style: GoogleFonts.prompt(fontSize: 26)),
+            Text('Ku Food Delivery', style: TextStyle(fontSize: 26)),
         backgroundColor: Colors.teal,
         elevation: 0,
       ),
@@ -120,14 +119,14 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               'ยอดเงินในระบบ:',
-              style: GoogleFonts.prompt(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.teal),
             ),
             Text(
               '${userBalance.toStringAsFixed(2)} บาท',
-              style: GoogleFonts.prompt(
+              style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.teal),
@@ -147,7 +146,7 @@ class _HomePageState extends State<HomePage> {
           filled: true,
           fillColor: Colors.white,
           hintText: 'ค้นหาร้านอาหารหรือเมนู',
-          hintStyle: GoogleFonts.prompt(),
+          hintStyle: TextStyle(),
           prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
           suffixIcon: IconButton(
             icon: Icon(Icons.close, color: Colors.redAccent),
@@ -216,7 +215,7 @@ class _HomePageState extends State<HomePage> {
             if (snapshot.hasError || restaurantSnapshot.hasError) {
               return Center(
                   child: Text('Error: ${snapshot.error}',
-                      style: GoogleFonts.prompt()));
+                      style: TextStyle()));
             }
             if (snapshot.connectionState == ConnectionState.waiting ||
                 restaurantSnapshot.connectionState == ConnectionState.waiting) {
@@ -230,7 +229,7 @@ class _HomePageState extends State<HomePage> {
               return Center(
                 child: Text(
                   'ไม่พบผลลัพธ์',
-                  style: GoogleFonts.prompt(fontSize: 18),
+                  style: TextStyle(fontSize: 18),
                 ),
               );
             }
@@ -240,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                 if (restaurantItems.isNotEmpty)
                   Text(
                     'ร้านอาหารที่พบ:',
-                    style: GoogleFonts.prompt(
+                    style: TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 if (restaurantItems.isNotEmpty)
@@ -290,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     restaurantName,
-                                    style: GoogleFonts.prompt(
+                                    style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -307,7 +306,7 @@ class _HomePageState extends State<HomePage> {
                 if (menuItems.isNotEmpty)
                   Text(
                     'เมนูอาหารที่พบ:',
-                    style: GoogleFonts.prompt(
+                    style: TextStyle(
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 if (menuItems.isNotEmpty)
@@ -355,7 +354,7 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     name,
-                                    style: GoogleFonts.prompt(
+                                    style: TextStyle(
                                         fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -382,7 +381,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Text(
           _randomMessage,
-          style: GoogleFonts.prompt(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
       ),
@@ -397,7 +396,7 @@ class _HomePageState extends State<HomePage> {
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.teal),
             child: Text('Menu',
-                style: GoogleFonts.prompt(color: Colors.white, fontSize: 24)),
+                style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
           _buildDrawerItem(Icons.home, 'หน้าแรก', () {
             Navigator.push(
@@ -433,7 +432,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title, style: GoogleFonts.prompt()),
+      title: Text(title, style: TextStyle()),
       onTap: () {
         Navigator.pop(context);
         onTap();
@@ -446,7 +445,7 @@ class _HomePageState extends State<HomePage> {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: Colors.white),
-      label: Text(label, style: GoogleFonts.prompt(color: Colors.white)),
+      label: Text(label, style: TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),

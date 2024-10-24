@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
 class CustomerNotificationsPage extends StatefulWidget {
@@ -28,7 +27,7 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
     }
   }
 
-  // ดึงการแจ้งเตือนจาก customer_notifications collection สำหรับลูกค้าที่ล็อกอินอยู่
+
   Stream<List<Map<String, dynamic>>> fetchCustomerNotifications() {
     if (currentUserId == null) {
       return Stream.value([]);
@@ -48,6 +47,7 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
           'username': data['username'] ?? 'ไม่ทราบชื่อร้าน',
           'items': items,
           'timestamp': data['timestamp'],
+          'status': data['status'] ?? 'ไม่มีสถานะ', 
         };
       }).toList();
     });
@@ -57,7 +57,7 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('การแจ้งเตือนของคุณ', style: GoogleFonts.prompt(color: Colors.white)),
+        title: Text('สถานะออเดอร์ของคุณ', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.teal,
         leading: IconButton(onPressed: () {
           Navigator.pop(context);
@@ -80,7 +80,7 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('ไม่มีการแจ้งเตือน', style: GoogleFonts.prompt()));
+              return Center(child: Text('ไม่มีการแจ้งเตือน', style: TextStyle()));
             }
 
             final notifications = snapshot.data!;
@@ -104,12 +104,13 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
                   elevation: 4,
                   child: ListTile(
                     leading: Icon(Icons.notifications, size: 40, color: Colors.teal),
-                    title: Text('ร้าน: $restaurantName', style: GoogleFonts.prompt(color: Colors.teal.shade800)),
+                    title: Text('ร้าน: $restaurantName', style: TextStyle(color: Colors.teal.shade800)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('รายการอาหาร: $orderItems', style: GoogleFonts.prompt()),
-                        Text('ข้อความ: $message', style: GoogleFonts.prompt()),
+                        Text('รายการอาหาร: $orderItems', style: TextStyle()),
+                        Text('ข้อความ: $message', style: TextStyle()),
+                        Text('สถานะ: ${notification['status']}', style: TextStyle(color: Colors.teal.shade600)), // แสดงสถานะ
                         Text('วันที่: ${timestamp.toLocal()}', style: TextStyle(color: Colors.grey.shade600)),
                       ],
                     ),

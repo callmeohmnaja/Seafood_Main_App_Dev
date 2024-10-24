@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 // ignore: use_key_in_widget_constructors
 class ChatBoardPage extends StatefulWidget {
@@ -56,7 +56,7 @@ class _ChatBoardPageState extends State<ChatBoardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('KU Chat!', style: GoogleFonts.prompt(fontWeight: FontWeight.bold)),
+        title: Text('KU Chat!', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.teal,
       ),
       body: Container(
@@ -82,7 +82,7 @@ class _ChatBoardPageState extends State<ChatBoardPage> {
                     return Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text('ยังไม่พบข้อความ', style: GoogleFonts.prompt(fontSize: 16)));
+                    return Center(child: Text('ยังไม่พบข้อความ', style: TextStyle(fontSize: 16)));
                   }
 
                   final messages = snapshot.data!.docs;
@@ -129,7 +129,7 @@ class _ChatBoardPageState extends State<ChatBoardPage> {
                                   children: [
                                     Text(
                                       messageSender,
-                                      style: GoogleFonts.prompt(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.teal.shade900,
@@ -144,7 +144,7 @@ class _ChatBoardPageState extends State<ChatBoardPage> {
                                         padding: const EdgeInsets.all(12.0),
                                         child: Text(
                                           messageText,
-                                          style: GoogleFonts.prompt(
+                                          style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.black87,
                                             height: 1.5,
@@ -198,10 +198,10 @@ class _ChatBoardPageState extends State<ChatBoardPage> {
           Expanded(
             child: TextField(
               controller: _messageController,
-              style: GoogleFonts.prompt(),
+              style: TextStyle(),
               decoration: InputDecoration(
                 labelText: 'พิมพ์ข้อความ...',
-                labelStyle: GoogleFonts.prompt(color: Colors.teal.shade700),
+                labelStyle: TextStyle(color: Colors.teal.shade700),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
