@@ -7,7 +7,7 @@ import 'package:seafood_app/screen/food_oderpage.dart'; // นำเข้าค
 class RestaurantMenuPage extends StatelessWidget {
   final String restaurantUid;
 
-  RestaurantMenuPage({
+  const RestaurantMenuPage({super.key, 
     required this.restaurantUid,
     required Function(Food food) onAddToCart,
   });

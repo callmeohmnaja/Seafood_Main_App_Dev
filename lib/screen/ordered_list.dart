@@ -14,7 +14,7 @@ String generateNumericOrderId() {
 class OrderedListPage extends StatelessWidget {
   final String userUid;
 
-  OrderedListPage({required this.userUid, required List<Food> orderedItems});
+  const OrderedListPage({super.key, required this.userUid, required List<Food> orderedItems});
 
   @override
   Widget build(BuildContext context) {

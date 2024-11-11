@@ -5,7 +5,7 @@ import 'package:seafood_app/screen/food_app.dart';
 class FoodDetailPage extends StatelessWidget {
   final String foodId;
 
-  FoodDetailPage({required this.foodId});
+  const FoodDetailPage({super.key, required this.foodId});
 
   @override
   Widget build(BuildContext context) {

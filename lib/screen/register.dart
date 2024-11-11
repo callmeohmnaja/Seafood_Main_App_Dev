@@ -391,10 +391,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   String _generateRandomString(int length) {
-    const _chars = '0123456789';
-    Random _rnd = Random();
+    const chars = '0123456789';
+    Random rnd = Random();
     return String.fromCharCodes(
-      Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))),
+      Iterable.generate(length, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))),
     );
   }
 }

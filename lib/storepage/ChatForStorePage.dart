@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class Chatforstorepage extends StatefulWidget {
+  const Chatforstorepage({super.key});
+
   @override
   _Chatforstorepage createState() => _Chatforstorepage();
 }

@@ -75,9 +75,9 @@ class RaiderinfoPage extends StatelessWidget {
                             radius: 30,
                           )
                         : CircleAvatar(
-                            child: Icon(Icons.person, size: 30, color: Colors.brown.shade700),
                             backgroundColor: Colors.brown.shade200,
                             radius: 30,
+                            child: Icon(Icons.person, size: 30, color: Colors.brown.shade700),
                           ),
                     title: Text(
                       username,

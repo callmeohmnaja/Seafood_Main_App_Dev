@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:seafood_app/screen/food_app.dart';
 
 class AddMoneyPage extends StatefulWidget {
-  const AddMoneyPage({Key? key}) : super(key: key);
+  const AddMoneyPage({super.key});
 
   @override
   State<AddMoneyPage> createState() => _AddMoneyPageState();

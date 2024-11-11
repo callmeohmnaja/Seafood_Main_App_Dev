@@ -11,8 +11,12 @@ import 'package:seafood_app/storepage/edit_or_delete_menu_page.dart';
 import 'package:seafood_app/storepage/editstore_page.dart';
 import 'package:seafood_app/storepage/order_storepage.dart';
 import 'package:seafood_app/storepage/raiderinfo_page.dart';
+import 'package:seafood_app/storepage/showmoney.dart';
+import 'package:seafood_app/storepage/test.dart';
 
 class StoreDashboard extends StatefulWidget {
+  const StoreDashboard({super.key});
+
   @override
   _StoreDashboardState createState() => _StoreDashboardState();
 }
@@ -176,7 +180,8 @@ class _StoreDashboardState extends State<StoreDashboard> {
                       _buildStyledMenuItem('แก้ไขหรือลบเมนู', EditOrDeleteMenuPage()),
                       _buildStyledMenuItem('Ku Chat', Chatforstorepage()),
                       _buildStyledMenuItem('ค้นหาไรเดอร์', RaiderinfoPage()),
-                      // _buildStyledMenuItem('แจ้งเตือนคําตอบรับไรเดอร์', StoreNotificationsPage()),
+                      _buildStyledMenuItem('รายได้ทั้งหมดของฉัน', Showmoney()),
+                       _buildStyledMenuItem('test',SalesReportPage(userId: '')),
                       _buildStyledLogoutButton(),
                     ],
                   ),

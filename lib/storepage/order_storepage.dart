@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart';
 
 class OrderStorepage extends StatefulWidget {
+  const OrderStorepage({super.key});
+
   @override
   _OrderStorepageState createState() => _OrderStorepageState();
 }
@@ -227,20 +229,20 @@ class _OrderStorepageState extends State<OrderStorepage> {
                                 value: currentStatus, // ใช้สถานะที่ถูกต้อง
                                 items: [
                                   DropdownMenuItem(
-                                    child: Text('กำลังทำเมนู'),
                                     value: 'กำลังทำเมนู',
+                                    child: Text('กำลังทำเมนู'),
                                   ),
                                   DropdownMenuItem(
-                                    child: Text('กำลังจัดส่ง'),
                                     value: 'กำลังจัดส่ง',
+                                    child: Text('กำลังจัดส่ง'),
                                   ),
                                   DropdownMenuItem(
-                                    child: Text('จัดส่งสำเร็จ'),
                                     value: 'จัดส่งสำเร็จ',
+                                    child: Text('จัดส่งสำเร็จ'),
                                   ),
                                   DropdownMenuItem(
-                                    child: Text('ปฏิเสธคำสั่งซื้อ'),
                                     value: 'ปฏิเสธคำสั่งซื้อ',
+                                    child: Text('ปฏิเสธคำสั่งซื้อ'),
                                   ),
                                 ],
                                 onChanged: (newStatus) {

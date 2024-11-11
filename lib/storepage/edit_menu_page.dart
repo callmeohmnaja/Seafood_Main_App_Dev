@@ -8,7 +8,7 @@ import 'package:seafood_app/storepage/store_dashboard.dart';
 class EditMenuPage extends StatefulWidget {
   final String menuId;
 
-  EditMenuPage({required this.menuId});
+  const EditMenuPage({super.key, required this.menuId});
 
   @override
   _EditMenuPageState createState() => _EditMenuPageState();
@@ -42,8 +42,8 @@ class _EditMenuPageState extends State<EditMenuPage> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -148,7 +148,6 @@ class _EditMenuPageState extends State<EditMenuPage> {
                 SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _updateMenu,
-                  child: Text('อัปเดตเมนู'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white, backgroundColor: Colors.brown.shade300,
                     padding: EdgeInsets.symmetric(vertical: 16),
@@ -156,6 +155,7 @@ class _EditMenuPageState extends State<EditMenuPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                  child: Text('อัปเดตเมนู'),
                 ),
               ],
             ),

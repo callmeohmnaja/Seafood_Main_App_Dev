@@ -10,6 +10,8 @@ import 'package:seafood_app/screen/raiderpage/raider_dashboard.dart';
 import 'package:seafood_app/storepage/store_dashboard.dart'; // นำเข้า StoreDashboard ที่นี่
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/screen/home.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
@@ -99,10 +101,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _resetPassword,
-                        child: Text(
-                          'รีเซ็ตรหัสผ่าน',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 15),
                           backgroundColor: Colors.teal,
@@ -110,6 +108,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                           elevation: 5,
+                        ),
+                        child: Text(
+                          'รีเซ็ตรหัสผ่าน',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                       ),
                     ),

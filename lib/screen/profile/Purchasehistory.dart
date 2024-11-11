@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
 class OrderHistoryPage extends StatefulWidget {
+  const OrderHistoryPage({super.key});
+
   @override
   _OrderHistoryPageState createState() => _OrderHistoryPageState();
 }

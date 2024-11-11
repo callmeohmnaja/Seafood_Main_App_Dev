@@ -5,6 +5,8 @@ import 'package:seafood_app/storepage/store_dashboard.dart';
 import 'edit_menu_page.dart';
 
 class EditOrDeleteMenuPage extends StatefulWidget {
+  const EditOrDeleteMenuPage({super.key});
+
   @override
   _EditOrDeleteMenuPageState createState() => _EditOrDeleteMenuPageState();
 }

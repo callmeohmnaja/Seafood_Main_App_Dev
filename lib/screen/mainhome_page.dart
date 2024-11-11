@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
           : FirebaseFirestore.instance
               .collection('menu')
               .where('name', isGreaterThanOrEqualTo: searchQuery)
-              .where('name', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+              .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff')
               .snapshots(),
       builder: (context, snapshot) {
         return StreamBuilder<QuerySnapshot>(
@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> {
                   .collection('users')
                   .where('role', isEqualTo: 'ร้านอาหาร')
                   .where('username', isGreaterThanOrEqualTo: searchQuery)
-                  .where('username', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+                  .where('username', isLessThanOrEqualTo: '$searchQuery\uf8ff')
                   .snapshots(),
           builder: (context, restaurantSnapshot) {
             if (snapshot.hasError || restaurantSnapshot.hasError) {

@@ -15,6 +15,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,6 +30,8 @@ class MyApp extends StatelessWidget {
 }
 
 class AddMenuPage extends StatefulWidget {
+  const AddMenuPage({super.key});
+
   @override
   _AddMenuPageState createState() => _AddMenuPageState();
 }
@@ -214,13 +218,13 @@ class _AddMenuPageState extends State<AddMenuPage> {
                     ? CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: _submitForm,
-                        child: Text('บันทึก'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.brown.shade600,
                           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
+                        child: Text('บันทึก'),
                       ),
               ),
             ],

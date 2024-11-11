@@ -7,7 +7,7 @@ import 'package:seafood_app/model/cart_page.dart';
 class FoodOrderPage extends StatefulWidget {
   final List<Food> initialCartItems;
 
-  FoodOrderPage({required this.initialCartItems});
+  const FoodOrderPage({super.key, required this.initialCartItems});
 
   @override
   _FoodOrderPageState createState() => _FoodOrderPageState();
@@ -260,7 +260,7 @@ class _FoodOrderPageState extends State<FoodOrderPage> {
       snapshot = await FirebaseFirestore.instance
           .collection('menu')
           .where('name', isGreaterThanOrEqualTo: query)
-          .where('name', isLessThanOrEqualTo: query + '\uf8ff')
+          .where('name', isLessThanOrEqualTo: '$query\uf8ff')
           .get();
     }
 

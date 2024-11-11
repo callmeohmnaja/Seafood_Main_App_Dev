@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seafood_app/screen/profile/profile.dart';
 
 class CustomerNotificationsPage extends StatefulWidget {
+  const CustomerNotificationsPage({super.key});
+
   @override
   _CustomerNotificationsPageState createState() => _CustomerNotificationsPageState();
 }

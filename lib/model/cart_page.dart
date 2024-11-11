@@ -18,7 +18,7 @@ class CartPage extends StatefulWidget {
   final String userUid;
   final VoidCallback onConfirmOrder;
 
-  CartPage({
+  const CartPage({super.key, 
     required this.items,
     required this.userUid,
     required this.onConfirmOrder,
@@ -175,7 +175,7 @@ class _CartPageState extends State<CartPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'รวมทั้งหมด: THB${totalPrice}',
+                'รวมทั้งหมด: THB$totalPrice',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
